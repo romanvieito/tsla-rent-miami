@@ -14,7 +14,7 @@ export default function Home() {
             <nav className="hidden md:flex space-x-6">
               <a href="#fleet" className="text-gray-700 hover:text-gray-900 font-medium">Our Fleet</a>
               <a href="/about" className="text-gray-700 hover:text-gray-900 font-medium">About</a>
-              <a href="#contact" className="text-gray-700 hover:text-gray-900 font-medium">Contact</a>
+              <a href="/contact" className="text-gray-700 hover:text-gray-900 font-medium">Contact</a>
             </nav>
           </div>
         </div>
@@ -50,7 +50,7 @@ export default function Home() {
               </div>
               <div className="p-5">
                 <h3 className="text-xl font-bold text-gray-900 mb-1">{car.model}</h3>
-                <p className="text-sm text-gray-600 mb-3">{car.color}</p>
+                <p className="text-sm text-gray-600 mb-3">{car.description}</p>
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="text-2xl font-bold text-gray-900">${car.price}</span>
@@ -81,7 +81,7 @@ export default function Home() {
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#fleet" className="hover:text-white">Our Fleet</a></li>
                 <li><a href="/about" className="hover:text-white">About Us</a></li>
-                <li><a href="#contact" className="hover:text-white">Contact</a></li>
+                <li><a href="/contact" className="hover:text-white">Contact</a></li>
               </ul>
             </div>
             <div>
