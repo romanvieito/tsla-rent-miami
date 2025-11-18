@@ -1,4 +1,5 @@
 import { cars } from '@/lib/cars';
+import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -39,10 +40,11 @@ export default function Home() {
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
               <div className="relative h-48 bg-gray-200">
-                <img
+                <Image
                   src={car.image}
                   alt={`${car.model} ${car.year}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
                 <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-xs font-semibold text-gray-800">
                   {car.year}
@@ -51,6 +53,25 @@ export default function Home() {
               <div className="p-5">
                 <h3 className="text-xl font-bold text-gray-900 mb-1">{car.model}</h3>
                 <p className="text-sm text-gray-600 mb-3">{car.description}</p>
+                
+                {/* Seats and Range */}
+                <div className="flex gap-3 mb-4">
+                  <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-full">
+                    <svg className="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span className="text-sm text-gray-900 font-medium">{car.seats} seats</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-full">
+                    <svg className="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                      <rect x="2" y="7" width="16" height="10" rx="1" />
+                      <rect x="18" y="10" width="2" height="4" rx="0.5" />
+                      <path d="M10.5 9L8 12h4l-2.5 3" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                    </svg>
+                    <span className="text-sm text-gray-900 font-medium">{car.range} miles</span>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="text-2xl font-bold text-gray-900">${car.price}</span>

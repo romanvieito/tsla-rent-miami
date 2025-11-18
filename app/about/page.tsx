@@ -29,15 +29,15 @@ export default function About() {
           
           <div className="prose prose-lg max-w-none text-gray-700 space-y-6">
             <p className="text-lg leading-relaxed">
-              I'm an engineer who loves exploring new places. A sunrise view with an espresso in hand? ☀️☕ That's my kind of bliss!
+              I&apos;m an engineer who loves exploring new places. A sunrise view with an espresso in hand? ☀️☕ That&apos;s my kind of bliss!
             </p>
 
             <p className="text-lg leading-relaxed">
-              Fun fact: I used to be a hesitant driver, but I've grown into a confident and careful one. Thanks to its incredible innovation, I feel safest in a Tesla. I'm excited to share the joy of the road with you!
+              Fun fact: I used to be a hesitant driver, but I&apos;ve grown into a confident and careful one. Thanks to its incredible innovation, I feel safest in a Tesla. I&apos;m excited to share the joy of the road with you!
             </p>
 
             <p className="text-lg leading-relaxed">
-              Let's connect on <a href="https://linkedin.com/in/yaibolanos" target="_blank" rel="noopener noreferrer" className="text-gray-900 hover:text-gray-700 underline font-medium">LinkedIn</a>. Can't wait to drive and make new memories!
+              Let&apos;s connect on <a href="https://linkedin.com/in/yaibolanos" target="_blank" rel="noopener noreferrer" className="text-gray-900 hover:text-gray-700 underline font-medium">LinkedIn</a>. Can&apos;t wait to drive and make new memories!
             </p>
           </div>
         </div>
