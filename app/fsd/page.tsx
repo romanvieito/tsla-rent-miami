@@ -24,7 +24,7 @@ export default function Home() {
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                   TSLA Rent
                 </h1>
-                <p className="text-xs text-gray-500 hidden sm:block">Miami's Tesla Enthusiasts</p>
+                <p className="text-xs text-gray-500 hidden sm:block">Miami&apos;s Tesla Enthusiasts</p>
               </div>
             </div>
             
@@ -131,7 +131,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h3 className="text-4xl font-bold mb-4">Why us?</h3>
             <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              We're not just another rental company... we're Tesla enthusiasts who want you to experience the best.
+              We&apos;re not just another rental company... we&apos;re Tesla enthusiasts who want you to experience the best.
             </p>
           </div>
 
@@ -153,7 +153,7 @@ export default function Home() {
                 </svg>
               </div>
               <h4 className="text-xl font-bold mb-2">Full Self-Driving</h4>
-              <p className="text-gray-300">Try Tesla's advanced FSD technology on every rental.</p>
+              <p className="text-gray-300">Try Tesla&apos;s advanced FSD technology on every rental.</p>
             </div>
 
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all">
@@ -311,11 +311,11 @@ export default function Home() {
                 </div>
             <div>
                   <h3 className="text-2xl font-bold">TSLA Rent</h3>
-                  <p className="text-red-400 text-sm">Miami's Tesla Enthusiasts</p>
+                  <p className="text-red-400 text-sm">Miami&apos;s Tesla Enthusiasts</p>
                 </div>
               </div>
               <p className="text-gray-400 leading-relaxed mb-6 max-w-md">
-                Your premier family-owned Tesla rental experience in Miami. We're passionate about providing you with the cleanest vehicles, cutting-edge technology, and unbeatable service.
+                Your premier family-owned Tesla rental experience in Miami. We&apos;re passionate about providing you with the cleanest vehicles, cutting-edge technology, and unbeatable service.
               </p>
               <div className="flex space-x-4">
                 <a href="#" className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-colors">

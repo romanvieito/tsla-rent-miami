@@ -274,11 +274,11 @@ export default function Home() {
                 </div>
             <div>
                   <h3 className="text-2xl font-bold">TSLA Rent</h3>
-                  <p className="text-red-400 text-sm">Miami's Tesla Enthusiasts</p>
+                  <p className="text-red-400 text-sm">Miami&apos;s Tesla Enthusiasts</p>
                 </div>
               </div>
               <p className="text-gray-400 leading-relaxed mb-6 max-w-md">
-                Your premier family-owned Tesla rental experience in Miami. We're passionate about providing you with the cleanest vehicles, cutting-edge technology, and unbeatable service.
+                Your premier family-owned Tesla rental experience in Miami. We&apos;re passionate about providing you with the cleanest vehicles, cutting-edge technology, and unbeatable service.
               </p>
             </div>
 
