@@ -24,7 +24,7 @@ export default function Home() {
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                   TSLA Rent
                 </h1>
-                <p className="text-xs text-gray-500 hidden sm:block">Miami's Tesla Specialists</p>
+                <p className="text-xs text-gray-500 hidden sm:block">Miami's Tesla Enthusiasts</p>
               </div>
             </div>
             
@@ -299,7 +299,7 @@ export default function Home() {
                 </div>
             <div>
                   <h3 className="text-2xl font-bold">TSLA Rent</h3>
-                  <p className="text-red-400 text-sm">Miami's Tesla Specialists</p>
+                  <p className="text-red-400 text-sm">Miami's Tesla Enthusiasts</p>
                 </div>
               </div>
               <p className="text-gray-400 leading-relaxed mb-6 max-w-md">
@@ -398,13 +398,13 @@ export default function Home() {
           <div className="border-t border-gray-800 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
               <p className="text-gray-400 text-sm">
-                &copy; 2025 TSLA Rent Miami. All rights reserved.
+                &copy; 2025 TSLA Rent Miami.
               </p>
-              <div className="flex space-x-6 text-sm">
+              {/* <div className="flex space-x-6 text-sm">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Insurance</a>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
