@@ -88,8 +88,7 @@ export default function Home() {
             Feel the <span className="bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">Future</span>
           </h2>
           <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto mb-10 leading-relaxed">
-            Safety is more important than ever... family-owned.
-            {/* <span className="block mt-2 text-lg text-gray-500">Family-owned. Locally trusted.</span> */}
+            Safety first. Family-owned.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -264,21 +263,34 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Image Section */}
+      <section className="relative bg-white overflow-hidden">
+        <div className="relative w-full h-[400px] md:h-[500px]">
+          <Image
+            src="/TeslaModels.jpg"
+            alt="Tesla fleet lineup on Miami beach"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-red-600 to-red-700 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Ready to Experience the Future?
+      <section className="bg-white py-16">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            Ready?
           </h3>
-          <p className="text-red-100 text-lg mb-8 max-w-2xl mx-auto">
-            Book your Tesla today and discover why Miami drivers choose us for the ultimate electric experience.
+          <p className="text-gray-600 text-lg mb-10 max-w-xl mx-auto">
+            Drive safe. Book your Tesla today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="bg-white text-red-600 px-8 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg">
+            <a href="/contact" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg">
               Reserve Now
             </a>
-            <a href="tel:+17868179906" className="bg-red-800/50 backdrop-blur-sm text-white border-2 border-white/30 px-8 py-4 rounded-xl hover:bg-red-800/70 transition-all font-bold text-lg">
-              Call Us: (786) 817-9906
+            <a href="tel:+17868179906" className="bg-gray-900 text-white px-10 py-4 rounded-xl hover:bg-gray-800 hover:shadow-xl transition-all font-bold text-lg">
+              (786) 817-9906
             </a>
           </div>
         </div>

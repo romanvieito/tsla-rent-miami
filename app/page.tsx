@@ -3,14 +3,15 @@
 import { cars } from '@/lib/cars';
 import Image from 'next/image';
 import { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { addDays, setHours, setMinutes } from 'date-fns';
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [bookingForm, setBookingForm] = useState({
-    from: '',
-    to: '',
-    location: 'Miami Airport (MIA)'
-  });
+  const [startDate, setStartDate] = useState<Date | null>(setHours(setMinutes(addDays(new Date(), 1), 0), 10));
+  const [endDate, setEndDate] = useState<Date | null>(setHours(setMinutes(addDays(new Date(), 4), 0), 10));
+  const [location, setLocation] = useState('Miami Airport (MIA)');
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -68,74 +69,82 @@ export default function Home() {
       </header>
 
       {/* Hero Section with Booking */}
-      <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-            backgroundSize: '40px 40px'
-          }}></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-white pt-8 pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Booking Form - Enhanced with DatePicker */}
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-visible">
+              <div className="grid grid-cols-1 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                
+                {/* Location */}
+                <div className="col-span-1 md:col-span-2 p-5 hover:bg-gray-50 transition-colors group">
+                  <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+                    Location
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className="w-full text-base font-medium text-gray-900 bg-transparent border-none outline-none appearance-none pr-6 cursor-pointer"
+                    >
+                      <option value="Miami Airport (MIA)">Miami Airport (MIA)</option>
+                      <option value="Fort Lauderdale Airport (FLL)">Fort Lauderdale Airport (FLL)</option>
+                      <option value="Miami Beach">Miami Beach</option>
+                      <option value="Downtown Miami">Downtown Miami</option>
+                      <option value="Brickell">Brickell</option>
+                    </select>
+                    <svg className="absolute right-0 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
 
-          {/* Booking Form */}
-          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-6 md:p-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* From Date */}
-              <div>
-                <label htmlFor="from" className="block text-sm font-semibold text-gray-700 mb-2">
-                  From
-                </label>
-                <input
-                  type="date"
-                  id="from"
-                  value={bookingForm.from}
-                  onChange={(e) => setBookingForm({ ...bookingForm, from: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                />
-              </div>
+                {/* From Date & Time */}
+                <div className="col-span-1 md:col-span-1.5 p-5 hover:bg-gray-50 transition-colors group">
+                  <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+                    From
+                  </label>
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    showTimeSelect
+                    timeIntervals={30}
+                    minDate={new Date()}
+                    dateFormat="MMM d, h:mm aa"
+                    className="w-full text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer"
+                    calendarClassName="custom-calendar"
+                    wrapperClassName="w-full"
+                  />
+                </div>
 
-              {/* To Date */}
-              <div>
-                <label htmlFor="to" className="block text-sm font-semibold text-gray-700 mb-2">
-                  To
-                </label>
-                <input
-                  type="date"
-                  id="to"
-                  value={bookingForm.to}
-                  onChange={(e) => setBookingForm({ ...bookingForm, to: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
-                />
-              </div>
+                {/* Until Date & Time */}
+                <div className="col-span-1 md:col-span-1.5 p-5 hover:bg-gray-50 transition-colors group">
+                  <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+                    Until
+                  </label>
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    showTimeSelect
+                    timeIntervals={30}
+                    minDate={startDate || new Date()}
+                    dateFormat="MMM d, h:mm aa"
+                    className="w-full text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer"
+                    calendarClassName="custom-calendar"
+                    wrapperClassName="w-full"
+                  />
+                </div>
 
-              {/* Location */}
-              <div>
-                <label htmlFor="location" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Where
-                </label>
-                <select
-                  id="location"
-                  value={bookingForm.location}
-                  onChange={(e) => setBookingForm({ ...bookingForm, location: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all appearance-none bg-white"
-                >
-                  <option value="Miami Airport (MIA)">Miami Airport (MIA)</option>
-                  <option value="Fort Lauderdale Airport (FLL)">Fort Lauderdale Airport (FLL)</option>
-                  <option value="Miami Beach">Miami Beach</option>
-                  <option value="Downtown Miami">Downtown Miami</option>
-                  <option value="Brickell">Brickell</option>
-                </select>
-              </div>
-
-              {/* Search Button */}
-              <div className="flex items-end">
-                <button className="w-12 h-12 flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-all hover:scale-105">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </button>
+                {/* Search Button */}
+                <div className="col-span-1 p-3 bg-gray-50">
+                  <button className="w-full h-full min-h-[80px] bg-gray-900 hover:bg-gray-800 text-white rounded-xl transition-all font-semibold text-base flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Search
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -143,7 +152,7 @@ export default function Home() {
       </section>
 
       {/* Fleet Section */}
-      <section id="fleet" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section id="fleet" className="bg-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20">
         {/* <div className="text-center mb-12">
           <h3 className="text-4xl font-bold text-gray-900 mb-4">Our Fleet</h3>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -223,6 +232,30 @@ export default function Home() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Hero Image Section */}
+      <section className="relative bg-white overflow-hidden">
+        <div className="relative w-full h-[600px] md:h-[700px]">
+          <Image
+            src="/TeslaModels.jpg"
+            alt="Tesla fleet lineup on Miami beach"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/20 to-transparent"></div>
+          <div className="absolute inset-0 flex items-end">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                Experience Miami in Style
+              </h2>
+              <p className="text-xl text-white/90 max-w-2xl drop-shadow-md">
+                Our premium Tesla fleet awaits you on the beautiful beaches of Miami
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
