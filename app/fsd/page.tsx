@@ -263,9 +263,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Image Section */}
+      {/* Image Section with CTA */}
       <section className="relative bg-white overflow-hidden">
-        <div className="relative w-full h-[400px] md:h-[500px]">
+        <div className="relative w-full h-[500px] md:h-[600px] lg:h-[700px]">
           <Image
             src="/TeslaModels.jpg"
             alt="Tesla fleet lineup on Miami beach"
@@ -273,25 +273,24 @@ export default function Home() {
             className="object-cover"
             priority
           />
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-white py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            Ready?
-          </h3>
-          <p className="text-gray-600 text-lg mb-10 max-w-xl mx-auto">
-            Drive safe. Book your Tesla today.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg">
-              Reserve Now
-            </a>
-            <a href="tel:+17868179906" className="bg-gray-900 text-white px-10 py-4 rounded-xl hover:bg-gray-800 hover:shadow-xl transition-all font-bold text-lg">
-              (786) 817-9906
-            </a>
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+          
+          {/* Text content at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-4 md:pb-6 lg:pb-8">
+            <div className="max-w-4xl mx-auto text-center">
+              <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
+                Ready?
+              </h3>
+              <p className="text-white/95 text-xl sm:text-2xl mb-10 max-w-2xl mx-auto drop-shadow-md">
+                Drive safe. Book your Tesla today.
+              </p>
+              <div className="flex justify-center">
+                <a href="/contact" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg">
+                  Reserve Now
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
