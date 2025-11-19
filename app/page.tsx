@@ -36,9 +36,8 @@ export default function Home() {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               <a href="#fleet" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Fleet</a>
-              <a href="#why-us" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Why Us</a>
               <a href="/about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</a>
-             
+              <a href="/contact" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Contact</a>
             </nav>
 
             {/* Mobile Menu Button */}
@@ -295,19 +294,11 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="#why-us" className="text-gray-400 hover:text-white transition-colors flex items-center group">
-                    <svg className="w-4 h-4 mr-2 text-red-500 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                    Why Choose Us
-                  </a>
-                </li>
-                <li>
                   <a href="/about" className="text-gray-400 hover:text-white transition-colors flex items-center group">
                     <svg className="w-4 h-4 mr-2 text-red-500 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                    About Us
+                    About
                   </a>
                 </li>
                 <li>
