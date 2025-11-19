@@ -249,10 +249,10 @@ export default function Home() {
           <div className="absolute inset-0 flex items-end">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-                Experience Miami in Style
+                Safety is more important than ever.
               </h2>
               <p className="text-xl text-white/90 max-w-2xl drop-shadow-md">
-                Our premium Tesla fleet awaits you on the beautiful beaches of Miami
+                Enjoy your Tesla, try Full Self-Driving.
               </p>
             </div>
           </div>
