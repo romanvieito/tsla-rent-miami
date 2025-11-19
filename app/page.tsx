@@ -79,7 +79,7 @@ export default function Home() {
                 {/* Location */}
                 <div className="col-span-1 md:col-span-2 p-5 hover:bg-gray-50 transition-colors group">
                   <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
-                    Location
+                    Where
                   </label>
                   <div className="relative">
                     <select
@@ -120,7 +120,7 @@ export default function Home() {
                 {/* Until Date & Time */}
                 <div className="col-span-1 md:col-span-1.5 p-5 hover:bg-gray-50 transition-colors group">
                   <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
-                    Until
+                    To
                   </label>
                   <DatePicker
                     selected={endDate}
