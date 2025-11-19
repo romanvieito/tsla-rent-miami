@@ -9,8 +9,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">TSLA Rent Miami</h1>
-              <p className="text-sm text-gray-600 mt-1">Premium Tesla Rentals</p>
+              <h1 className="text-3xl font-bold text-gray-900">TSLA Rent</h1>
+              <p className="text-sm text-gray-600 mt-1">Try a Tesla, from a small family business in Miami</p>
             </div>
             <nav className="hidden md:flex space-x-6">
               <a href="#fleet" className="text-gray-700 hover:text-gray-900 font-medium">Our Fleet</a>
@@ -25,10 +25,10 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h2 className="text-5xl font-bold text-gray-900 mb-4">
-            Feel the Future in Miami
+            Feel the Future
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Choose from our premium fleet of Teslas. All with FSD included.
+            Easy. Safe. Try FSD & Enjoy Miami.
           </p>
         </div>
 
