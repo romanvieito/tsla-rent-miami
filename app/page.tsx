@@ -6,6 +6,11 @@ import { useState } from 'react';
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [bookingForm, setBookingForm] = useState({
+    from: '',
+    to: '',
+    location: 'Miami Airport (MIA)'
+  });
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -66,6 +71,76 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Hero Section with Booking */}
+      <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px'
+          }}></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Booking Form */}
+          <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-6 md:p-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* From Date */}
+              <div>
+                <label htmlFor="from" className="block text-sm font-semibold text-gray-700 mb-2">
+                  From
+                </label>
+                <input
+                  type="date"
+                  id="from"
+                  value={bookingForm.from}
+                  onChange={(e) => setBookingForm({ ...bookingForm, from: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              {/* To Date */}
+              <div>
+                <label htmlFor="to" className="block text-sm font-semibold text-gray-700 mb-2">
+                  To
+                </label>
+                <input
+                  type="date"
+                  id="to"
+                  value={bookingForm.to}
+                  onChange={(e) => setBookingForm({ ...bookingForm, to: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              {/* Location */}
+              <div>
+                <label htmlFor="location" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Location
+                </label>
+                <select
+                  id="location"
+                  value={bookingForm.location}
+                  onChange={(e) => setBookingForm({ ...bookingForm, location: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all appearance-none bg-white"
+                >
+                  <option value="Miami Airport (MIA)">Miami Airport (MIA)</option>
+                  <option value="Fort Lauderdale Airport (FLL)">Fort Lauderdale Airport (FLL)</option>
+                  <option value="Miami Beach">Miami Beach</option>
+                  <option value="Downtown Miami">Downtown Miami</option>
+                  <option value="Brickell">Brickell</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Search Button */}
+            <button className="w-full mt-6 bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all font-bold text-lg">
+              Search Available Vehicles
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Fleet Section */}
       <section id="fleet" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
