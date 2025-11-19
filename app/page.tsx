@@ -174,19 +174,6 @@ export default function Home() {
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                
-                {/* Year Badge */}
-                <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-gray-900 shadow-lg">
-                  {car.year}
-                </div>
-
-                {/* FSD Badge */}
-                <div className="absolute top-3 left-3 bg-red-500/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold text-white shadow-lg flex items-center space-x-1">
-                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  <span>FSD</span>
-                </div>
               </div>
 
               <div className="p-5">
