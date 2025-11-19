@@ -37,9 +37,7 @@ export default function Home() {
               <a href="#fleet" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Fleet</a>
               <a href="#why-us" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Why Us</a>
               <a href="/about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</a>
-              <a href="/contact" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all font-medium">
-                Book Now
-              </a>
+             
             </nav>
 
             {/* Mobile Menu Button */}
@@ -63,9 +61,7 @@ export default function Home() {
               <a href="#fleet" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">Our Fleet</a>
               <a href="#why-us" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">Why Us</a>
               <a href="/about" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">About</a>
-              <a href="/contact" className="block text-center bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-lg font-medium">
-                Book Now
-              </a>
+             
             </nav>
           )}
         </div>
@@ -85,7 +81,7 @@ export default function Home() {
 
           {/* Booking Form */}
           <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-6 md:p-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* From Date */}
               <div>
                 <label htmlFor="from" className="block text-sm font-semibold text-gray-700 mb-2">
@@ -117,7 +113,7 @@ export default function Home() {
               {/* Location */}
               <div>
                 <label htmlFor="location" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Location
+                  Where
                 </label>
                 <select
                   id="location"
@@ -132,12 +128,16 @@ export default function Home() {
                   <option value="Brickell">Brickell</option>
                 </select>
               </div>
-            </div>
 
-            {/* Search Button */}
-            <button className="w-full mt-6 bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all font-bold text-lg">
-              Search Available Vehicles
-            </button>
+              {/* Search Button */}
+              <div className="flex items-end">
+                <button className="w-12 h-12 flex items-center justify-center bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-all hover:scale-105">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
