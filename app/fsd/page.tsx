@@ -33,7 +33,7 @@ export default function Home() {
               <a href="#fleet" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Fleet</a>
               <a href="#why-us" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Why Us</a>
               <a href="/about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</a>
-              <a href="/contact" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all font-medium">
+              <a href="/" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all font-medium">
                 Book Now
               </a>
             </nav>
@@ -92,14 +92,11 @@ export default function Home() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="#fleet" className="group bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-semibold text-lg flex items-center space-x-2">
-              <span>Explore Fleet</span>
+            <a href="/" className="group bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-semibold text-lg flex items-center space-x-2">
+              <span>Learn More</span>
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </a>
-            <a href="/contact" className="bg-white text-gray-900 px-8 py-4 rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all font-semibold text-lg">
-              Contact Us
             </a>
           </div>
         </div>
@@ -253,9 +250,9 @@ export default function Home() {
                       <span className="text-sm text-gray-500 ml-1">/day</span>
                     </div>
                   </div>
-                  <button className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2.5 rounded-xl hover:shadow-lg hover:scale-105 transition-all font-semibold text-sm">
+                  <a href="/" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2.5 rounded-xl hover:shadow-lg hover:scale-105 transition-all font-semibold text-sm inline-block text-center">
                     Book
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
@@ -286,7 +283,7 @@ export default function Home() {
                 Drive safe. Book your Tesla today.
               </p>
               <div className="flex justify-center">
-                <a href="/contact" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg">
+                <a href="/" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg">
                   Reserve Now
                 </a>
               </div>
