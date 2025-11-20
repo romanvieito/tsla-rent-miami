@@ -12,37 +12,18 @@ export default function Home() {
   const [startDate, setStartDate] = useState<Date | null>(setHours(setMinutes(addDays(new Date(), 1), 0), 10));
   const [endDate, setEndDate] = useState<Date | null>(setHours(setMinutes(addDays(new Date(), 4), 0), 10));
   const [location, setLocation] = useState('Miami Airport (MIA)');
-  const [currentCarIndex, setCurrentCarIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
 
-  const nextCar = () => {
-    setCurrentCarIndex((prev) => (prev + 1) % cars.length);
-  };
-
-  const prevCar = () => {
-    setCurrentCarIndex((prev) => (prev - 1 + cars.length) % cars.length);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentCarIndex(index);
-  };
-
-  // Handle touch events for swipe gestures
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 75) {
-      nextCar();
+  const scrollLeft = () => {
+    const container = document.getElementById('cars-carousel');
+    if (container) {
+      container.scrollBy({ left: -400, behavior: 'smooth' });
     }
-    if (touchStart - touchEnd < -75) {
-      prevCar();
+  };
+
+  const scrollRight = () => {
+    const container = document.getElementById('cars-carousel');
+    if (container) {
+      container.scrollBy({ left: 400, behavior: 'smooth' });
     }
   };
 
@@ -155,133 +136,116 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Fleet Section - Carousel */}
-      <section id="fleet" className="bg-gradient-to-b from-white to-gray-50 py-4 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-2">
-            <h2 className="text-xl md:text-xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
+      {/* Fleet Section - Hero + Carousel */}
+      <section id="fleet" className="bg-white">
+        {/* Hero Image */}
+        <div className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
+          <Image
+            src={cars[0].image}
+            alt="Tesla Fleet"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/40"></div>
+        </div>
+
+        {/* Carousel Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Title */}
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
               Select a Model
             </h2>
           </div>
 
-          {/* Carousel Container */}
-          <div className="relative max-w-5xl mx-auto">
-            {/* Main Carousel */}
-            <div 
-              className="relative overflow-hidden rounded-3xl"
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div 
-                className="flex transition-transform duration-500 ease-out"
-                style={{ transform: `translateX(-${currentCarIndex * 100}%)` }}
-              >
-                {cars.map((car) => (
-                  <div
-                    key={car.id}
-                    className="w-full flex-shrink-0 px-4"
-                  >
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-                      {/* Image Section */}
-                      <div className="relative h-64 md:h-96 bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 overflow-hidden group">
-                        <Image
-                          src={car.image}
-                          alt={`${car.model} ${car.year}`}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-700"
-                          priority={car.id === cars[currentCarIndex].id}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                      </div>
-
-                      {/* Content Section */}
-                      <div className="p-6 md:p-8">
-                        {/* Title & Description */}
-                        <div className="mb-6">
-                          <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                            {car.model}
-                          </h3>
-                          <p className="text-base text-gray-600 leading-relaxed">{car.description}</p>
-                        </div>
-                        
-                        {/* Seats and Range */}
-                        <div className="flex gap-2 mb-6">
-                          <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
-                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                            <span className="text-sm text-gray-700 font-medium">{car.seats}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
-                            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                              <rect x="2" y="7" width="16" height="10" rx="1" />
-                              <rect x="18" y="10" width="2" height="4" rx="0.5" />
-                              <path d="M10.5 9L8 12h4l-2.5 3" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
-                            </svg>
-                            <span className="text-sm text-gray-700 font-medium">{car.range}mi</span>
-                          </div>
-                        </div>
-
-                        {/* Price & CTA */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-gray-200">
-                          <div>
-                            <div className="flex items-baseline">
-                              <span className="text-4xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-                                ${car.price}
-                              </span>
-                              <span className="text-lg text-gray-500 ml-2 font-medium">/day</span>
-                            </div>
-                          </div>
-                          <button className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all font-bold text-base shadow-lg">
-                            Reserve
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
+          {/* Cars Carousel */}
+          <div className="relative">
             {/* Navigation Arrows */}
             <button
-              onClick={prevCar}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-6 w-12 h-12 md:w-14 md:h-14 bg-white rounded-full shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center group border border-gray-200 z-10"
-              aria-label="Previous car"
+              onClick={scrollLeft}
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all items-center justify-center z-10 border border-gray-200"
+              aria-label="Scroll left"
             >
-              <svg className="w-6 h-6 text-gray-700 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             
             <button
-              onClick={nextCar}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-6 w-12 h-12 md:w-14 md:h-14 bg-white rounded-full shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center justify-center group border border-gray-200 z-10"
-              aria-label="Next car"
+              onClick={scrollRight}
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all items-center justify-center z-10 border border-gray-200"
+              aria-label="Scroll right"
             >
-              <svg className="w-6 h-6 text-gray-700 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
             </button>
 
-            {/* Pagination Dots */}
-            <div className="flex justify-center items-center gap-2 my-6">
-              {cars.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`transition-all duration-300 rounded-full ${
-                    index === currentCarIndex
-                      ? 'w-10 h-3 bg-gradient-to-r from-red-600 to-red-700'
-                      : 'w-3 h-3 bg-gray-300 hover:bg-gray-400'
-                  }`}
-                  aria-label={`Go to car ${index + 1}`}
-                />
+            {/* Scrollable Cards */}
+            <div
+              id="cars-carousel"
+              className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-4"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {cars.map((car) => (
+                <div
+                  key={car.id}
+                  className="flex-none w-[calc(55.55%-0.75rem)] md:w-[calc(33.333%-1rem)] snap-start"
+                >
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all duration-300 h-full">
+                    {/* Card Content */}
+                    <div className="p-8">
+                      {/* Model Name */}
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                        {car.model}
+                      </h3>
+                      
+                      {/* Description */}
+                      <p className="text-gray-600 mb-6 leading-relaxed min-h-[60px]">
+                        {car.description}
+                      </p>
+
+                      {/* Seats and Range */}
+                      <div className="flex gap-2 mb-4">
+                        <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
+                          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                          <span className="text-sm text-gray-700 font-medium">{car.seats}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
+                          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                            <rect x="2" y="7" width="16" height="10" rx="1" />
+                            <rect x="18" y="10" width="2" height="4" rx="0.5" />
+                            <path d="M10.5 9L8 12h4l-2.5 3" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                          </svg>
+                          <span className="text-sm text-gray-700 font-medium">{car.range}mi</span>
+                        </div>
+                      </div>
+
+                      {/* Price */}
+                      <div className="mb-6">
+                        <div className="flex items-baseline">
+                          <span className="text-3xl font-bold text-gray-900">
+                            ${car.price}
+                          </span>
+                          <span className="text-gray-600 ml-2">/day</span>
+                        </div>
+                      </div>
+
+                      {/* CTA Buttons */}
+                      <div className="space-y-3">
+                        <button className="w-full bg-gray-900 text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors font-medium">
+                          Reserve
+                        </button>
+                       
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
-           
           </div>
         </div>
       </section>
