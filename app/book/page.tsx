@@ -44,16 +44,16 @@ export default function BookPage() {
       longitude: -80.2870,
     },
     {
-      value: 'Miami Beach',
-      description: 'Hotel, resort, and short-term rental deliveries between South Pointe and Mid-Beach.',
-      latitude: 25.7907,
-      longitude: -80.1300,
+      value: 'Edgewater',
+      description: '2000 Biscayne Blvd, Miami, FL 33132',
+      latitude: 25.7987,
+      longitude: -80.1900,
     },
     {
-      value: 'Downtown Miami',
-      description: 'Office towers, museums, and event loading zones with valet coordination.',
-      latitude: 25.7743,
-      longitude: -80.1937,
+      value: 'Coconut Grove',
+      description: '2930 Coconut Ave, Miami, FL 33133',
+      latitude: 25.7280,
+      longitude: -80.2410,
     },
   ];
   const [location, setLocation] = useState(pickupLocations[0].value);

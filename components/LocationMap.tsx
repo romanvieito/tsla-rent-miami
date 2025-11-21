@@ -72,7 +72,7 @@ function GoogleMapsMap({
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
-    
+
     // Restrict map bounds to Miami area
     const restriction: google.maps.MapRestriction = {
       latLngBounds: MIAMI_BOUNDS,
@@ -89,6 +89,16 @@ function GoogleMapsMap({
     map.setZoom(DEFAULT_ZOOM);
   }, [center]);
 
+  // Effect to recenter map when selected location changes
+  useEffect(() => {
+    if (mapRef.current) {
+      const newCenter = getMapCenter();
+      mapRef.current.panTo(newCenter);
+      // Optional: adjust zoom level for better visibility
+      mapRef.current.setZoom(DEFAULT_ZOOM);
+    }
+  }, [selectedLocation, customCoordinates]);
+
   const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
     if (e.latLng) {
       onCustomSelect(e.latLng.lat(), e.latLng.lng());
@@ -100,20 +110,20 @@ function GoogleMapsMap({
     if (isCustom) {
       return {
         path: google.maps.SymbolPath.CIRCLE,
-        scale: 10,
+        scale: 12,
         fillColor: '#3b82f6',
         fillOpacity: 1,
         strokeColor: '#ffffff',
-        strokeWeight: 2,
+        strokeWeight: 3,
       };
     }
     return {
       path: google.maps.SymbolPath.CIRCLE,
-      scale: isSelected ? 12 : 10,
+      scale: isSelected ? 14 : 10,
       fillColor: isSelected ? '#10b981' : '#ef4444',
       fillOpacity: 1,
       strokeColor: '#ffffff',
-      strokeWeight: 2,
+      strokeWeight: isSelected ? 3 : 2,
     };
   };
 
