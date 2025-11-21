@@ -74,8 +74,10 @@ export default function Home() {
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
   const [isInReserveSection, setIsInReserveSection] = useState(false);
+  const [isFooterVisible, setIsFooterVisible] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestionsRef = useRef<HTMLDivElement | null>(null);
+  const footerRef = useRef<HTMLElement | null>(null);
   const suggestionsListId = 'pickup-location-suggestions';
 
   const resetStatusIfNeeded = () => {
@@ -345,20 +347,34 @@ export default function Home() {
 
   useEffect(() => {
     const reserveSection = document.getElementById('reserve');
-    if (!reserveSection) return;
+    const footerElement = footerRef.current;
+
+    if (!reserveSection && !footerElement) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          setIsInReserveSection(entry.isIntersecting);
+      entries => {
+        entries.forEach(entry => {
+          if (reserveSection && entry.target === reserveSection) {
+            setIsInReserveSection(entry.isIntersecting);
+          }
+          if (footerElement && entry.target === footerElement) {
+            setIsFooterVisible(entry.isIntersecting);
+          }
         });
       },
       {
-        threshold: 0.7, // Trigger when 70% of the section is visible
+        threshold: 0.7, // Trigger when 70% of the target is visible
       }
     );
 
-    observer.observe(reserveSection);
+    if (reserveSection) {
+      observer.observe(reserveSection);
+    }
+    if (footerElement) {
+      observer.observe(footerElement);
+    }
 
     return () => {
       observer.disconnect();
@@ -664,11 +680,11 @@ export default function Home() {
             <p className="text-gray-600 max-w-2xl mx-auto">
               Choose a location.
             </p>
-                      </div>
+          </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div className="bg-white text-gray-900 rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-8 space-y-6">
+          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-8">
+            <div className="grid lg:grid-cols-2 gap-8">
+              <div className="space-y-6">
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
                     Pickup Location
@@ -794,16 +810,16 @@ export default function Home() {
                   Need to tweak the drop-off later? Just let us know and we&apos;ll confirm before delivery.
                 </p>
               </div>
-            </div>
 
-            <div className="flex items-start">
-              <LocationMap
-                locations={pickupLocations}
-                selectedLocation={location}
-                customCoordinates={customCoordinates}
-                onSelect={handlePresetLocationChange}
-                onCustomSelect={handleCustomLocationChange}
-              />
+              <div className="overflow-hidden">
+                <LocationMap
+                  locations={pickupLocations}
+                  selectedLocation={location}
+                  customCoordinates={customCoordinates}
+                  onSelect={handlePresetLocationChange}
+                  onCustomSelect={handleCustomLocationChange}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -875,6 +891,7 @@ export default function Home() {
                 {/* <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
                   We&apos;ll reach out to confirm the details and share arrival instructions.
                 </div> */}
+              </div>
 
               <div className="space-y-5">
                 <div>
@@ -918,7 +935,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            </div>
 
             <div className="space-y-3">
               <button
@@ -938,7 +954,7 @@ export default function Home() {
       </section>
 
       {/* Mobile sticky summary */}
-      {!isInReserveSection && (
+      {!isInReserveSection && !isFooterVisible && (
       <div
         className="fixed inset-x-0 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 md:hidden pointer-events-none"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
@@ -988,7 +1004,7 @@ export default function Home() {
       </div>
       )}
 
-      <Footer />
+      <Footer ref={footerRef} />
     </main>
   );
 }

@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import { forwardRef } from 'react';
 
-export default function Footer() {
+const Footer = forwardRef<HTMLElement>((props, ref) => {
   return (
-    <footer className="bg-white border-t border-gray-200">
+    <footer ref={ref} className="bg-white border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600">
           <p>&copy; {new Date().getFullYear()} TRent.</p>
@@ -21,5 +22,9 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+});
+
+Footer.displayName = 'Footer';
+
+export default Footer;
 
