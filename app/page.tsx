@@ -424,8 +424,13 @@ export default function Home() {
   const formatDate = (date: Date | null) =>
     date ? format(date, 'MMM d, h:mm aa') : '--';
 
+  const scrollToReserve = () => {
+    const reserveSection = document.getElementById('reserve');
+    reserveSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900">
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900 pb-32 md:pb-0">
       {/* Header */}
       <Header />
 
@@ -908,6 +913,36 @@ export default function Home() {
           </form>
         </div>
       </section>
+
+      {/* Mobile sticky summary */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 md:hidden pointer-events-none"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="pointer-events-auto bg-gray-900 text-white rounded-2xl shadow-2xl border border-gray-800/50 px-5 py-4 flex items-center gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-semibold truncate">{selectedCar.model}</p>
+              <div className="flex items-center gap-2 text-sm text-gray-200 mt-1">
+                <span className="truncate">{formatDate(startDate)}</span>
+                <span className="text-gray-500">→</span>
+                <span className="truncate">{formatDate(endDate)}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-200 mt-1">
+                <span className="truncate">{addressInput}</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={scrollToReserve}
+              className="flex-shrink-0 bg-white text-gray-900 font-semibold px-5 py-3 rounded-xl shadow-lg shadow-gray-900/20"
+              aria-label="Scroll to reservation form"
+            >
+              Reserve
+            </button>
+          </div>
+        </div>
+      </div>
 
       <Footer />
     </main>
