@@ -73,6 +73,7 @@ export default function Home() {
   const [isFetchingPlaceDetails, setIsFetchingPlaceDetails] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
+  const [isInReserveSection, setIsInReserveSection] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestionsRef = useRef<HTMLDivElement | null>(null);
   const suggestionsListId = 'pickup-location-suggestions';
@@ -341,6 +342,28 @@ export default function Home() {
       }
     };
   }, [addressInput]);
+
+  useEffect(() => {
+    const reserveSection = document.getElementById('reserve');
+    if (!reserveSection) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsInReserveSection(entry.isIntersecting);
+        });
+      },
+      {
+        threshold: 0.7, // Trigger when 70% of the section is visible
+      }
+    );
+
+    observer.observe(reserveSection);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -852,7 +875,6 @@ export default function Home() {
                 {/* <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
                   We&apos;ll reach out to confirm the details and share arrival instructions.
                 </div> */}
-              </div>
 
               <div className="space-y-5">
                 <div>
@@ -896,6 +918,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
+            </div>
 
             <div className="space-y-3">
               <button
@@ -915,34 +938,55 @@ export default function Home() {
       </section>
 
       {/* Mobile sticky summary */}
+      {!isInReserveSection && (
       <div
-        className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 md:hidden pointer-events-none"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}
+        className="fixed inset-x-0 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 md:hidden pointer-events-none"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
       >
-        <div className="max-w-5xl mx-auto">
-          <div className="pointer-events-auto bg-gray-900 text-white rounded-2xl shadow-2xl border border-gray-800/50 px-5 py-4 flex items-center gap-4">
-            <div className="flex-1 min-w-0">
-              <p className="text-base font-semibold truncate">{selectedCar.model}</p>
-              <div className="flex items-center gap-2 text-sm text-gray-200 mt-1">
-                <span className="truncate">{formatDate(startDate)}</span>
-                <span className="text-gray-500">→</span>
-                <span className="truncate">{formatDate(endDate)}</span>
+        <div className="w-full">
+          <div className="pointer-events-auto bg-gray-900 text-white rounded-2xl shadow-2xl border border-gray-800/50 px-4 sm:px-5 py-3 sm:py-4">
+            <div className="flex items-start justify-between gap-3 sm:gap-4">
+              <div className="flex-1 min-w-0 space-y-2">
+                <p className="text-base sm:text-lg font-semibold truncate">{selectedCar.model}</p>
+                <div className="flex items-center gap-1.5 text-xs text-gray-300 truncate">
+                  <svg className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="truncate">{formatDate(startDate)}</span>
+                  <span className="text-gray-500">→</span>
+                  <span className="truncate">{formatDate(endDate)}</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-gray-300 truncate">
+                  <svg className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="truncate">
+                    {location === 'Custom Pin'
+                      ? addressInput || 'Pending'
+                      : pickupLocations.find(loc => loc.value === location)?.address || addressInput || 'Pending'}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-200 mt-1">
-                <span className="truncate">{addressInput}</span>
+              <div className="flex-shrink-0 flex flex-col items-end gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm sm:text-base font-bold text-white">${totalPrice.toLocaleString()}</span>
+                  <span className="text-xs text-gray-400">total</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={scrollToReserve}
+                  className="bg-white text-gray-900 font-semibold px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl shadow-lg shadow-gray-900/20 text-sm sm:text-base whitespace-nowrap"
+                  aria-label="Scroll to reservation form"
+                >
+                  Reserve
+                </button>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={scrollToReserve}
-              className="flex-shrink-0 bg-white text-gray-900 font-semibold px-5 py-3 rounded-xl shadow-lg shadow-gray-900/20"
-              aria-label="Scroll to reservation form"
-            >
-              Reserve
-            </button>
           </div>
         </div>
       </div>
+      )}
 
       <Footer />
     </main>

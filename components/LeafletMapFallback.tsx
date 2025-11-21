@@ -126,7 +126,7 @@ export default function LeafletMapFallback({
   );
 
   return (
-    <div className="h-[500px] w-full rounded-2xl overflow-hidden border border-gray-200 shadow-xl">
+    <div className="h-[300px] md:h-[500px] w-full rounded-2xl overflow-hidden border border-gray-200 shadow-xl">
       <MapContainer
         center={center}
         zoom={11}
