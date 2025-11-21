@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { DateTimePicker } from '@/components/DateTimePicker';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { addDays, format, setHours, setMinutes } from 'date-fns';
 
 // Dynamically import LocationMap to avoid SSR issues with Leaflet
@@ -549,9 +550,9 @@ export default function BookPage() {
                   {errors.endDate && <p className="text-sm text-red-600 mt-1">{errors.endDate}</p>}
                 </div>
               </div>
-              <p className="text-sm text-gray-500">
+              {/* <p className="text-sm text-gray-500">
                 Need to tweak the schedule later? Just text us—we&apos;ll take care of it before delivery.
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
@@ -888,60 +889,7 @@ export default function BookPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-950 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-          <div className="grid gap-10 md:grid-cols-3">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center">
-                  <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L4 6v12l8 4 8-4V6l-8-4zm0 2.2l6 3v9.6l-6 3-6-3V7.2l6-3z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">Miami&apos;s Tesla Family</p>
-                  <p className="text-2xl font-semibold">TRent.</p>
-                </div>
-              </div>
-              <p className="text-gray-400">
-                Premium Tesla rentals with Full Self-Driving in Miami.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Visit</h4>
-              <p className="text-gray-400">Brickell &amp; Miami Beach delivery zones</p>
-              <p className="text-gray-400 mt-2">Miami, Florida</p>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contact</h4>
-              <div className="space-y-2 text-gray-400">
-                <a href="tel:+17868179906" className="block hover:text-white">
-                  +1 (786) 817-9906
-                </a>
-                <a href="mailto:hi@tslarent.miami" className="block hover:text-white">
-                  hi@tslarent.miami
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 mt-10 pt-6 text-sm text-gray-500 flex flex-col md:flex-row justify-between gap-4">
-            <p>&copy; {new Date().getFullYear()} TSLA Rent Miami. All rights reserved.</p>
-            <div className="flex gap-4">
-              <a href="/about" className="hover:text-white">
-                About
-              </a>
-              <a href="/contact" className="hover:text-white">
-                Contact
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
