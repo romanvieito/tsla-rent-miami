@@ -167,20 +167,20 @@ export default function Home() {
             {/* Navigation Arrows */}
             <button
               onClick={scrollLeft}
-              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all items-center justify-center z-10 border border-gray-200"
+              className="flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 md:-translate-x-6 w-8 h-8 md:w-12 md:h-12 bg-white/80 md:bg-white rounded-full md:shadow-lg hover:bg-white md:hover:shadow-xl hover:scale-105 md:hover:scale-110 transition-all items-center justify-center z-10 border-0 md:border border-gray-200"
               aria-label="Scroll left"
             >
-              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 md:w-6 md:h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             
             <button
               onClick={scrollRight}
-              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all items-center justify-center z-10 border border-gray-200"
+              className="flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 md:translate-x-6 w-8 h-8 md:w-12 md:h-12 bg-white/80 md:bg-white rounded-full md:shadow-lg hover:bg-white md:hover:shadow-xl hover:scale-105 md:hover:scale-110 transition-all items-center justify-center z-10 border-0 md:border border-gray-200"
               aria-label="Scroll right"
             >
-              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 md:w-6 md:h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -188,7 +188,7 @@ export default function Home() {
             {/* Scrollable Cards */}
             <div
               id="cars-carousel"
-              className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-4"
+              className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth py-2 pb-4"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {cars.map((car) => (
@@ -218,7 +218,7 @@ export default function Home() {
                       </p>
 
                       {/* Seats and Range */}
-                      <div className="flex gap-1 md:gap-2 mb-1 md:mb-2">
+                      <div className="hidden md:flex gap-1 md:gap-2 mb-1 md:mb-2">
                         <div className={`flex items-center gap-1 md:gap-1.5 px-1.5 py-0.5 md:px-3 md:py-1.5 rounded md:rounded-lg border transition-all ${
                           selectedCarId === car.id 
                             ? 'bg-gray-100 border-gray-300' 
@@ -244,12 +244,12 @@ export default function Home() {
                       </div>
 
                       {/* Price */}
-                      <div className="mb-4">
+                      <div className="mb-2">
                         <div className="flex items-baseline">
                           <span className="text-xl font-bold text-gray-900">
                             ${car.price}
                           </span>
-                          <span className="text-gray-600 ml-2">/day</span>
+                          <span className="text-gray-600 ml-1">/day</span>
                         </div>
                       </div>
 
