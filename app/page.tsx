@@ -12,6 +12,9 @@ export default function Home() {
   const [startDate, setStartDate] = useState<Date | null>(setHours(setMinutes(addDays(new Date(), 1), 0), 10));
   const [endDate, setEndDate] = useState<Date | null>(setHours(setMinutes(addDays(new Date(), 4), 0), 10));
   const [location, setLocation] = useState('Miami Airport (MIA)');
+  const [selectedCarId, setSelectedCarId] = useState(cars[0].id);
+
+  const selectedCar = cars.find(car => car.id === selectedCarId) || cars[0];
 
   const scrollLeft = () => {
     const container = document.getElementById('cars-carousel');
@@ -34,12 +37,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              
-            <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                   TRent.
                 </h1>
-              </div>
             </div>
 
             {/* Menu Button */}
@@ -68,12 +68,12 @@ export default function Home() {
           )}
 
           {/* Booking Form */}
-          <div className="mt-6">
+          <div className="mt-2">
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-visible">
               <div className="grid grid-cols-1 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-gray-200">
                 
                 {/* From Date & Time */}
-                <div className="col-span-1 md:col-span-1.5 p-5 hover:bg-gray-50 transition-colors group">
+                <div className="col-span-1 md:col-span-1.5 p-4 hover:bg-gray-50 transition-colors group">
                   <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
                     From
                   </label>
@@ -91,7 +91,7 @@ export default function Home() {
                 </div>
 
                 {/* Until Date & Time */}
-                <div className="col-span-1 md:col-span-1.5 p-5 hover:bg-gray-50 transition-colors group">
+                <div className="col-span-1 md:col-span-1.5 p-4 hover:bg-gray-50 transition-colors group">
                   <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
                     To
                   </label>
@@ -109,7 +109,7 @@ export default function Home() {
                 </div>
 
                 {/* Location */}
-                <div className="col-span-1 md:col-span-2 p-5 hover:bg-gray-50 transition-colors group">
+                <div className="col-span-1 md:col-span-2 p-4 hover:bg-gray-50 transition-colors group">
                   <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
                     Where
                   </label>
@@ -138,27 +138,30 @@ export default function Home() {
 
       {/* Fleet Section - Hero + Carousel */}
       <section id="fleet" className="bg-white">
-        {/* Hero Image */}
-        <div className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
-          <Image
-            src={cars[0].image}
-            alt="Tesla Fleet"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/40"></div>
-        </div>
-
-        {/* Carousel Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Title */}
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+        {/* Title */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
+          <div className="text-center mb-2">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-700">
               Select a Model
             </h2>
           </div>
+        </div>
 
+        {/* Hero Image */}
+        <div className="relative w-full h-[500px] md:h-[600px] overflow-hidden bg-gray-900">
+          <Image
+            key={selectedCarId}
+            src={selectedCar.image}
+            alt={selectedCar.model}
+            fill
+            className="object-cover transition-all duration-500 ease-in-out"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-white/40 transition-all duration-500"></div>
+        </div>
+
+        {/* Carousel Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           {/* Cars Carousel */}
           <div className="relative">
             {/* Navigation Arrows */}
@@ -193,7 +196,15 @@ export default function Home() {
                   key={car.id}
                   className="flex-none w-[calc(55.55%-0.75rem)] md:w-[calc(33.333%-1rem)] snap-start"
                 >
-                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all duration-300 h-full">
+                  <div 
+                    onMouseEnter={() => setSelectedCarId(car.id)}
+                    onClick={() => setSelectedCarId(car.id)}
+                    className={`rounded-lg border overflow-hidden transition-all duration-300 h-full cursor-pointer ${
+                      selectedCarId === car.id 
+                        ? 'bg-gray-50/50 border-gray-400 shadow-lg scale-[1.01]' 
+                        : 'bg-white border-gray-200 hover:shadow-xl hover:border-gray-300 hover:scale-[1.01]'
+                    }`}
+                  >
                     {/* Card Content */}
                     <div className="p-8">
                       {/* Model Name */}
@@ -208,13 +219,21 @@ export default function Home() {
 
                       {/* Seats and Range */}
                       <div className="flex gap-2 mb-4">
-                        <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
+                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+                          selectedCarId === car.id 
+                            ? 'bg-gray-100 border-gray-300' 
+                            : 'bg-gray-50 border-gray-200'
+                        }`}>
                           <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
                           <span className="text-sm text-gray-700 font-medium">{car.seats}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
+                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+                          selectedCarId === car.id 
+                            ? 'bg-gray-100 border-gray-300' 
+                            : 'bg-gray-50 border-gray-200'
+                        }`}>
                           <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                             <rect x="2" y="7" width="16" height="10" rx="1" />
                             <rect x="18" y="10" width="2" height="4" rx="0.5" />
@@ -236,7 +255,7 @@ export default function Home() {
 
                       {/* CTA Buttons */}
                       <div className="space-y-3">
-                        <button className="w-full bg-gray-900 text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors font-medium">
+                        <button className="w-full px-6 py-3 rounded-md font-medium transition-colors bg-gray-900 text-white hover:bg-gray-800">
                           Reserve
                         </button>
                        
