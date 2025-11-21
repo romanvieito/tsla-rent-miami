@@ -369,7 +369,7 @@ export default function BookPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!validateForm()) {
@@ -377,7 +377,42 @@ export default function BookPage() {
       return;
     }
 
-    setStatus('success');
+    const payload = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      carModel: selectedCar.model,
+      carPricePerDay: selectedCar.price,
+      location,
+      address: addressInput,
+      startDate: startDate?.toISOString() ?? null,
+      endDate: endDate?.toISOString() ?? null,
+      customCoordinates,
+    };
+
+    try {
+      const response = await fetch('/api/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = (await response.json().catch(() => ({}))) as {
+        success?: boolean;
+        error?: string;
+      };
+
+      if (!response.ok || data?.success !== true) {
+        throw new Error(data?.error ?? 'Notification request failed');
+      }
+
+      setStatus('success');
+    } catch (error) {
+      console.error('Reservation submission error:', error);
+      setStatus('idle');
+    }
   };
 
   const formatDate = (date: Date | null) =>
@@ -845,8 +880,9 @@ export default function BookPage() {
               </button>
               {status === 'success' && (
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-                  Thanks! We&apos;ll text you in a few minutes to confirm the schedule and delivery
-                  details. This demo doesn&apos;t send an email yet, but your info is saved locally.
+                  Thanks! We just pinged our concierge and will text you in a few minutes to confirm
+                  the schedule and delivery details. This demo doesn&apos;t send an email yet, but
+                  your info is saved locally.
                 </div>
               )}
             </div>
