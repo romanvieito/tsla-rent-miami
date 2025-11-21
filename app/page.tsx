@@ -218,28 +218,28 @@ export default function Home() {
                       </p>
 
                       {/* Seats and Range */}
-                      <div className="flex gap-2 mb-2">
-                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+                      <div className="flex gap-1 md:gap-2 mb-1 md:mb-2">
+                        <div className={`flex items-center gap-1 md:gap-1.5 px-1.5 py-0.5 md:px-3 md:py-1.5 rounded md:rounded-lg border transition-all ${
                           selectedCarId === car.id 
                             ? 'bg-gray-100 border-gray-300' 
                             : 'bg-gray-50 border-gray-200'
                         }`}>
-                          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-3 h-3 md:w-4 md:h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                           </svg>
-                          <span className="text-sm text-gray-700 font-medium">{car.seats}</span>
+                          <span className="text-xs md:text-sm text-gray-700 font-medium">{car.seats}</span>
                         </div>
-                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+                        <div className={`flex items-center gap-1 md:gap-1.5 px-1.5 py-0.5 md:px-3 md:py-1.5 rounded md:rounded-lg border transition-all ${
                           selectedCarId === car.id 
                             ? 'bg-gray-100 border-gray-300' 
                             : 'bg-gray-50 border-gray-200'
                         }`}>
-                          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                          <svg className="w-3 h-3 md:w-4 md:h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
                             <rect x="2" y="7" width="16" height="10" rx="1" />
                             <rect x="18" y="10" width="2" height="4" rx="0.5" />
                             <path d="M10.5 9L8 12h4l-2.5 3" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
                           </svg>
-                          <span className="text-sm text-gray-700 font-medium">{car.range}mi</span>
+                          <span className="text-xs md:text-sm text-gray-700 font-medium">{car.range}mi</span>
                         </div>
                       </div>
 
