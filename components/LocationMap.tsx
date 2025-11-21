@@ -198,6 +198,8 @@ function GoogleMapsMap({
 export default function LocationMap(props: LocationMapProps) {
   const [useGoogleMaps, setUseGoogleMaps] = useState<boolean | null>(null);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [isGoogleReady, setIsGoogleReady] = useState(false);
+  const [googleLoadError, setGoogleLoadError] = useState(false);
 
   // Check if Google Maps API key is available
   useEffect(() => {
@@ -232,6 +234,12 @@ export default function LocationMap(props: LocationMapProps) {
     checkGoogleMaps();
   }, []);
 
+  useEffect(() => {
+    if (useGoogleMaps === false) {
+      setIsGoogleReady(false);
+    }
+  }, [useGoogleMaps]);
+
   // While checking, show loading state
   if (useGoogleMaps === null) {
     return (
@@ -257,11 +265,24 @@ export default function LocationMap(props: LocationMapProps) {
     <div className="h-[500px] w-full rounded-2xl overflow-hidden border border-gray-200 shadow-xl">
       <LoadScript
         googleMapsApiKey={apiKey}
+        onLoad={() => {
+          if (typeof window !== 'undefined' && (window as typeof window & { google?: typeof google }).google?.maps) {
+            setIsGoogleReady(true);
+          }
+        }}
+        onError={() => {
+          setGoogleLoadError(true);
+          setUseGoogleMaps(false);
+        }}
         loadingElement={
           <div className="h-[500px] w-full rounded-2xl bg-gray-100 animate-pulse" />
         }
       >
-        <GoogleMapsMap {...props} apiKey={apiKey} />
+        {isGoogleReady && !googleLoadError ? (
+          <GoogleMapsMap {...props} apiKey={apiKey} />
+        ) : (
+          <div className="h-[500px] w-full rounded-2xl bg-gray-100 animate-pulse" />
+        )}
       </LoadScript>
     </div>
   );

@@ -38,7 +38,7 @@ export default function BookPage() {
   );
   const pickupLocations = [
     {
-      value: 'Miami Airport (MIA)',
+      value: 'Miami International Airport (MIA)',
       description: 'Coordinated handoffs across all terminals.',
       latitude: 25.7959,
       longitude: -80.2870,
@@ -251,8 +251,10 @@ export default function BookPage() {
 
     const controller = new AbortController();
     let isCancelled = false;
+    let hasStartedRequest = false;
     
     const timeoutId = setTimeout(async () => {
+      hasStartedRequest = true;
       try {
         const response = await fetch('/api/places/autocomplete', {
           method: 'POST',
@@ -306,7 +308,7 @@ export default function BookPage() {
       isCancelled = true;
       clearTimeout(timeoutId);
       try {
-        if (!controller.signal.aborted) {
+        if (hasStartedRequest && !controller.signal.aborted) {
           controller.abort();
         }
       } catch (error) {
@@ -525,7 +527,6 @@ export default function BookPage() {
               >
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-gray-400">{car.year}</p>
                     <h4 className="text-xl font-bold">{car.model}</h4>
                   </div>
                   <span
@@ -669,7 +670,7 @@ export default function BookPage() {
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="flex flex-col gap-3">
                     {pickupLocations.map(pickupLocation => {
                       const isActive = location === pickupLocation.value && location !== 'Custom Pin';
                       return (
@@ -687,9 +688,7 @@ export default function BookPage() {
                           <div className="flex items-center justify-between gap-2">
                             <p className="text-sm font-semibold text-gray-900">{pickupLocation.value}</p>
                             {isActive && (
-                              <span className="text-[11px] font-semibold uppercase tracking-widest bg-gray-900 text-white px-2 py-0.5 rounded-full">
-                                Selected
-                              </span>
+                              <span className="w-2 h-2 bg-gray-900 rounded-full" />
                             )}
                           </div>
                           <p className="text-sm text-gray-600 mt-1">{pickupLocation.description}</p>
