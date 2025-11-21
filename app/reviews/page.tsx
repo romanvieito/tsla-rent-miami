@@ -75,27 +75,34 @@ export default function ReviewsPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/30" />
         </div>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4 text-white">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4 text-gray-900">
             What our clients say
           </h2>
-          <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto">
-            Real experiences from real people who chose TSLA Rent for their Miami adventures.
+          <p className="text-lg sm:text-xl text-gray-900 max-w-2xl mx-auto">
+            Real experiences from real people who chose us to enjoy their Tesla in Miami.
           </p>
         </div>
       </section>
 
       {/* Reviews Section */}
       <section className="bg-white py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {reviews.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {reviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  {/* Header with photo and basic info */}
-                  <div className="flex items-start gap-4 mb-4">
+                <div key={review.id} className="space-y-4">
+                  {/* Star rating */}
+                  <div className="flex items-center gap-1">
+                    <StarRating rating={review.rating} />
+                  </div>
+
+                  {/* Quote */}
+                  <blockquote className="text-lg text-gray-700 leading-relaxed">
+                    "{review.text}"
+                  </blockquote>
+
+                  {/* Author info */}
+                  <div className="flex items-center gap-4">
                     <div className="flex-shrink-0">
                       {review.photo ? (
                         <Image
@@ -113,30 +120,22 @@ export default function ReviewsPage() {
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-gray-900 truncate">{review.name}</h4>
-                      <p className="text-sm text-gray-600 truncate">{review.location}</p>
-                      <div className="mt-1">
-                        <StarRating rating={review.rating} />
+                    <div>
+                      <cite className="font-semibold text-gray-900 not-italic">{review.name}</cite>
+                      <div className="text-sm text-gray-600">
+                        {review.location}
+                        {review.carModel && (
+                          <span className="ml-2 text-gray-400">• {review.carModel}</span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {new Date(review.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
                       </div>
                     </div>
-                  </div>
-
-                  {/* Review text */}
-                  <p className="text-gray-700 leading-relaxed mb-4">{review.text}</p>
-
-                  {/* Footer with date and car model */}
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{new Date(review.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}</span>
-                    {review.carModel && (
-                      <span className="bg-gray-100 px-2 py-1 rounded-full">
-                        {review.carModel}
-                      </span>
-                    )}
                   </div>
                 </div>
               ))}
