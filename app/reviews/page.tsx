@@ -79,7 +79,7 @@ export default function ReviewsPage() {
             What our clients say
           </h2>
           <p className="text-lg sm:text-xl text-gray-900 max-w-2xl mx-auto">
-            Real experiences from real people who chose us to enjoy their Tesla in Miami.
+            Recent experiences from real people who chose us to enjoy a Tesla in Miami.
           </p>
         </div>
       </section>
@@ -153,7 +153,7 @@ export default function ReviewsPage() {
       {/* Call to Action */}
       <section className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-3xl font-bold mb-4">Ready to create your own story?</h3>
+          <h3 className="text-3xl font-bold mb-4">Create your own story...</h3>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto">
             Join our growing community of satisfied customers and experience the future of driving in Miami.
           </p>
