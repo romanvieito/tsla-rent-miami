@@ -823,9 +823,9 @@ export default function BookPage() {
                     </p>
                   </div>
                 </div>
-                <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
+                {/* <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
                   We&apos;ll reach out to confirm the details and share arrival instructions.
-                </div>
+                </div> */}
               </div>
 
               <div className="space-y-5">
@@ -880,9 +880,7 @@ export default function BookPage() {
               </button>
               {status === 'success' && (
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-                  Thanks! We just pinged our concierge and will text you in a few minutes to confirm
-                  the schedule and delivery details. This demo doesn&apos;t send an email yet, but
-                  your info is saved locally.
+                  Thanks! We will reach out to confirm the details and share arrival instructions.
                 </div>
               )}
             </div>
