@@ -122,12 +122,6 @@ export default function ReviewsPage() {
                     </div>
                     <div>
                       <cite className="font-semibold text-gray-900 not-italic">{review.name}</cite>
-                      <div className="text-sm text-gray-600">
-                        {review.location}
-                        {review.carModel && (
-                          <span className="ml-2 text-gray-400">• {review.carModel}</span>
-                        )}
-                      </div>
                       <div className="text-xs text-gray-500 mt-1">
                         {new Date(review.date).toLocaleDateString('en-US', {
                           year: 'numeric',
