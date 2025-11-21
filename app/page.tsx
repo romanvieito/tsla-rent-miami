@@ -112,7 +112,7 @@ export default function Home() {
                       <option value="Fort Lauderdale Airport (FLL)">Fort Lauderdale Airport (FLL)</option>
                       <option value="Miami Beach">Miami Beach</option>
                       <option value="Downtown Miami">Downtown Miami</option>
-                      <option value="Brickell">Brickell</option>
+                      <option value="Other">Other</option>
                     </select>
                     <svg className="absolute right-0 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

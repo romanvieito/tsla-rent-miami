@@ -3,9 +3,15 @@
 import { cars } from '@/lib/cars';
 import Image from 'next/image';
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { DateTimePicker } from '@/components/DateTimePicker';
 import Header from '@/components/Header';
 import { addDays, format, setHours, setMinutes } from 'date-fns';
+
+// Dynamically import LocationMap to avoid SSR issues with Leaflet
+const LocationMap = dynamic(() => import('@/components/LocationMap'), {
+  ssr: false,
+});
 
 type FormState = {
   name: string;
@@ -26,26 +32,25 @@ export default function BookPage() {
   const pickupLocations = [
     {
       value: 'Miami Airport (MIA)',
-      description: 'Front-door delivery at arrivals or Signature Aviation.',
-    },
-    {
-      value: 'Fort Lauderdale Airport (FLL)',
-      description: 'Coordinated handoffs across all terminals with buffer time.',
+      description: 'Coordinated handoffs across all terminals.',
+      latitude: 25.7959,
+      longitude: -80.2870,
     },
     {
       value: 'Miami Beach',
       description: 'Hotel, resort, and short-term rental deliveries between South Pointe and Mid-Beach.',
+      latitude: 25.7907,
+      longitude: -80.1300,
     },
     {
       value: 'Downtown Miami',
       description: 'Office towers, museums, and event loading zones with valet coordination.',
-    },
-    {
-      value: 'Brickell',
-      description: 'Residential towers and Brickell City Centre meetups with garage access.',
+      latitude: 25.7743,
+      longitude: -80.1937,
     },
   ];
   const [location, setLocation] = useState(pickupLocations[0].value);
+  const [customCoordinates, setCustomCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [formData, setFormData] = useState<FormState>({
     name: '',
     email: '',
@@ -377,6 +382,10 @@ export default function BookPage() {
                       value={location}
                       onChange={event => {
                         setLocation(event.target.value);
+                        // Clear custom coordinates if selecting a predefined location
+                        if (event.target.value !== 'Custom Pin') {
+                          setCustomCoordinates(null);
+                        }
                         if (status === 'success') {
                           setStatus('idle');
                         }
@@ -388,6 +397,9 @@ export default function BookPage() {
                           {option.value}
                         </option>
                       ))}
+                      {customCoordinates && (
+                        <option value="Custom Pin">Custom Pin</option>
+                      )}
                     </select>
                     <svg
                       className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
@@ -459,20 +471,29 @@ export default function BookPage() {
                 </div>
               </form>
               <p className="text-white/60 text-sm">
-                Need something special (villa, marina, production site)? Text or call us after you submit the
+                Need something special? No worries, just submit the
                 form and we&apos;ll confirm the logistics within minutes.
               </p>
             </div>
             <div className="grid gap-4">
-              {pickupLocations.map(option => (
-                <div key={option.value} className="bg-white/5 border border-white/10 rounded-2xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-semibold text-white">{option.value}</p>
-                    <span className="text-xs uppercase tracking-wide text-emerald-300">Preferred</span>
-                  </div>
-                  <p className="text-white/70 text-sm">{option.description}</p>
-                </div>
-              ))}
+              <LocationMap
+                locations={pickupLocations}
+                selectedLocation={location}
+                customCoordinates={customCoordinates}
+                onSelect={(selectedValue) => {
+                  setLocation(selectedValue);
+                  if (status === 'success') {
+                    setStatus('idle');
+                  }
+                }}
+                onCustomSelect={(lat, lng) => {
+                  setCustomCoordinates({ lat, lng });
+                  setLocation('Custom Pin');
+                  if (status === 'success') {
+                    setStatus('idle');
+                  }
+                }}
+              />
             </div>
           </div>
         </div>
@@ -492,11 +513,11 @@ export default function BookPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Miami&apos;s Tesla Family</p>
-                  <p className="text-2xl font-semibold">TSLA Rent</p>
+                  <p className="text-2xl font-semibold">TRent.</p>
                 </div>
               </div>
               <p className="text-gray-400">
-                Premium Tesla rentals with Full Self-Driving and real humans on the other end of the phone.
+                Premium Tesla rentals with Full Self-Driving in Miami.
               </p>
             </div>
 
