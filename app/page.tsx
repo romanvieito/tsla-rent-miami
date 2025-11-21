@@ -806,9 +806,9 @@ export default function Home() {
                     })}
                   </div>
                 </div>
-                <p className="text-sm text-gray-500">
+                {/* <p className="text-sm text-gray-500">
                   Need to tweak the drop-off later? Just let us know and we&apos;ll confirm before delivery.
-                </p>
+                </p> */}
               </div>
 
               <div className="overflow-hidden">
