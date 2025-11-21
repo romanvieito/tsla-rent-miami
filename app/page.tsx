@@ -3,8 +3,7 @@
 import { cars } from '@/lib/cars';
 import Image from 'next/image';
 import { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DateTimePicker } from '@/components/DateTimePicker';
 import { addDays, setHours, setMinutes } from 'date-fns';
 
 export default function Home() {
@@ -77,16 +76,11 @@ export default function Home() {
                   <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
                     From
                   </label>
-                  <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    showTimeSelect
-                    timeIntervals={30}
+                  <DateTimePicker
+                    date={startDate}
+                    setDate={setStartDate}
                     minDate={new Date()}
-                    dateFormat="MMM d, h:mm aa"
                     className="w-full text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer"
-                    calendarClassName="custom-calendar"
-                    wrapperClassName="w-full"
                   />
                 </div>
 
@@ -95,16 +89,11 @@ export default function Home() {
                   <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
                     To
                   </label>
-                  <DatePicker
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    showTimeSelect
-                    timeIntervals={30}
+                  <DateTimePicker
+                    date={endDate}
+                    setDate={setEndDate}
                     minDate={startDate || new Date()}
-                    dateFormat="MMM d, h:mm aa"
                     className="w-full text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer"
-                    calendarClassName="custom-calendar"
-                    wrapperClassName="w-full"
                   />
                 </div>
 

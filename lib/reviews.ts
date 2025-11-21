@@ -140,5 +140,110 @@ export const reviews: Review[] = [
     date: "2025-11-04",
     rating: 5,
     text: "Absolutely fantastic, owner was so helpful as this was my first time driving a Tesla and I was definitely more than needy in requiring some support! She was lovely and responsive!"
+  },
+  {
+    id: 20,
+    name: "Antonio",
+    date: "2025-11-01",
+    rating: 5,
+    text: "Yay is an incredible host, we such an amazing experience, everything when perfectly smooth. A dream come true! Thank you very much!"
+  },
+  {
+    id: 21,
+    name: "Beat",
+    date: "2025-10-30",
+    rating: 5,
+    text: "Simple and friendly communication with the host. Clean and reliable car. Thank you, it was an amazing trip."
+  },
+  {
+    id: 22,
+    name: "Jose",
+    date: "2025-10-29",
+    rating: 5,
+    text: "Amazing host. Smooth process renting vehicle. Will definitely use again."
+  },
+  {
+    id: 23,
+    name: "Pablo",
+    date: "2025-10-29",
+    rating: 5,
+    text: "Great car, Great host!"
+  },
+  {
+    id: 24,
+    name: "Landon",
+    date: "2025-10-26",
+    rating: 5,
+    text: "Great ride, easy pick up and drop off"
+  },
+  {
+    id: 25,
+    name: "Robert",
+    date: "2025-10-26",
+    rating: 5,
+    text: "Host was very responsive and the car was very clean and ran great. Would highly recommended booking. Fun car!"
+  },
+  {
+    id: 26,
+    name: "Jamie",
+    date: "2025-10-26",
+    rating: 5,
+    text: "Everything was wonderful, highly recommend. The Tesla took some getting used to (would recommend googling how to use it first if you haven't driven one before), but it was a true pleasure. Thank you! Highly recommend."
+  },
+  {
+    id: 27,
+    name: "Michael",
+    date: "2025-10-25",
+    rating: 5,
+    text: "Excellent host and very accommodating. Great car and great experience!"
+  },
+  {
+    id: 28,
+    name: "Jesus",
+    date: "2025-10-19",
+    rating: 5,
+    text: "Amazing host, hope to rent with her again next time I visit Miami, very much recommended!"
+  },
+  {
+    id: 29,
+    name: "Adonis",
+    date: "2025-10-19",
+    rating: 5,
+    text: "A++"
+  },
+  {
+    id: 30,
+    name: "Diana",
+    date: "2025-10-15",
+    rating: 5,
+    text: "We have a very nice experience renting the car and the host super kind and best service"
+  },
+  {
+    id: 31,
+    name: "Jose Daniel",
+    date: "2025-10-14",
+    rating: 5,
+    text: "Excellent service."
+  },
+  {
+    id: 32,
+    name: "Davide",
+    date: "2025-10-13",
+    rating: 5,
+    text: "All great!"
+  },
+  {
+    id: 33,
+    name: "Marianna",
+    date: "2025-10-13",
+    rating: 5,
+    text: "Great car. Easy pick up and drop off. Host very responsive throughout the experience. Will rent again!"
+  },
+  {
+    id: 34,
+    name: "Daryl",
+    date: "2025-10-13",
+    rating: 5,
+    text: "Everything was fantastic! Thank you!"
   }
 ];

@@ -3,8 +3,8 @@
 import { cars } from '@/lib/cars';
 import Image from 'next/image';
 import { useState } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DateTimePicker } from '@/components/DateTimePicker';
+import Header from '@/components/Header';
 import { addDays, format, setHours, setMinutes } from 'date-fns';
 
 type FormState = {
@@ -16,7 +16,6 @@ type FormState = {
 type FormStatus = 'idle' | 'success';
 
 export default function BookPage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedCarId, setSelectedCarId] = useState(cars[0].id);
   const [startDate, setStartDate] = useState<Date | null>(
     setHours(setMinutes(addDays(new Date(), 1), 0), 10)
@@ -133,39 +132,7 @@ export default function BookPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-md z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  TRent.
-                </h1>
-            </div>
-
-            {/* Menu Button */}
-            <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
-
-          {/* Menu */}
-          {mobileMenuOpen && (
-            <nav className="mt-4 pb-4 space-y-3 animate-in slide-in-from-top">
-              <a href="/reviews" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">What our clients say</a>
-              <a href="/about" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">About</a>
-            </nav>
-          )}
-        </div>
-      </header>
+      <Header />
 
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -253,7 +220,7 @@ export default function BookPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-sm font-semibold text-red-600 tracking-widest uppercase mb-3">Step 1</p>
-            <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">When do you want to drive?</h3>
+            <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">When?</h3>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Lock in your pickup and return window.
             </p>
@@ -266,19 +233,14 @@ export default function BookPage() {
                   <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
                     Pickup
                   </label>
-                  <DatePicker
-                    selected={startDate}
-                    onChange={date => {
+                  <DateTimePicker
+                    date={startDate}
+                    setDate={date => {
                       setStartDate(date);
                       clearDateError('startDate');
                     }}
-                    showTimeSelect
-                    timeIntervals={30}
                     minDate={new Date()}
-                    dateFormat="MMM d, h:mm aa"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
-                    calendarClassName="custom-calendar"
-                    wrapperClassName="w-full"
+                    className="w-full"
                   />
                   {errors.startDate && <p className="text-sm text-red-600 mt-1">{errors.startDate}</p>}
                 </div>
@@ -286,19 +248,14 @@ export default function BookPage() {
                   <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
                     Return
                   </label>
-                  <DatePicker
-                    selected={endDate}
-                    onChange={date => {
+                  <DateTimePicker
+                    date={endDate}
+                    setDate={date => {
                       setEndDate(date);
                       clearDateError('endDate');
                     }}
-                    showTimeSelect
-                    timeIntervals={30}
                     minDate={startDate ?? new Date()}
-                    dateFormat="MMM d, h:mm aa"
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
-                    calendarClassName="custom-calendar"
-                    wrapperClassName="w-full"
+                    className="w-full"
                   />
                   {errors.endDate && <p className="text-sm text-red-600 mt-1">{errors.endDate}</p>}
                 </div>
