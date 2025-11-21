@@ -235,7 +235,7 @@ export default function LocationMap(props: LocationMapProps) {
   // While checking, show loading state
   if (useGoogleMaps === null) {
     return (
-      <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl bg-gray-100 animate-pulse" />
+      <div className="h-[500px] w-full rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-gray-100 animate-pulse" />
     );
   }
 
@@ -254,11 +254,11 @@ export default function LocationMap(props: LocationMapProps) {
 
   // Use Google Maps
   return (
-    <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl">
+    <div className="h-[500px] w-full rounded-2xl overflow-hidden border border-gray-200 shadow-xl">
       <LoadScript
         googleMapsApiKey={apiKey}
         loadingElement={
-          <div className="h-[400px] w-full rounded-2xl bg-gray-100 animate-pulse" />
+          <div className="h-[500px] w-full rounded-2xl bg-gray-100 animate-pulse" />
         }
       >
         <GoogleMapsMap {...props} apiKey={apiKey} />

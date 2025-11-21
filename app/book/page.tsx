@@ -566,18 +566,18 @@ export default function BookPage() {
 
       {/* Step 3 – Where */}
       <section id="where" className="bg-white py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-10">
-            <div className="space-y-6">
-              <div className="text-center mb-10">
-                <p className="text-sm font-semibold tracking-widest uppercase text-red-600 mb-3">Step 3</p>
-                <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Where?</h3>
-                <p className="text-gray-600 max-w-2xl mx-auto">
-                  Choose a location.
-                </p>
-              </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <p className="text-sm font-semibold tracking-widest uppercase text-red-600 mb-3">Step 3</p>
+            <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Where?</h3>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Choose a location.
+            </p>
+          </div>
 
-              <div className="bg-white text-gray-900 rounded-3xl shadow-xl border border-white/10 p-6 sm:p-8 space-y-6">
+          <div className="grid lg:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <div className="bg-white text-gray-900 rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-8 space-y-6">
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
                     Pickup Location
@@ -702,14 +702,9 @@ export default function BookPage() {
                   Need to tweak the drop-off later? Just let us know and we&apos;ll confirm before delivery.
                 </p>
               </div>
-
-              {/* <p className="text-white/60 text-sm">
-                Need something special? No worries, just submit the
-                form and we&apos;ll confirm the logistics within minutes.
-              </p> */}
             </div>
 
-            <div className="space-y-6">
+            <div className="flex items-start">
               <LocationMap
                 locations={pickupLocations}
                 selectedLocation={location}
