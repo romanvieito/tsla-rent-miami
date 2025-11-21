@@ -842,9 +842,27 @@ export default function Home() {
               </p>
             </div>
           </div>
-                {/* <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
-                  We&apos;ll reach out to confirm the details and share arrival instructions.
-                </div> */}
+                <div className="rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 text-sm text-gray-700">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="space-y-2">
+                      <p className="font-medium text-gray-900">Reservation Summary</p>
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                          <span className="text-gray-500">Rental Days:</span>
+                          <span className="ml-1 font-semibold text-gray-900">{rentalDays} {rentalDays === 1 ? 'day' : 'days'}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Total Price:</span>
+                          <span className="ml-1 font-semibold text-gray-900">${totalPrice.toLocaleString()}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600">We&apos;ll reach out to confirm the details and share arrival instructions.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-5">
