@@ -63,12 +63,15 @@ function MapClickHandler({
 }
 
 // Component to center map on selected location
-function MapCenter({ center }: { center: [number, number] }) {
+function MapCenter({ center, zoom }: { center: [number, number]; zoom?: number }) {
   const map = useMap();
 
   useEffect(() => {
-    map.setView(center, map.getZoom());
-  }, [map, center]);
+    map.setView(center, zoom ?? map.getZoom(), {
+      animate: true,
+      duration: 0.5,
+    });
+  }, [map, center, zoom]);
 
   return null;
 }
@@ -139,7 +142,7 @@ export default function LeafletMapFallback({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <MapCenter center={center} />
+        <MapCenter center={center} zoom={11} />
         <MapClickHandler onMapClick={onCustomSelect} />
 
         {/* Render predefined location markers */}

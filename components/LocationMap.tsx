@@ -92,12 +92,30 @@ function GoogleMapsMap({
   // Effect to recenter map when selected location changes
   useEffect(() => {
     if (mapRef.current) {
-      const newCenter = getMapCenter();
+      // Determine center based on selection
+      let newCenter: { lat: number; lng: number } = DEFAULT_CENTER;
+      const isCustom = selectedLocation === 'Custom Pin';
+      
+      if (isCustom && customCoordinates) {
+        newCenter = { lat: customCoordinates.lat, lng: customCoordinates.lng };
+      } else {
+        const loc = locations.find(loc => loc.value === selectedLocation);
+        if (loc) {
+          newCenter = { lat: loc.latitude, lng: loc.longitude };
+        }
+      }
+      
       mapRef.current.panTo(newCenter);
-      // Optional: adjust zoom level for better visibility
+      // Adjust zoom level for better visibility of selected location
       mapRef.current.setZoom(DEFAULT_ZOOM);
+      
+      // Show info window for selected preset location to highlight it on the map
+      const loc = locations.find(loc => loc.value === selectedLocation);
+      if (loc && !isCustom) {
+        setInfoWindowOpen(selectedLocation);
+      }
     }
-  }, [selectedLocation, customCoordinates]);
+  }, [selectedLocation, customCoordinates, locations]);
 
   const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
     if (e.latLng) {

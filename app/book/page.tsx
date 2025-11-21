@@ -57,7 +57,7 @@ export default function BookPage() {
     },
   ];
   const [location, setLocation] = useState(pickupLocations[0].value);
-  const [addressInput, setAddressInput] = useState('');
+  const [addressInput, setAddressInput] = useState(pickupLocations[0].address);
   const [customCoordinates, setCustomCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [formData, setFormData] = useState<FormState>({
     name: '',
@@ -111,6 +111,16 @@ export default function BookPage() {
   const handlePresetLocationChange = (value: string) => {
     setLocation(value);
     setCustomCoordinates(null);
+    // Autofill address input with the preset location's address
+    const selectedPickupLocation = pickupLocations.find(loc => loc.value === value);
+    if (selectedPickupLocation) {
+      setAddressInput(selectedPickupLocation.address);
+    }
+    // Close suggestions and clear them to avoid showing autocomplete
+    setIsSuggestionsOpen(false);
+    setSuggestions([]);
+    setActiveSuggestionIndex(-1);
+    setSuggestionError(null);
     resetStatusIfNeeded();
   };
 
@@ -237,6 +247,17 @@ export default function BookPage() {
   useEffect(() => {
     const query = addressInput.trim();
     if (query.length < 3) {
+      setSuggestions([]);
+      setIsSuggestionsOpen(false);
+      setSuggestionError(null);
+      setIsFetchingSuggestions(false);
+      setActiveSuggestionIndex(-1);
+      return;
+    }
+
+    // Don't trigger autocomplete if the input matches a preset location address
+    const isPresetAddress = pickupLocations.some(loc => loc.address === query);
+    if (isPresetAddress) {
       setSuggestions([]);
       setIsSuggestionsOpen(false);
       setSuggestionError(null);
@@ -607,7 +628,10 @@ export default function BookPage() {
                         resetStatusIfNeeded();
                       }}
                       onFocus={() => {
-                        if (addressInput.trim().length >= 3 && (suggestions.length || suggestionError)) {
+                        const query = addressInput.trim();
+                        // Don't open suggestions if it's a preset location address
+                        const isPresetAddress = pickupLocations.some(loc => loc.address === query);
+                        if (query.length >= 3 && (suggestions.length || suggestionError) && !isPresetAddress) {
                           setIsSuggestionsOpen(true);
                         }
                       }}
