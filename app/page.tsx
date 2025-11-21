@@ -558,7 +558,28 @@ export default function Home() {
       <section id="book-form" className="bg-white py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <p className="text-sm font-semibold text-red-600 tracking-widest uppercase mb-3">Step 1</p>
+            {/* Progress indicator */}
+            <div className="flex justify-center items-center gap-2 mb-6">
+              {[1, 2, 3, 4].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      step === 1
+                        ? 'bg-red-600'
+                        : step < 1
+                        ? 'bg-gray-900'
+                        : 'bg-gray-200'
+                    }`}
+                  />
+                  {step < 4 && (
+                    <div className={`w-8 h-px mx-1 ${
+                      step < 1 ? 'bg-gray-900' : 'bg-gray-200'
+                    }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-sm font-semibold text-red-600 tracking-widest uppercase mb-3">Step 1 of 4</p>
             <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">When?</h3>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Lock in your pickup and return window.
@@ -610,7 +631,26 @@ export default function Home() {
       {/* Models */}
       <section id="models" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-10">
-          <p className="text-sm font-semibold text-red-600 tracking-widest uppercase mb-3">Step 2</p>
+          {/* Progress indicator */}
+          <div className="flex justify-center items-center gap-2 mb-6">
+            {[1, 2, 3, 4].map((step) => (
+              <div key={step} className="flex items-center">
+                <div
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    step <= 2
+                      ? 'bg-red-600'
+                      : 'bg-gray-200'
+                  }`}
+                />
+                {step < 4 && (
+                  <div className={`w-8 h-px mx-1 ${
+                    step < 2 ? 'bg-red-600' : 'bg-gray-200'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+          <p className="text-sm font-semibold text-red-600 tracking-widest uppercase mb-3">Step 2 of 4</p>
           <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Select a Model</h3>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Every vehicle includes Full Self-Driving, premium connectivity, and concierge delivery.
@@ -675,7 +715,26 @@ export default function Home() {
       <section id="where" className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <p className="text-sm font-semibold tracking-widest uppercase text-red-600 mb-3">Step 3</p>
+            {/* Progress indicator */}
+            <div className="flex justify-center items-center gap-2 mb-6">
+              {[1, 2, 3, 4].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      step <= 3
+                        ? 'bg-red-600'
+                        : 'bg-gray-200'
+                    }`}
+                  />
+                  {step < 4 && (
+                    <div className={`w-8 h-px mx-1 ${
+                      step < 3 ? 'bg-red-600' : 'bg-gray-200'
+                    }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-sm font-semibold tracking-widest uppercase text-red-600 mb-3">Step 3 of 4</p>
             <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Where?</h3>
             <p className="text-gray-600 max-w-2xl mx-auto">
               Choose a location.
@@ -829,7 +888,26 @@ export default function Home() {
       <section id="reserve" className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <p className="text-sm font-semibold text-red-400 tracking-widest uppercase mb-3">Step 4</p>
+            {/* Progress indicator */}
+            <div className="flex justify-center items-center gap-2 mb-6">
+              {[1, 2, 3, 4].map((step) => (
+                <div key={step} className="flex items-center">
+                  <div
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      step <= 4
+                        ? 'bg-red-400'
+                        : 'bg-white/20'
+                    }`}
+                  />
+                  {step < 4 && (
+                    <div className={`w-8 h-px mx-1 ${
+                      step < 4 ? 'bg-red-400' : 'bg-white/20'
+                    }`} />
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-sm font-semibold text-red-400 tracking-widest uppercase mb-3">Step 4 of 4</p>
             <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4">Reserve</h3>
             <p className="text-white/80 max-w-2xl mx-auto">
               Confirm your driver details so we can coordinate the handoff for your {selectedCar.model.split(' ').slice(0, 2).join(' ')}.
