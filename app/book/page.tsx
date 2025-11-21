@@ -111,12 +111,20 @@ export default function BookPage() {
   const handlePresetLocationChange = (value: string) => {
     setLocation(value);
     setCustomCoordinates(null);
+
+    // Set address to the description of the selected location
+    const selectedLocationData = pickupLocations.find(loc => loc.value === value);
+    if (selectedLocationData) {
+      setAddressInput(selectedLocationData.description);
+    }
+
     resetStatusIfNeeded();
   };
 
   const handleCustomLocationChange = (lat: number, lng: number) => {
     setCustomCoordinates({ lat, lng });
     setLocation('Custom Pin');
+    setAddressInput(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
     resetStatusIfNeeded();
   };
 
