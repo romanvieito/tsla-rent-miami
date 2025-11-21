@@ -19,7 +19,7 @@ export default function Header() {
             {/* Reserve Button */}
             <a
               href="/#book-form"
-              className="hidden sm:inline-flex bg-gray-900 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-800 transition-colors"
+              className="inline-flex bg-gray-900 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-800 transition-colors"
             >
               Reserve
             </a>
@@ -43,7 +43,6 @@ export default function Header() {
         {/* Menu */}
         {mobileMenuOpen && (
           <nav className="mt-4 pb-4 space-y-3 animate-in slide-in-from-top">
-            <a href="/#book-form" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">Reserve</a>
             <a href="/reviews" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">What our clients say</a>
             <a href="/about" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">About</a>
           </nav>
