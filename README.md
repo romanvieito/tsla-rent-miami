@@ -20,13 +20,23 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ### Environment Variables
 
-Create a `.env.local` file with your Google Maps Places key so the pickup address autocomplete works:
+Create a `.env.local` file with your Google Maps API key:
 
 ```
-GOOGLE_MAPS_API_KEY=YOUR_PLACES_KEY
+GOOGLE_MAPS_API_KEY=YOUR_API_KEY
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YOUR_API_KEY
 ```
 
-The key only needs access to **Places API (Autocomplete + Details)** and should be restricted to your Vercel/localhost origins. When the key is missing or rate-limited the input still works, but the UI will show a subtle message and you can drop a manual pin on the map instead.
+**Note:** Both variables should use the same key. `GOOGLE_MAPS_API_KEY` is used server-side for Places API calls, while `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is used client-side for the Google Maps display.
+
+**API Requirements:**
+- The key needs access to **Places API (Autocomplete + Details)** and **Maps JavaScript API**
+- Restrict the key to your Vercel/localhost origins on Google Cloud Console
+- When the key is missing or invalid, the app automatically falls back to Leaflet/OpenStreetMap
+
+**Fallback Behavior:**
+- ✅ With valid Google Maps API key: Uses Google Maps with enhanced integration
+- ✅ Without key or on error: Falls back to Leaflet with OpenStreetMap (free, no API key needed)
 
 ## Setup with GitHub
 

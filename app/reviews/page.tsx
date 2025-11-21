@@ -74,7 +74,7 @@ export default function ReviewsPage() {
 
                     {/* Quote */}
                     <blockquote className="text-lg text-gray-700 leading-relaxed">
-                      "{review.text}"
+                      &ldquo;{review.text}&rdquo;
                     </blockquote>
 
                     {/* Author info */}
@@ -133,7 +133,7 @@ export default function ReviewsPage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No reviews yet</h3>
               <p className="text-gray-600 max-w-md mx-auto">
-                We're just getting started! Reviews from our amazing customers will appear here soon.
+                We&apos;re just getting started! Reviews from our amazing customers will appear here soon.
               </p>
             </div>
           )}

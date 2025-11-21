@@ -1,77 +1,16 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { LoadScript, GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
+import dynamic from 'next/dynamic';
 
-// Fix for default marker icons in Next.js
-const createIcon = (color: string = '#000000') => {
-  return L.divIcon({
-    className: 'custom-marker',
-    html: `
-      <div style="
-        background-color: ${color};
-        width: 24px;
-        height: 24px;
-        border-radius: 50% 50% 50% 0;
-        transform: rotate(-45deg);
-        border: 3px solid white;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      "></div>
-      <div style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(45deg);
-        width: 8px;
-        height: 8px;
-        background-color: white;
-        border-radius: 50%;
-      "></div>
-    `,
-    iconSize: [24, 24],
-    iconAnchor: [12, 24],
-    popupAnchor: [0, -24],
-  });
-};
-
-const defaultIcon = createIcon('#ef4444'); // red-500
-const selectedIcon = createIcon('#10b981'); // emerald-500
-const customIcon = createIcon('#3b82f6'); // blue-500
-
-// Component to handle map click events
-function MapClickHandler({
-  onMapClick,
-}: {
-  onMapClick: (lat: number, lng: number) => void;
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    const handleClick = (e: L.LeafletMouseEvent) => {
-      onMapClick(e.latlng.lat, e.latlng.lng);
-    };
-
-    map.on('click', handleClick);
-    return () => {
-      map.off('click', handleClick);
-    };
-  }, [map, onMapClick]);
-
-  return null;
-}
-
-// Component to center map on selected location
-function MapCenter({ center }: { center: [number, number] }) {
-  const map = useMap();
-
-  useEffect(() => {
-    map.setView(center, map.getZoom());
-  }, [map, center]);
-
-  return null;
-}
+// Dynamically import Leaflet components for fallback
+const LeafletMap = dynamic(() => import('./LeafletMapFallback'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl bg-gray-100 animate-pulse" />
+  ),
+});
 
 type Location = {
   value: string;
@@ -88,107 +27,242 @@ type LocationMapProps = {
   onCustomSelect: (lat: number, lng: number) => void;
 };
 
-export default function LocationMap({
+const DEFAULT_CENTER = { lat: 25.7617, lng: -80.1918 }; // Miami center
+const DEFAULT_ZOOM = 11;
+const MIAMI_BOUNDS = {
+  north: 25.95,
+  south: 25.6,
+  east: -80.05,
+  west: -80.35,
+};
+
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+};
+
+// Inner component that uses Google Maps (only renders after LoadScript loads)
+function GoogleMapsMap({
   locations,
   selectedLocation,
   customCoordinates,
   onSelect,
   onCustomSelect,
-}: LocationMapProps) {
-  const mapRef = useRef<L.Map | null>(null);
+  apiKey,
+}: LocationMapProps & { apiKey: string }) {
+  const [infoWindowOpen, setInfoWindowOpen] = useState<string | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
 
   // Find selected location coordinates
   const selectedLoc = locations.find(loc => loc.value === selectedLocation);
   const isCustomSelected = selectedLocation === 'Custom Pin';
 
   // Determine map center
-  const getMapCenter = (): [number, number] => {
+  const getMapCenter = (): { lat: number; lng: number } => {
     if (isCustomSelected && customCoordinates) {
-      return [customCoordinates.lat, customCoordinates.lng];
+      return { lat: customCoordinates.lat, lng: customCoordinates.lng };
     }
     if (selectedLoc) {
-      return [selectedLoc.latitude, selectedLoc.longitude];
+      return { lat: selectedLoc.latitude, lng: selectedLoc.longitude };
     }
-    // Default to Miami center
-    return [25.7617, -80.1918];
+    return DEFAULT_CENTER;
   };
 
   const center = getMapCenter();
 
-  // Miami bounds: restrict map to Miami area
-  // North: Aventura, South: Key Biscayne, East: Beach, West: Airport area
-  const miamiBounds = L.latLngBounds(
-    [25.6, -80.35], // Southwest corner
-    [25.95, -80.05] // Northeast corner
-  );
+  const onMapLoad = useCallback((map: google.maps.Map) => {
+    mapRef.current = map;
+    
+    // Restrict map bounds to Miami area
+    const restriction: google.maps.MapRestriction = {
+      latLngBounds: MIAMI_BOUNDS,
+      strictBounds: true,
+    };
+    map.setOptions({
+      restriction,
+      minZoom: 10,
+      maxZoom: 16,
+    });
+
+    // Center on selected location
+    map.setCenter(center);
+    map.setZoom(DEFAULT_ZOOM);
+  }, [center]);
+
+  const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
+    if (e.latLng) {
+      onCustomSelect(e.latLng.lat(), e.latLng.lng());
+    }
+  }, [onCustomSelect]);
+
+  // Create marker icon options
+  const getMarkerIcon = (isSelected: boolean, isCustom: boolean = false) => {
+    if (isCustom) {
+      return {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 10,
+        fillColor: '#3b82f6',
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+      };
+    }
+    return {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: isSelected ? 12 : 10,
+      fillColor: isSelected ? '#10b981' : '#ef4444',
+      fillOpacity: 1,
+      strokeColor: '#ffffff',
+      strokeWeight: 2,
+    };
+  };
 
   return (
-    <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl">
-      <MapContainer
-        center={center}
-        zoom={11}
-        minZoom={10}
-        maxZoom={16}
-        maxBounds={miamiBounds}
-        maxBoundsViscosity={1.0}
-        style={{ height: '100%', width: '100%' }}
-        ref={mapRef}
-        scrollWheelZoom={true}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <MapCenter center={center} />
-        <MapClickHandler onMapClick={onCustomSelect} />
-
-        {/* Render predefined location markers */}
-        {locations.map(location => {
-          const isSelected = location.value === selectedLocation && !isCustomSelected;
-          return (
-            <Marker
-              key={location.value}
-              position={[location.latitude, location.longitude]}
-              icon={isSelected ? selectedIcon : defaultIcon}
-              eventHandlers={{
-                click: () => {
-                  onSelect(location.value);
-                },
-              }}
-            >
-              <Popup>
+    <GoogleMap
+      mapContainerStyle={mapContainerStyle}
+      center={center}
+      zoom={DEFAULT_ZOOM}
+      onLoad={onMapLoad}
+      onClick={handleMapClick}
+      options={{
+        disableDefaultUI: false,
+        zoomControl: true,
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: true,
+      }}
+    >
+      {/* Render predefined location markers */}
+      {locations.map(location => {
+        const isSelected = location.value === selectedLocation && !isCustomSelected;
+        return (
+          <Marker
+            key={location.value}
+            position={{ lat: location.latitude, lng: location.longitude }}
+            icon={getMarkerIcon(isSelected)}
+            animation={google.maps.Animation.DROP}
+            onClick={() => {
+              setInfoWindowOpen(location.value);
+              onSelect(location.value);
+            }}
+          >
+            {infoWindowOpen === location.value && (
+              <InfoWindow
+                onCloseClick={() => setInfoWindowOpen(null)}
+                options={{
+                  pixelOffset: new google.maps.Size(0, -10),
+                }}
+              >
                 <div className="text-sm">
                   <p className="font-semibold text-gray-900">{location.value}</p>
                   <p className="text-gray-600">{location.description}</p>
                 </div>
-              </Popup>
-            </Marker>
-          );
-        })}
+              </InfoWindow>
+            )}
+          </Marker>
+        );
+      })}
 
-        {/* Render custom location marker if exists */}
-        {customCoordinates && (
-          <Marker
-            position={[customCoordinates.lat, customCoordinates.lng]}
-            icon={customIcon}
-            eventHandlers={{
-              click: () => {
-                onSelect('Custom Pin');
-              },
-            }}
-          >
-            <Popup>
+      {/* Render custom location marker if exists */}
+      {customCoordinates && (
+        <Marker
+          position={{ lat: customCoordinates.lat, lng: customCoordinates.lng }}
+          icon={getMarkerIcon(false, true)}
+          animation={google.maps.Animation.DROP}
+          onClick={() => {
+            setInfoWindowOpen('Custom Pin');
+            onSelect('Custom Pin');
+          }}
+        >
+          {infoWindowOpen === 'Custom Pin' && (
+            <InfoWindow
+              onCloseClick={() => setInfoWindowOpen(null)}
+              options={{
+                pixelOffset: new google.maps.Size(0, -10),
+              }}
+            >
               <div className="text-sm">
                 <p className="font-semibold text-gray-900">Custom Location</p>
                 <p className="text-gray-600">
                   {customCoordinates.lat.toFixed(4)}, {customCoordinates.lng.toFixed(4)}
                 </p>
               </div>
-            </Popup>
-          </Marker>
-        )}
-      </MapContainer>
-    </div>
+            </InfoWindow>
+          )}
+        </Marker>
+      )}
+    </GoogleMap>
   );
 }
 
+export default function LocationMap(props: LocationMapProps) {
+  const [useGoogleMaps, setUseGoogleMaps] = useState<boolean | null>(null);
+  const [apiKey, setApiKey] = useState<string | null>(null);
+
+  // Check if Google Maps API key is available
+  useEffect(() => {
+    const checkGoogleMaps = async () => {
+      // First check if NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is set (preferred for client-side)
+      const publicKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      if (publicKey && publicKey.trim().length > 0) {
+        setApiKey(publicKey);
+        setUseGoogleMaps(true);
+        return;
+      }
+
+      // Fallback: check server-side API route
+      try {
+        const response = await fetch('/api/places/check-key');
+        const data = await response.json();
+        if (data.available) {
+          // Fetch the API key from server (it's safe to expose as it should be restricted)
+          const keyResponse = await fetch('/api/places/get-key');
+          const keyData = await keyResponse.json();
+          if (keyData.key) {
+            setApiKey(keyData.key);
+            setUseGoogleMaps(true);
+            return;
+          }
+        }
+        setUseGoogleMaps(false);
+      } catch {
+        setUseGoogleMaps(false);
+      }
+    };
+    checkGoogleMaps();
+  }, []);
+
+  // While checking, show loading state
+  if (useGoogleMaps === null) {
+    return (
+      <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl bg-gray-100 animate-pulse" />
+    );
+  }
+
+  // If Google Maps is not available, use Leaflet fallback
+  if (!useGoogleMaps || !apiKey) {
+    return (
+      <LeafletMap
+        locations={props.locations}
+        selectedLocation={props.selectedLocation}
+        customCoordinates={props.customCoordinates}
+        onSelect={props.onSelect}
+        onCustomSelect={props.onCustomSelect}
+      />
+    );
+  }
+
+  // Use Google Maps
+  return (
+    <div className="h-[400px] w-full rounded-2xl overflow-hidden border border-white/10 shadow-xl">
+      <LoadScript
+        googleMapsApiKey={apiKey}
+        loadingElement={
+          <div className="h-[400px] w-full rounded-2xl bg-gray-100 animate-pulse" />
+        }
+      >
+        <GoogleMapsMap {...props} apiKey={apiKey} />
+      </LoadScript>
+    </div>
+  );
+}
