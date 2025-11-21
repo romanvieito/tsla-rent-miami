@@ -39,19 +39,19 @@ export default function BookPage() {
   const pickupLocations = [
     {
       value: 'Miami International Airport (MIA)',
-      description: 'Coordinated handoffs across all terminals.',
+      address: 'NW 21st St, Miami, FL 33126',
       latitude: 25.7959,
       longitude: -80.2870,
     },
     {
       value: 'Edgewater',
-      description: '2000 Biscayne Blvd, Miami, FL 33132',
+      address: '2000 Biscayne Blvd, Miami, FL 33132',
       latitude: 25.7987,
       longitude: -80.1900,
     },
     {
       value: 'Coconut Grove',
-      description: '2930 Coconut Ave, Miami, FL 33133',
+      address: '2930 Coconut Ave, Miami, FL 33133',
       latitude: 25.7280,
       longitude: -80.2410,
     },
@@ -111,20 +111,12 @@ export default function BookPage() {
   const handlePresetLocationChange = (value: string) => {
     setLocation(value);
     setCustomCoordinates(null);
-
-    // Set address to the description of the selected location
-    const selectedLocationData = pickupLocations.find(loc => loc.value === value);
-    if (selectedLocationData) {
-      setAddressInput(selectedLocationData.description);
-    }
-
     resetStatusIfNeeded();
   };
 
   const handleCustomLocationChange = (lat: number, lng: number) => {
     setCustomCoordinates({ lat, lng });
     setLocation('Custom Pin');
-    setAddressInput(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
     resetStatusIfNeeded();
   };
 
@@ -699,7 +691,7 @@ export default function BookPage() {
                               <span className="w-2 h-2 bg-gray-900 rounded-full" />
                             )}
                           </div>
-                          <p className="text-sm text-gray-600 mt-1">{pickupLocation.description}</p>
+                          <p className="text-sm text-gray-600 mt-1">{pickupLocation.address}</p>
                         </button>
                       );
                     })}
@@ -765,11 +757,15 @@ export default function BookPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-500 text-xs uppercase mb-1">Address</p>
-                    <p>{addressInput || 'Pending'}</p>
+                    <p>
+                      {location === 'Custom Pin'
+                        ? addressInput || 'Pending'
+                        : pickupLocations.find(loc => loc.value === location)?.address || addressInput || 'Pending'}
+                    </p>
                   </div>
                 </div>
                 <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
-                  We&apos;ll send a quick confirmation text once everything is locked in and share arrival
+                  We&apos;ll confirm once everything is locked in and share arrival
                   instructions for your concierge.
                 </div>
               </div>

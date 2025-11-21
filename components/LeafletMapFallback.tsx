@@ -75,7 +75,7 @@ function MapCenter({ center }: { center: [number, number] }) {
 
 type Location = {
   value: string;
-  description: string;
+  address: string;
   latitude: number;
   longitude: number;
 };
@@ -159,7 +159,7 @@ export default function LeafletMapFallback({
               <Popup>
                 <div className="text-sm">
                   <p className="font-semibold text-gray-900">{location.value}</p>
-                  <p className="text-gray-600">{location.description}</p>
+                  <p className="text-gray-600">{location.address}</p>
                 </div>
               </Popup>
             </Marker>

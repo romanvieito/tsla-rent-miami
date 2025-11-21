@@ -14,7 +14,7 @@ const LeafletMap = dynamic(() => import('./LeafletMapFallback'), {
 
 type Location = {
   value: string;
-  description: string;
+  address: string;
   latitude: number;
   longitude: number;
 };
@@ -72,7 +72,7 @@ function GoogleMapsMap({
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
-
+    
     // Restrict map bounds to Miami area
     const restriction: google.maps.MapRestriction = {
       latLngBounds: MIAMI_BOUNDS,
@@ -165,7 +165,7 @@ function GoogleMapsMap({
               >
                 <div className="text-sm">
                   <p className="font-semibold text-gray-900">{location.value}</p>
-                  <p className="text-gray-600">{location.description}</p>
+                  <p className="text-gray-600">{location.address}</p>
                 </div>
               </InfoWindow>
             )}
