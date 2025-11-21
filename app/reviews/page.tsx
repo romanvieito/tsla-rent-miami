@@ -23,6 +23,15 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function ReviewsPage() {
+  const [visibleCount, setVisibleCount] = useState(9);
+
+  const visibleReviews = reviews.slice(0, visibleCount);
+  const hasMore = reviews.length > visibleCount;
+
+  const handleSeeMore = () => {
+    setVisibleCount(reviews.length);
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900">
       {/* Header */}
@@ -54,52 +63,67 @@ export default function ReviewsPage() {
       <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {reviews.length > 0 ? (
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {reviews.map((review) => (
-                <div key={review.id} className="space-y-4">
-                  {/* Star rating */}
-                  <div className="flex items-center gap-1">
-                    <StarRating rating={review.rating} />
-                  </div>
-
-                  {/* Quote */}
-                  <blockquote className="text-lg text-gray-700 leading-relaxed">
-                    "{review.text}"
-                  </blockquote>
-
-                  {/* Author info */}
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0">
-                      {review.photo ? (
-                        <Image
-                          src={review.photo}
-                          alt={review.name}
-                          width={48}
-                          height={48}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                          <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                          </svg>
-                        </div>
-                      )}
+            <>
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {visibleReviews.map((review) => (
+                  <div key={review.id} className="space-y-4">
+                    {/* Star rating */}
+                    <div className="flex items-center gap-1">
+                      <StarRating rating={review.rating} />
                     </div>
-                    <div>
-                      <cite className="font-semibold text-gray-900 not-italic">{review.name}</cite>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {new Date(review.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+
+                    {/* Quote */}
+                    <blockquote className="text-lg text-gray-700 leading-relaxed">
+                      "{review.text}"
+                    </blockquote>
+
+                    {/* Author info */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        {review.photo ? (
+                          <Image
+                            src={review.photo}
+                            alt={review.name}
+                            width={48}
+                            height={48}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                            <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <cite className="font-semibold text-gray-900 not-italic">{review.name}</cite>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {new Date(review.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
+                ))}
+              </div>
+              {hasMore && (
+                <div className="text-center mt-12">
+                  <button
+                    onClick={handleSeeMore}
+                    className="inline-flex items-center px-8 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+                  >
+                    See More Reviews
+                    <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-16">
               <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
