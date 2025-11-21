@@ -188,7 +188,7 @@ export default function Home() {
             {/* Scrollable Cards */}
             <div
               id="cars-carousel"
-              className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-4"
+              className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth pb-4"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {cars.map((car) => (
@@ -206,19 +206,19 @@ export default function Home() {
                     }`}
                   >
                     {/* Card Content */}
-                    <div className="p-8">
+                    <div className="p-4">
                       {/* Model Name */}
-                      <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                      <h3 className="text-lg font-bold text-gray-900 mb-1">
                         {car.model}
                       </h3>
                       
                       {/* Description */}
-                      <p className="text-gray-600 mb-6 leading-relaxed min-h-[60px]">
+                      <p className="text-gray-600 text-sm mb-1 leading-relaxed min-h-[60px]">
                         {car.description}
                       </p>
 
                       {/* Seats and Range */}
-                      <div className="flex gap-2 mb-4">
+                      <div className="flex gap-2 mb-2">
                         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
                           selectedCarId === car.id 
                             ? 'bg-gray-100 border-gray-300' 
@@ -244,9 +244,9 @@ export default function Home() {
                       </div>
 
                       {/* Price */}
-                      <div className="mb-6">
+                      <div className="mb-4">
                         <div className="flex items-baseline">
-                          <span className="text-3xl font-bold text-gray-900">
+                          <span className="text-xl font-bold text-gray-900">
                             ${car.price}
                           </span>
                           <span className="text-gray-600 ml-2">/day</span>
