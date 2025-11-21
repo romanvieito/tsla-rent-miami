@@ -16,7 +16,7 @@ type BookingPayload = {
   } | null;
 };
 
-const NTFY_TOPIC_URL = 'https://ntfy.sh/trent-miami';
+const NTFY_TOPIC = 'trent-miami';
 
 const formatDate = (isoDate?: string | null) => {
   if (!isoDate) {
@@ -80,8 +80,19 @@ export async function POST(request: Request) {
 
   const message = lines.join('\n');
 
+  const accessToken = process.env.NTFY_ACCESS_TOKEN;
+  if (!accessToken) {
+    console.error('NTFY_ACCESS_TOKEN environment variable is not set');
+    return NextResponse.json(
+      { error: 'Notification service configuration error.' },
+      { status: 500 }
+    );
+  }
+
+  const ntfyUrl = `https://ntfy.sh/${NTFY_TOPIC}?auth=${encodeURIComponent(accessToken)}`;
+
   try {
-    const response = await fetch(NTFY_TOPIC_URL, {
+    const response = await fetch(ntfyUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain',
