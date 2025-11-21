@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import { DateTimePicker } from '@/components/DateTimePicker';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { addDays, format, setHours, setMinutes } from 'date-fns';
+import { addDays, format, setHours, setMinutes, differenceInDays } from 'date-fns';
 
 // Dynamically import LocationMap to avoid SSR issues with Leaflet
 const LocationMap = dynamic(() => import('@/components/LocationMap'), {
@@ -85,6 +85,9 @@ export default function Home() {
 
   const selectedCar =
     cars.find(car => car.id === selectedCarId) ?? cars[0];
+  const rentalDays =
+    startDate && endDate ? Math.max(1, differenceInDays(endDate, startDate)) : 1;
+  const totalPrice = rentalDays * selectedCar.price;
 
   const handleInputChange = (field: keyof FormState, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -798,9 +801,24 @@ export default function Home() {
                     <p className="text-xs uppercase tracking-widest text-gray-400">Selected Model</p>
                     <p className="text-lg font-semibold text-gray-900">{selectedCar.model}</p>
                   </div>
-                  <span className="text-sm font-semibold bg-gray-100 text-gray-900 border border-gray-200 px-3 py-1 rounded-full">
-                    ${selectedCar.price}/day
-                  </span>
+                  <div className="text-right">
+                    <div className="inline-flex flex-col items-end bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 px-5 py-3 rounded-2xl shadow-sm">
+                      <div className="flex items-center gap-2 text-gray-900">
+                        <span className="text-lg font-bold">${selectedCar.price}</span>
+                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <span className="text-sm font-semibold text-gray-600">{rentalDays} {rentalDays === 1 ? 'day' : 'days'}</span>
+                      </div>
+                      <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-2.5"></div>
+                      <div className="flex flex-col items-end">
+                        <span className="text-xs uppercase tracking-wider text-gray-500 font-medium mb-0.5">Total</span>
+                        <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                          ${totalPrice.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                   <div>
