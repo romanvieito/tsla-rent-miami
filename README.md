@@ -18,6 +18,16 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+### Environment Variables
+
+Create a `.env.local` file with your Google Maps Places key so the pickup address autocomplete works:
+
+```
+GOOGLE_MAPS_API_KEY=YOUR_PLACES_KEY
+```
+
+The key only needs access to **Places API (Autocomplete + Details)** and should be restricted to your Vercel/localhost origins. When the key is missing or rate-limited the input still works, but the UI will show a subtle message and you can drop a manual pin on the map instead.
+
 ## Setup with GitHub
 
 1. Create a new repository on GitHub (don't initialize with README, .gitignore, or license)

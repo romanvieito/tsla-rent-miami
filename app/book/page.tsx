@@ -2,7 +2,7 @@
 
 import { cars } from '@/lib/cars';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { DateTimePicker } from '@/components/DateTimePicker';
 import Header from '@/components/Header';
@@ -20,6 +20,13 @@ type FormState = {
 };
 
 type FormStatus = 'idle' | 'success';
+
+type AutocompleteSuggestion = {
+  description: string;
+  placeId: string;
+  primaryText: string;
+  secondaryText: string;
+};
 
 export default function BookPage() {
   const [selectedCarId, setSelectedCarId] = useState(cars[0].id);
@@ -50,6 +57,7 @@ export default function BookPage() {
     },
   ];
   const [location, setLocation] = useState(pickupLocations[0].value);
+  const [addressInput, setAddressInput] = useState('');
   const [customCoordinates, setCustomCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [formData, setFormData] = useState<FormState>({
     name: '',
@@ -58,6 +66,21 @@ export default function BookPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<FormStatus>('idle');
+  const [suggestions, setSuggestions] = useState<AutocompleteSuggestion[]>([]);
+  const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+  const [isFetchingPlaceDetails, setIsFetchingPlaceDetails] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
+  const [suggestionError, setSuggestionError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const suggestionsRef = useRef<HTMLDivElement | null>(null);
+  const suggestionsListId = 'pickup-location-suggestions';
+
+  const resetStatusIfNeeded = () => {
+    if (status === 'success') {
+      setStatus('idle');
+    }
+  };
 
   const selectedCar =
     cars.find(car => car.id === selectedCarId) ?? cars[0];
@@ -71,9 +94,7 @@ export default function BookPage() {
         return updated;
       });
     }
-    if (status === 'success') {
-      setStatus('idle');
-    }
+    resetStatusIfNeeded();
   };
 
   const clearDateError = (field: 'startDate' | 'endDate') => {
@@ -84,10 +105,215 @@ export default function BookPage() {
         return updated;
       });
     }
-    if (status === 'success') {
-      setStatus('idle');
+    resetStatusIfNeeded();
+  };
+
+  const handlePresetLocationChange = (value: string) => {
+    setLocation(value);
+    setCustomCoordinates(null);
+    resetStatusIfNeeded();
+  };
+
+  const handleCustomLocationChange = (lat: number, lng: number) => {
+    setCustomCoordinates({ lat, lng });
+    setLocation('Custom Pin');
+    resetStatusIfNeeded();
+  };
+
+  const closeSuggestions = () => {
+    setIsSuggestionsOpen(false);
+    setActiveSuggestionIndex(-1);
+  };
+
+  const handleSuggestionSelect = async (suggestion: AutocompleteSuggestion) => {
+    setAddressInput(suggestion.description);
+    resetStatusIfNeeded();
+    setSuggestions([]);
+    closeSuggestions();
+    setSuggestionError(null);
+    setIsFetchingPlaceDetails(true);
+
+    try {
+      const response = await fetch('/api/places/details', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ placeId: suggestion.placeId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch place details');
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (data.address) {
+        setAddressInput(data.address);
+      }
+
+      if (
+        typeof data.coordinates?.lat === 'number' &&
+        typeof data.coordinates?.lng === 'number'
+      ) {
+        handleCustomLocationChange(data.coordinates.lat, data.coordinates.lng);
+      }
+    } catch (error) {
+      console.error('Place selection error:', error);
+      setSuggestionError('Unable to load that spot. Try again or drop a pin on the map.');
+    } finally {
+      setIsFetchingPlaceDetails(false);
     }
   };
+
+  const handleAddressKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowDown') {
+      if (!suggestions.length) {
+        return;
+      }
+      event.preventDefault();
+      setIsSuggestionsOpen(true);
+      setActiveSuggestionIndex(prev => {
+        if (prev === -1 || prev === suggestions.length - 1) {
+          return 0;
+        }
+        return prev + 1;
+      });
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      if (!suggestions.length) {
+        return;
+      }
+      event.preventDefault();
+      setIsSuggestionsOpen(true);
+      setActiveSuggestionIndex(prev => {
+        if (prev <= 0) {
+          return suggestions.length - 1;
+        }
+        return prev - 1;
+      });
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      if (isSuggestionsOpen && activeSuggestionIndex >= 0 && suggestions[activeSuggestionIndex]) {
+        event.preventDefault();
+        handleSuggestionSelect(suggestions[activeSuggestionIndex]);
+      }
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      closeSuggestions();
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(target) &&
+        inputRef.current &&
+        !inputRef.current.contains(target)
+      ) {
+        setIsSuggestionsOpen(false);
+        setActiveSuggestionIndex(-1);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const query = addressInput.trim();
+    if (query.length < 3) {
+      setSuggestions([]);
+      setIsSuggestionsOpen(false);
+      setSuggestionError(null);
+      setIsFetchingSuggestions(false);
+      setActiveSuggestionIndex(-1);
+      return;
+    }
+
+    setIsFetchingSuggestions(true);
+    setIsSuggestionsOpen(true);
+    setSuggestionError(null);
+
+    const controller = new AbortController();
+    let isCancelled = false;
+    
+    const timeoutId = setTimeout(async () => {
+      try {
+        const response = await fetch('/api/places/autocomplete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ query }),
+          signal: controller.signal,
+        });
+
+        if (isCancelled) return;
+
+        if (!response.ok) {
+          throw new Error('Autocomplete request failed');
+        }
+
+        const data = await response.json();
+
+        if (isCancelled) return;
+
+        if (data.error) {
+          setSuggestionError('Unable to fetch suggestions right now.');
+          setSuggestions([]);
+          setActiveSuggestionIndex(-1);
+          return;
+        }
+
+        const nextPredictions: AutocompleteSuggestion[] = data.predictions ?? [];
+        setSuggestions(nextPredictions);
+        setActiveSuggestionIndex(-1);
+        setSuggestionError(
+          nextPredictions.length ? null : 'No nearby matches yet. Try another block or drop a pin.'
+        );
+      } catch (error) {
+        if (isCancelled) return;
+        
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
+        setSuggestionError('Unable to fetch suggestions right now.');
+        setSuggestions([]);
+        setActiveSuggestionIndex(-1);
+      } finally {
+        if (!isCancelled) {
+          setIsFetchingSuggestions(false);
+        }
+      }
+    }, 250);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timeoutId);
+      try {
+        if (!controller.signal.aborted) {
+          controller.abort();
+        }
+      } catch (error) {
+        // Silently handle any abort errors
+      }
+    };
+  }, [addressInput]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -339,22 +565,186 @@ export default function BookPage() {
       </section>
 
       {/* Step 3 – Where */}
-      <section id="where" className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white py-16">
+      <section id="where" className="bg-white py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-10">
             <div className="space-y-6">
-              <p className="text-sm font-semibold tracking-widest uppercase text-red-400 mb-3">Step 3</p>
-              <h3 className="text-3xl font-bold">Where?</h3>
-              <p className="text-white/80">
-                Choose a location and tell us who to contact on delivery day.
-              </p>
-              <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-xl border border-white/10">
-                <div className="flex items-center justify-between mb-3">
+              <div className="text-center mb-10">
+                <p className="text-sm font-semibold tracking-widest uppercase text-red-600 mb-3">Step 3</p>
+                <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Where?</h3>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                  Choose a location.
+                </p>
+              </div>
+
+              <div className="bg-white text-gray-900 rounded-3xl shadow-xl border border-white/10 p-6 sm:p-8 space-y-6">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
+                    Pickup Location
+                  </label>
+                  <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg
+                        className="w-5 h-5 text-gray-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      ref={inputRef}
+                      value={addressInput}
+                      onChange={event => {
+                        setAddressInput(event.target.value);
+                        resetStatusIfNeeded();
+                      }}
+                      onFocus={() => {
+                        if (addressInput.trim().length >= 3 && (suggestions.length || suggestionError)) {
+                          setIsSuggestionsOpen(true);
+                        }
+                      }}
+                      onKeyDown={handleAddressKeyDown}
+                      className="w-full bg-gray-100 border-0 rounded-xl pl-12 pr-4 py-3 text-sm font-medium text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+                      placeholder="Enter Address"
+                      role="combobox"
+                      aria-expanded={isSuggestionsOpen}
+                      aria-controls={isSuggestionsOpen ? suggestionsListId : undefined}
+                      aria-activedescendant={
+                        isSuggestionsOpen && activeSuggestionIndex >= 0
+                          ? `${suggestionsListId}-option-${activeSuggestionIndex}`
+                          : undefined
+                      }
+                      aria-autocomplete="list"
+                      autoComplete="off"
+                    />
+                    {isSuggestionsOpen && (
+                      <div
+                        ref={suggestionsRef}
+                        className="absolute left-0 right-0 mt-2 rounded-2xl border border-gray-200 bg-white shadow-2xl shadow-gray-900/5 z-20 overflow-hidden"
+                        role="listbox"
+                        id={suggestionsListId}
+                      >
+                        {isFetchingSuggestions && (
+                          <p className="px-4 py-3 text-xs font-semibold uppercase tracking-widest text-gray-500">
+                            Searching near Miami…
+                          </p>
+                        )}
+                        {!isFetchingSuggestions && suggestionError && (
+                          <p className="px-4 py-3 text-xs text-gray-500">{suggestionError}</p>
+                        )}
+                        {suggestions.map((suggestion, index) => {
+                          const isActive = index === activeSuggestionIndex;
+                          return (
+                            <button
+                              key={suggestion.placeId}
+                              type="button"
+                              id={`${suggestionsListId}-option-${index}`}
+                              className={`flex flex-col w-full text-left px-4 py-3 text-sm transition ${
+                                isActive ? 'bg-gray-100' : 'hover:bg-gray-50'
+                              }`}
+                              onMouseDown={event => event.preventDefault()}
+                              onClick={() => handleSuggestionSelect(suggestion)}
+                              role="option"
+                              aria-selected={isActive}
+                            >
+                              <span className="font-semibold text-gray-900">{suggestion.primaryText}</span>
+                              {suggestion.secondaryText && (
+                                <span className="text-xs text-gray-500">{suggestion.secondaryText}</span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {isFetchingPlaceDetails && (
+                      <p className="text-xs text-gray-500 mt-2">Dropping a pin at that spot…</p>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {pickupLocations.map(pickupLocation => {
+                      const isActive = location === pickupLocation.value && location !== 'Custom Pin';
+                      return (
+                        <button
+                          key={pickupLocation.value}
+                          type="button"
+                          onClick={() => handlePresetLocationChange(pickupLocation.value)}
+                          className={`rounded-2xl border p-4 text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 ${
+                            isActive
+                              ? 'border-gray-900 bg-gray-900/5 shadow-lg shadow-gray-200/60'
+                              : 'border-gray-200 hover:border-gray-400'
+                          }`}
+                          aria-pressed={isActive}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-sm font-semibold text-gray-900">{pickupLocation.value}</p>
+                            {isActive && (
+                              <span className="text-[11px] font-semibold uppercase tracking-widest bg-gray-900 text-white px-2 py-0.5 rounded-full">
+                                Selected
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">{pickupLocation.description}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500">
+                  Need to tweak the drop-off later? Just let us know and we&apos;ll confirm before delivery.
+                </p>
+              </div>
+
+              {/* <p className="text-white/60 text-sm">
+                Need something special? No worries, just submit the
+                form and we&apos;ll confirm the logistics within minutes.
+              </p> */}
+            </div>
+
+            <div className="space-y-6">
+              <LocationMap
+                locations={pickupLocations}
+                selectedLocation={location}
+                customCoordinates={customCoordinates}
+                onSelect={handlePresetLocationChange}
+                onCustomSelect={handleCustomLocationChange}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Step 4 – Reserve */}
+      <section id="reserve" className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white py-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <p className="text-sm font-semibold text-red-400 tracking-widest uppercase mb-3">Step 4</p>
+            <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4">Reserve</h3>
+            <p className="text-white/80 max-w-2xl mx-auto">
+              Confirm your driver details so we can coordinate the handoff for your {selectedCar.model.split(' ').slice(0, 2).join(' ')}.
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 sm:p-10 space-y-8"
+          >
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs uppercase tracking-widest text-gray-400">Selected Model</p>
                     <p className="text-lg font-semibold text-gray-900">{selectedCar.model}</p>
                   </div>
-                  <span className="text-sm font-semibold bg-white border border-gray-200 px-3 py-1 rounded-full">
+                  <span className="text-sm font-semibold bg-gray-100 text-gray-900 border border-gray-200 px-3 py-1 rounded-full">
                     ${selectedCar.price}/day
                   </span>
                 </div>
@@ -367,80 +757,48 @@ export default function BookPage() {
                     <p className="font-semibold text-gray-500 text-xs uppercase mb-1">Return</p>
                     <p>{formatDate(endDate)}</p>
                   </div>
+                  <div>
+                    <p className="font-semibold text-gray-500 text-xs uppercase mb-1">Location</p>
+                    <p>{location}</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-500 text-xs uppercase mb-1">Address</p>
+                    <p>{addressInput || 'Pending'}</p>
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
+                  We&apos;ll send a quick confirmation text once everything is locked in and share arrival
+                  instructions for your concierge.
                 </div>
               </div>
-              <form
-                onSubmit={handleSubmit}
-                className="bg-white text-gray-900 rounded-3xl shadow-xl border border-white/10 p-6 sm:p-8 space-y-6"
-              >
+
+              <div className="space-y-5">
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
-                    Pickup Location
+                    Full Name
                   </label>
-                  <div className="relative">
-                    <select
-                      value={location}
-                      onChange={event => {
-                        setLocation(event.target.value);
-                        // Clear custom coordinates if selecting a predefined location
-                        if (event.target.value !== 'Custom Pin') {
-                          setCustomCoordinates(null);
-                        }
-                        if (status === 'success') {
-                          setStatus('idle');
-                        }
-                      }}
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 appearance-none"
-                    >
-                      {pickupLocations.map(option => (
-                        <option key={option.value} value={option.value}>
-                          {option.value}
-                        </option>
-                      ))}
-                      {customCoordinates && (
-                        <option value="Custom Pin">Custom Pin</option>
-                      )}
-                    </select>
-                    <svg
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={event => handleInputChange('name', event.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+                    placeholder="Jane Doe"
+                  />
+                  {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
                 </div>
-
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={event => handleInputChange('name', event.target.value)}
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
-                      placeholder="Jane Doe"
-                    />
-                    {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
-                      Phone
-                    </label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={event => handleInputChange('phone', event.target.value)}
-                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
-                      placeholder="(305) 555-0101"
-                    />
-                    {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={event => handleInputChange('phone', event.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+                    placeholder="(305) 555-0101"
+                  />
+                  {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
                 </div>
-
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
                     Email
@@ -454,48 +812,24 @@ export default function BookPage() {
                   />
                   {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
                 </div>
+              </div>
+            </div>
 
-                <div className="space-y-3">
-                  <button
-                    type="submit"
-                    className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors"
-                  >
-                    Send Request
-                  </button>
-                  {status === 'success' && (
-                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-                      Thanks! We&apos;ll text you in a few minutes to confirm the schedule and delivery
-                      details. This demo doesn&apos;t send an email yet, but your info is saved locally.
-                    </div>
-                  )}
+            <div className="space-y-3">
+              <button
+                type="submit"
+                className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors"
+              >
+                Reserve
+              </button>
+              {status === 'success' && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+                  Thanks! We&apos;ll text you in a few minutes to confirm the schedule and delivery
+                  details. This demo doesn&apos;t send an email yet, but your info is saved locally.
                 </div>
-              </form>
-              <p className="text-white/60 text-sm">
-                Need something special? No worries, just submit the
-                form and we&apos;ll confirm the logistics within minutes.
-              </p>
+              )}
             </div>
-            <div className="grid gap-4">
-              <LocationMap
-                locations={pickupLocations}
-                selectedLocation={location}
-                customCoordinates={customCoordinates}
-                onSelect={(selectedValue) => {
-                  setLocation(selectedValue);
-                  if (status === 'success') {
-                    setStatus('idle');
-                  }
-                }}
-                onCustomSelect={(lat, lng) => {
-                  setCustomCoordinates({ lat, lng });
-                  setLocation('Custom Pin');
-                  if (status === 'success') {
-                    setStatus('idle');
-                  }
-                }}
-              />
-            </div>
-          </div>
+          </form>
         </div>
       </section>
 
