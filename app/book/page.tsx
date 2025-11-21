@@ -765,8 +765,7 @@ export default function BookPage() {
                   </div>
                 </div>
                 <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
-                  We&apos;ll confirm once everything is locked in and share arrival
-                  instructions for your concierge.
+                  We&apos;ll reach out to confirm the details and share arrival instructions.
                 </div>
               </div>
 
