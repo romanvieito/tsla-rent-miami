@@ -571,7 +571,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Models */}
+      {/* Step 2 Models */}
       <section id="models" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-10">
           <p className="text-sm font-semibold text-red-600 tracking-widest uppercase mb-3">Step 2 of 4</p>
@@ -610,7 +610,7 @@ export default function Home() {
                     ${car.price}/day
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mb-4 min-h-[56px]">{car.description}</p>
+                <p className="text-sm text-gray-600 mb-1 min-h-[56px]">{car.description}</p>
                 <div className="flex items-center gap-3 text-sm text-gray-700">
                   <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
                     <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -125,9 +125,14 @@ function GoogleMapsMap({
 
   // Create marker icon options
   const getMarkerIcon = (isSelected: boolean, isCustom: boolean = false) => {
+    // Ensure google.maps is loaded before accessing SymbolPath
+    if (typeof window === 'undefined' || !window.google?.maps?.SymbolPath) {
+      return undefined; // Return undefined to use default marker
+    }
+
     if (isCustom) {
       return {
-        path: google.maps.SymbolPath.CIRCLE,
+        path: window.google.maps.SymbolPath.CIRCLE,
         scale: 12,
         fillColor: '#3b82f6',
         fillOpacity: 1,
@@ -136,7 +141,7 @@ function GoogleMapsMap({
       };
     }
     return {
-      path: google.maps.SymbolPath.CIRCLE,
+      path: window.google.maps.SymbolPath.CIRCLE,
       scale: isSelected ? 14 : 10,
       fillColor: isSelected ? '#10b981' : '#ef4444',
       fillOpacity: 1,
@@ -168,7 +173,7 @@ function GoogleMapsMap({
             key={location.value}
             position={{ lat: location.latitude, lng: location.longitude }}
             icon={getMarkerIcon(isSelected)}
-            animation={google.maps.Animation.DROP}
+            animation={typeof window !== 'undefined' && window.google?.maps?.Animation?.DROP ? window.google.maps.Animation.DROP : undefined}
             onClick={() => {
               setInfoWindowOpen(location.value);
               onSelect(location.value);
@@ -178,7 +183,7 @@ function GoogleMapsMap({
               <InfoWindow
                 onCloseClick={() => setInfoWindowOpen(null)}
                 options={{
-                  pixelOffset: new google.maps.Size(0, -10),
+                  pixelOffset: typeof window !== 'undefined' && window.google?.maps?.Size ? new window.google.maps.Size(0, -10) : undefined,
                 }}
               >
                 <div className="text-sm">
@@ -196,7 +201,7 @@ function GoogleMapsMap({
         <Marker
           position={{ lat: customCoordinates.lat, lng: customCoordinates.lng }}
           icon={getMarkerIcon(false, true)}
-          animation={google.maps.Animation.DROP}
+          animation={typeof window !== 'undefined' && window.google?.maps?.Animation?.DROP ? window.google.maps.Animation.DROP : undefined}
           onClick={() => {
             setInfoWindowOpen('Custom Pin');
             onSelect('Custom Pin');
@@ -206,7 +211,7 @@ function GoogleMapsMap({
             <InfoWindow
               onCloseClick={() => setInfoWindowOpen(null)}
               options={{
-                pixelOffset: new google.maps.Size(0, -10),
+                pixelOffset: typeof window !== 'undefined' && window.google?.maps?.Size ? new window.google.maps.Size(0, -10) : undefined,
               }}
             >
               <div className="text-sm">
