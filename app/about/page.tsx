@@ -23,7 +23,7 @@ export default function About() {
           {/* Text content at bottom */}
           <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-4 md:pb-6 lg:pb-8">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-16 drop-shadow-lg">
                 About
               </h2>
             </div>
