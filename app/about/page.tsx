@@ -54,6 +54,22 @@ export default function About() {
         </div>
       </section>
 
+      {/* Call to Action */}
+      <section className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-3xl font-bold mb-4">Safety is more important than ever</h3>
+          <p className="text-white/80 mb-8 max-w-2xl mx-auto">
+            Enjoy a Tesla in Miami... and drive safe!
+          </p>
+          <a
+            href="/"
+            className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg inline-block"
+          >
+            Book Now
+          </a>
+        </div>
+      </section>
+
       <Footer />
     </main>
   );

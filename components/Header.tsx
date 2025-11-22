@@ -5,17 +5,13 @@ import { trackNavigation } from '@/lib/mixpanel';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(() => {
-    // Initialize directly from window.location.pathname to avoid race condition
-    if (typeof window !== 'undefined') {
-      return window.location.pathname;
-    }
-    return '';
-  });
+  const [currentPage, setCurrentPage] = useState('');
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useLayoutEffect(() => {
-    // Ensure currentPage is set synchronously before any potential navigation clicks
+    // Set current page and mark as hydrated
     setCurrentPage(window.location.pathname);
+    setIsHydrated(true);
   }, []);
 
   const handleNavigation = (toPage: string) => {
@@ -51,6 +47,17 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Book Now Button - Show on reviews and about pages after hydration */}
+            {isHydrated && (currentPage === '/reviews' || currentPage === '/about') && (
+              <a
+                href="/"
+                onClick={() => handleNavigation('/')}
+                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2 rounded-lg hover:shadow-2xl hover:scale-105 transition-all font-bold text-sm mr-2"
+              >
+                Book Now
+              </a>
+            )}
+
             {/* Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
