@@ -35,12 +35,11 @@ export default function ReviewsPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900">
-      {/* Header */}
-      <Header />
-
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
+      <section className="relative bg-white overflow-hidden">
+        {/* Header */}
+        <Header />
+        <div className="relative w-full h-[500px] md:h-[600px] lg:h-[700px]">
           <Image
             src="/TeslaModels.jpg"
             alt="Tesla lineup in Miami"
@@ -48,15 +47,20 @@ export default function ReviewsPage() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/30" />
-        </div>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4 text-gray-900">
-            What our clients say
-          </h2>
-          <p className="text-lg sm:text-xl text-gray-900 max-w-2xl mx-auto">
-            Recent experiences from real people who chose us to enjoy a Tesla in Miami.
-          </p>
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+          
+          {/* Text content at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-4 md:pb-6 lg:pb-8">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
+                What our clients say
+              </h2>
+              <p className="text-white/95 text-xl sm:text-2xl max-w-2xl mx-auto drop-shadow-md">
+                Recent experiences from real people who chose us to enjoy a Tesla in Miami.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
