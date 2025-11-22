@@ -1,6 +1,7 @@
 'use client';
 
 import { cars } from '@/lib/cars';
+import { pickupLocations } from '@/lib/locations';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -41,26 +42,6 @@ export default function BookPage() {
   const [endDate, setEndDate] = useState<Date | null>(
     setHours(setMinutes(addDays(new Date(), 4), 0), 10)
   );
-  const pickupLocations = [
-    {
-      value: 'Miami International Airport (MIA)',
-      address: 'NW 21st St, Miami, FL 33126',
-      latitude: 25.7959,
-      longitude: -80.2870,
-    },
-    {
-      value: 'Edgewater',
-      address: '2000 Biscayne Blvd, Miami, FL 33132',
-      latitude: 25.7987,
-      longitude: -80.1900,
-    },
-    {
-      value: 'Coconut Grove',
-      address: '2930 Coconut Ave, Miami, FL 33133',
-      latitude: 25.7280,
-      longitude: -80.2410,
-    },
-  ];
   const [location, setLocation] = useState(pickupLocations[0].value);
   const [addressInput, setAddressInput] = useState(pickupLocations[0].address);
   const [customCoordinates, setCustomCoordinates] = useState<{ lat: number; lng: number } | null>(null);

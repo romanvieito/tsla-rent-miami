@@ -201,7 +201,7 @@ function GoogleMapsMap({
         <Marker
           position={{ lat: customCoordinates.lat, lng: customCoordinates.lng }}
           icon={getMarkerIcon(false, true)}
-          animation={typeof window !== 'undefined' && window.google?.maps?.Animation?.DROP ? window.google.maps.Animation.DROP : undefined}
+          animation={typeof window !== 'undefined' ? window.google?.maps?.Animation?.DROP : undefined}
           onClick={() => {
             setInfoWindowOpen('Custom Pin');
             onSelect('Custom Pin');
