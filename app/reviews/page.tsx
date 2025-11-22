@@ -64,6 +64,21 @@ export default function ReviewsPage() {
         </div>
       </section>
 
+      {/* Turo Link */}
+      <div className="py-8 text-center">
+        <a 
+          href="https://turo.com/us/en/host/16664600" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors border-b border-gray-300 hover:border-gray-900 pb-1"
+        >
+          <span>View on Turo</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
       {/* Reviews Section */}
       <section className="bg-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
