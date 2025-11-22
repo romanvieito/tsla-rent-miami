@@ -4,10 +4,10 @@ let isInitialized = false;
 
 export const initMixpanel = () => {
   if (typeof window !== 'undefined' && !isInitialized) {
-    const token = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN || process.env.MIXPANEL_TOKEN;
+    const token = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 
     if (!token) {
-      console.warn('Mixpanel token not found. Please set MIXPANEL_TOKEN or NEXT_PUBLIC_MIXPANEL_TOKEN environment variable.');
+      console.warn('Mixpanel token not found. Please set NEXT_PUBLIC_MIXPANEL_TOKEN environment variable.');
       return;
     }
 

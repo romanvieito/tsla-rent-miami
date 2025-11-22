@@ -48,10 +48,10 @@ The app includes Mixpanel analytics for tracking user behavior and conversions.
 4. Add to your `.env.local` file:
 
 ```
-MIXPANEL_TOKEN=your_mixpanel_project_token_here
+NEXT_PUBLIC_MIXPANEL_TOKEN=your_mixpanel_project_token_here
 ```
 
-**Note:** The token is used client-side only, so it can be prefixed with `NEXT_PUBLIC_` if preferred, but it's not required as it's only used in browser code.
+**Note:** The `NEXT_PUBLIC_` prefix is required because this token is used in browser code.
 
 **Analytics Events Tracked:**
 - Page views (all pages)

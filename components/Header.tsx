@@ -1,13 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { trackNavigation } from '@/lib/mixpanel';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState('');
+  const [currentPage, setCurrentPage] = useState(() => {
+    // Initialize directly from window.location.pathname to avoid race condition
+    if (typeof window !== 'undefined') {
+      return window.location.pathname;
+    }
+    return '';
+  });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    // Ensure currentPage is set synchronously before any potential navigation clicks
     setCurrentPage(window.location.pathname);
   }, []);
 
