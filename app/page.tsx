@@ -515,7 +515,7 @@ export default function Home() {
                 Experience Full Self-Driving
               </h3>
               <p className="hidden md:block text-sm text-gray-700 leading-relaxed">
-                Let your vehicle drive you almost anywhere with your active supervision. Includes Auto Lane Changes, Actually Smart Summon, Autopark, and more.
+                Let your vehicle drive you almost anywhere with your active supervision.
               </p>
             </div>
 
@@ -532,7 +532,7 @@ export default function Home() {
                 Ownership Experience in App
               </h3>
               <p className="hidden md:block text-sm text-gray-700 leading-relaxed">
-                Download the Tesla App to experience keyless driving, locating your vehicle, pre-cooling and heating, locking and unlocking, Sentry, and more.
+                Download the Tesla App to experience keyless driving, locating your vehicle, pre-cooling, locking and unlocking, and more.
               </p>
             </div>
 
@@ -547,7 +547,7 @@ export default function Home() {
                 Quick and Easy Check-in
               </h3>
               <p className="hidden md:block text-sm text-gray-700 leading-relaxed">
-                Starting your drive is simple and low hassle, whether you&apos;re on a self-serve drive or visiting our advisors in store.
+                Starting your drive is simple and low hassle. The vehicle will be ready and waiting for you when you arrive.
               </p>
             </div>
           </div>

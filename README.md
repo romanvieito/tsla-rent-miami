@@ -86,6 +86,58 @@ Once connected, Vercel will automatically deploy:
 - Every push to `main` branch → Production deployment
 - Every pull request → Preview deployment
 
+## Setting Up Custom Domain (tsla.miami)
+
+### Step 1: Add Domain in Vercel Dashboard
+
+1. Go to your project on [vercel.com](https://vercel.com)
+2. Navigate to **Settings** → **Domains**
+3. Click **Add Domain**
+4. Enter `tsla.miami` and click **Add**
+5. Vercel will show you the DNS records you need to configure
+
+### Step 2: Configure DNS Records
+
+You need to add DNS records at your domain registrar (where you purchased `tsla.miami`). Vercel will provide you with specific values, but typically you'll need:
+
+**Option A: Apex Domain (tsla.miami)**
+- **Type**: `A` record
+- **Name**: `@` or `tsla.miami`
+- **Value**: Vercel's IP address (provided in dashboard)
+- **TTL**: 3600 (or default)
+
+**Option B: CNAME Record (Recommended)**
+- **Type**: `CNAME` record
+- **Name**: `@` or `tsla.miami`
+- **Value**: `cname.vercel-dns.com` (or the value provided by Vercel)
+- **TTL**: 3600 (or default)
+
+**Note**: Some registrars don't support CNAME on apex domains. If that's the case, use the A record option.
+
+### Step 3: Verify Domain
+
+1. After adding DNS records, wait a few minutes for DNS propagation
+2. Go back to Vercel dashboard → **Settings** → **Domains**
+3. Vercel will automatically verify the domain when DNS records are correct
+4. You'll see a green checkmark when the domain is verified
+
+### Step 4: SSL Certificate
+
+Vercel automatically provisions SSL certificates for your domain via Let's Encrypt. This usually happens within a few minutes after domain verification.
+
+### Step 5: Update Google Maps API Restrictions (If Applicable)
+
+If you're using Google Maps API, update your API key restrictions to include:
+- `https://tsla.miami`
+- `https://www.tsla.miami` (if you add www subdomain)
+
+### Troubleshooting
+
+- **DNS not propagating**: Wait 24-48 hours for full DNS propagation
+- **Domain not verifying**: Double-check DNS records match exactly what Vercel provided
+- **SSL certificate issues**: Usually resolves automatically; contact Vercel support if it persists
+- **Check DNS propagation**: Use tools like [whatsmydns.net](https://www.whatsmydns.net) to verify DNS records globally
+
 ## Project Structure
 
 ```
