@@ -51,7 +51,7 @@ export default function ReviewsPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
           
           {/* Text content at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-4 md:pb-6 lg:pb-8">
+          <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-16 md:pb-8 lg:pb-10">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
                 What our clients say
