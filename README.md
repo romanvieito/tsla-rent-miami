@@ -38,6 +38,28 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YOUR_API_KEY
 - ✅ With valid Google Maps API key: Uses Google Maps with enhanced integration
 - ✅ Without key or on error: Falls back to Leaflet with OpenStreetMap (free, no API key needed)
 
+### Mixpanel Analytics Setup
+
+The app includes Mixpanel analytics for tracking user behavior and conversions.
+
+1. Create a Mixpanel account at [mixpanel.com](https://mixpanel.com)
+2. Create a new project for your website
+3. Copy your Project Token from the project settings
+4. Add to your `.env.local` file:
+
+```
+MIXPANEL_TOKEN=your_mixpanel_project_token_here
+```
+
+**Note:** The token is used client-side only, so it can be prefixed with `NEXT_PUBLIC_` if preferred, but it's not required as it's only used in browser code.
+
+**Analytics Events Tracked:**
+- Page views (all pages)
+- Car selection (homepage and book page)
+- Form submissions (inquiry forms)
+- Booking inquiries (detailed booking data)
+- Navigation between pages
+
 ## Setup with GitHub
 
 1. Create a new repository on GitHub (don't initialize with README, .gitignore, or license)

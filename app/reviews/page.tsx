@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { usePageTracking } from '@/lib/use-mixpanel';
 
 // Star rating component
 function StarRating({ rating }: { rating: number }) {
@@ -24,6 +25,8 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function ReviewsPage() {
+  usePageTracking('Reviews Page');
+
   const [visibleCount, setVisibleCount] = useState(9);
 
   const visibleReviews = reviews.slice(0, visibleCount);

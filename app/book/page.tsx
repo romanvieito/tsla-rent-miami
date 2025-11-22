@@ -8,6 +8,8 @@ import { DateTimePicker } from '@/components/DateTimePicker';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { addDays, format, setHours, setMinutes } from 'date-fns';
+import { usePageTracking } from '@/lib/use-mixpanel';
+import { trackCarSelection, trackFormSubmission, trackBookingInquiry } from '@/lib/mixpanel';
 
 // Dynamically import LocationMap to avoid SSR issues with Leaflet
 const LocationMap = dynamic(() => import('@/components/LocationMap'), {
@@ -30,6 +32,8 @@ type AutocompleteSuggestion = {
 };
 
 export default function BookPage() {
+  usePageTracking('Book Page');
+
   const [selectedCarId, setSelectedCarId] = useState(cars[0].id);
   const [startDate, setStartDate] = useState<Date | null>(
     setHours(setMinutes(addDays(new Date(), 1), 0), 10)
@@ -409,6 +413,22 @@ export default function BookPage() {
         throw new Error(data?.error ?? 'Notification request failed');
       }
 
+      // Track successful form submission
+      trackFormSubmission('book_page_inquiry');
+      trackBookingInquiry({
+        car_id: selectedCar.id,
+        car_name: selectedCar.model,
+        start_date: startDate?.toISOString() ?? '',
+        end_date: endDate?.toISOString() ?? '',
+        pickup_location: location,
+        dropoff_location: location,
+        contact_info: {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+        }
+      });
+
       setStatus('success');
     } catch (error) {
       console.error('Reservation submission error:', error);
@@ -575,7 +595,10 @@ export default function BookPage() {
               <button
                 key={car.id}
                 type="button"
-                onClick={() => setSelectedCarId(car.id)}
+                onClick={() => {
+                  setSelectedCarId(car.id);
+                  trackCarSelection(car.id, car.model);
+                }}
                 className={`text-left rounded-2xl border p-5 transition-all ${
                   isActive
                     ? 'border-gray-900 shadow-2xl shadow-gray-200 bg-white'

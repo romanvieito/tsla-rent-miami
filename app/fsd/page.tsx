@@ -4,8 +4,11 @@ import { cars } from '@/lib/cars';
 import Image from 'next/image';
 import { useState } from 'react';
 import Footer from '@/components/Footer';
+import { usePageTracking } from '@/lib/use-mixpanel';
 
 export default function Home() {
+  usePageTracking('FSD Page');
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (

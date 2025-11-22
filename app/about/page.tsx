@@ -1,8 +1,12 @@
+'use client';
+
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Image from 'next/image';
+import { usePageTracking } from '@/lib/use-mixpanel';
 
 export default function About() {
+  usePageTracking('About Page');
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900">
       {/* Hero */}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import 'react-day-picker/dist/style.css'
 import './globals.css'
+import MixpanelProvider from '@/components/MixpanelProvider'
 
 export const metadata: Metadata = {
   title: 'TSLA Rent Miami',
@@ -14,7 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <MixpanelProvider>
+          {children}
+        </MixpanelProvider>
+      </body>
     </html>
   )
 }

@@ -173,7 +173,7 @@ function GoogleMapsMap({
             key={location.value}
             position={{ lat: location.latitude, lng: location.longitude }}
             icon={getMarkerIcon(isSelected)}
-            animation={typeof window !== 'undefined' && window.google?.maps?.Animation?.DROP ? window.google.maps.Animation.DROP : undefined}
+            animation={typeof window !== 'undefined' ? window.google?.maps?.Animation?.DROP : undefined}
             onClick={() => {
               setInfoWindowOpen(location.value);
               onSelect(location.value);

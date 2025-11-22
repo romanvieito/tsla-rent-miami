@@ -1,8 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { usePageTracking } from '@/lib/use-mixpanel';
 
 export default function Contact() {
+  usePageTracking('Contact Page');
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Header />

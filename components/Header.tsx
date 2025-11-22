@@ -1,16 +1,44 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { trackNavigation } from '@/lib/mixpanel';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState('');
+
+  useEffect(() => {
+    setCurrentPage(window.location.pathname);
+  }, []);
+
+  const handleNavigation = (toPage: string) => {
+    const fromPage = getPageName(currentPage);
+    const toPageName = getPageName(toPage);
+    trackNavigation(fromPage, toPageName);
+  };
+
+  const getPageName = (path: string) => {
+    switch (path) {
+      case '/': return 'Homepage';
+      case '/about': return 'About Page';
+      case '/reviews': return 'Reviews Page';
+      case '/book': return 'Book Page';
+      case '/contact': return 'Contact Page';
+      case '/fsd': return 'FSD Page';
+      default: return path;
+    }
+  };
 
   return (
     <header className="absolute top-0 left-0 right-0 bg-transparent z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-              <a href="/" className="text-2xl font-bold text-white drop-shadow-lg hover:opacity-80 transition-opacity">
+              <a
+                href="/"
+                onClick={() => handleNavigation('/')}
+                className="text-2xl font-bold text-white drop-shadow-lg hover:opacity-80 transition-opacity"
+              >
                 Tsla.miami
               </a>
           </div>
@@ -35,8 +63,20 @@ export default function Header() {
         {/* Menu */}
         {mobileMenuOpen && (
           <nav className="mt-4 pb-4 space-y-3 animate-in slide-in-from-top bg-black/80 backdrop-blur-md rounded-lg p-4">
-            <a href="/reviews" className="block py-2 text-white hover:text-gray-200 font-medium">What our clients say</a>
-            <a href="/about" className="block py-2 text-white hover:text-gray-200 font-medium">About</a>
+            <a
+              href="/reviews"
+              onClick={() => handleNavigation('/reviews')}
+              className="block py-2 text-white hover:text-gray-200 font-medium"
+            >
+              What our clients say
+            </a>
+            <a
+              href="/about"
+              onClick={() => handleNavigation('/about')}
+              className="block py-2 text-white hover:text-gray-200 font-medium"
+            >
+              About
+            </a>
           </nav>
         )}
       </div>
