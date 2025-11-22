@@ -468,14 +468,18 @@ export default function Home() {
     reserveSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const scrollToStep1 = () => {
+    const step1Section = document.getElementById('book-form');
+    step1Section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900">
-      {/* Header */}
-      <Header />
-
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
+      <section className="relative bg-white overflow-hidden">
+        {/* Header */}
+        <Header />
+        <div className="relative w-full h-[500px] md:h-[600px] lg:h-[700px]">
           <Image
             src="/TeslaModels.jpg"
             alt="Tesla lineup in Miami"
@@ -483,72 +487,26 @@ export default function Home() {
             className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/30" />
-        </div>
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 text-center">
-          <h2 className="text-2xl sm:text-2xl lg:text-3xl xl:text-3xl font-bold leading-tight mb-2 text-gray-900">
-            Book a Tesla in Miami
-          </h2>
-          <div className="flex flex-col md:flex-row items-stretch gap-6 max-w-4xl mx-auto mt-8">
-            {/* Experience Full Self-Driving (Supervised) */}
-            <div className="flex flex-row md:flex-col items-center text-center flex-1 gap-4 md:gap-0">
-              <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center md:mb-4">
-                <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                  {/* Outer rim */}
-                  <circle cx="12" cy="12" r="8" />
-                  {/* Center hub */}
-                  <circle cx="12" cy="12" r="2.5" />
-                  {/* Horizontal spoke */}
-                  <line x1="4" y1="12" x2="9.5" y2="12" />
-                  <line x1="14.5" y1="12" x2="20" y2="12" />
-                  {/* Vertical spoke */}
-                  <line x1="12" y1="4" x2="12" y2="9.5" />
-                  <line x1="12" y1="14.5" x2="12" y2="20" />
-                  {/* Diagonal spokes */}
-                  <line x1="6.34" y1="6.34" x2="9.66" y2="9.66" />
-                  <line x1="14.34" y1="14.34" x2="17.66" y2="17.66" />
-                  <line x1="17.66" y1="6.34" x2="14.34" y2="9.66" />
-                  <line x1="9.66" y1="14.34" x2="6.34" y2="17.66" />
-                </svg>
-              </div>
-              <h3 className="text-lg text-gray-900 md:mb-2">
-                Experience Full Self-Driving
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+          
+          {/* Text content at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-4 md:pb-6 lg:pb-8">
+            <div className="max-w-4xl mx-auto text-center">
+              <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
+                Book a Tesla in Miami
               </h3>
-              <p className="hidden md:block text-sm text-gray-700 leading-relaxed">
-                Let your vehicle drive you almost anywhere with your active supervision.
+              <p className="text-white/95 text-xl sm:text-2xl mb-7 max-w-2xl mx-auto drop-shadow-md">
+                Safety is more important than ever
               </p>
-            </div>
-
-            {/* Ownership Experience in App */}
-            <div className="flex flex-row md:flex-col items-center text-center flex-1 gap-4 md:gap-0">
-              <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center md:mb-4">
-                <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <rect x="6" y="2" width="12" height="20" rx="2" />
-                  <path d="M11 1 h2" strokeLinecap="round" />
-                  <circle cx="12" cy="18" r="1" />
-                </svg>
+              <div className="flex justify-center">
+                <button
+                  onClick={scrollToStep1}
+                  className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg"
+                >
+                  Book Now
+                </button>
               </div>
-              <h3 className="text-lg text-gray-900 md:mb-2">
-                Ownership Experience in App
-              </h3>
-              <p className="hidden md:block text-sm text-gray-700 leading-relaxed">
-                Download the Tesla App to experience keyless driving, locating your vehicle, pre-cooling, locking and unlocking, and more.
-              </p>
-            </div>
-
-            {/* Quick and Easy Check-in */}
-            <div className="flex flex-row md:flex-col items-center text-center flex-1 gap-4 md:gap-0">
-              <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center md:mb-4">
-                <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              </div>
-              <h3 className="text-lg text-gray-900 md:mb-2">
-                Quick and Easy Check-in
-              </h3>
-              <p className="hidden md:block text-sm text-gray-700 leading-relaxed">
-                Starting your drive is simple and low hassle. The vehicle will be ready and waiting for you when you arrive.
-              </p>
             </div>
           </div>
         </div>

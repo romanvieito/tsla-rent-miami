@@ -6,11 +6,11 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white/90 backdrop-blur-md z-50">
+    <header className="absolute top-0 left-0 right-0 bg-transparent z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-              <a href="/" className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+              <a href="/" className="text-2xl font-bold text-white drop-shadow-lg hover:opacity-80 transition-opacity">
                 Tsla.miami
               </a>
           </div>
@@ -19,7 +19,7 @@ export default function Header() {
             {/* Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
             >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileMenuOpen ? (
@@ -34,9 +34,9 @@ export default function Header() {
 
         {/* Menu */}
         {mobileMenuOpen && (
-          <nav className="mt-4 pb-4 space-y-3 animate-in slide-in-from-top">
-            <a href="/reviews" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">What our clients say</a>
-            <a href="/about" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">About</a>
+          <nav className="mt-4 pb-4 space-y-3 animate-in slide-in-from-top bg-black/80 backdrop-blur-md rounded-lg p-4">
+            <a href="/reviews" className="block py-2 text-white hover:text-gray-200 font-medium">What our clients say</a>
+            <a href="/about" className="block py-2 text-white hover:text-gray-200 font-medium">About</a>
           </nav>
         )}
       </div>
