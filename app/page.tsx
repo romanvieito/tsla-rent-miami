@@ -458,6 +458,15 @@ export default function Home() {
         }
       });
 
+      // Track Google Ads conversion
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-16510475658/pSTTCMb298QbEIq758A9',
+          'value': totalPrice,
+          'currency': 'USD',
+        });
+      }
+
       setStatus('success');
     } catch (error) {
       console.error('Reservation submission error:', error);

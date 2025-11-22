@@ -29,6 +29,10 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YOUR_API_KEY
 
 **Note:** Both variables should use the same key. `GOOGLE_MAPS_API_KEY` is used server-side for Places API calls, while `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` is used client-side for the Google Maps display.
 
+**Google Ads Conversion Tracking:**
+- Google Ads conversion tracking is configured and will fire automatically when users successfully submit the reservation form (click "Reserve" button)
+- The conversion ID is hardcoded in the application code
+
 **API Requirements:**
 - The key needs access to **Places API (Autocomplete + Details)** and **Maps JavaScript API**
 - Restrict the key to your Vercel/localhost origins on Google Cloud Console
