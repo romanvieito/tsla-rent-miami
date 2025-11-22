@@ -75,6 +75,7 @@ export default function Home() {
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
   const [isInReserveSection, setIsInReserveSection] = useState(false);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestionsRef = useRef<HTMLDivElement | null>(null);
   const footerRef = useRef<HTMLElement | null>(null);
@@ -116,6 +117,7 @@ export default function Home() {
   };
 
   const handlePresetLocationChange = (value: string) => {
+    setHasInteracted(true);
     setLocation(value);
     setCustomCoordinates(null);
     // Autofill address input with the preset location's address
@@ -132,6 +134,7 @@ export default function Home() {
   };
 
   const handleCustomLocationChange = (lat: number, lng: number) => {
+    setHasInteracted(true);
     setCustomCoordinates({ lat, lng });
     setLocation('Custom Pin');
     resetStatusIfNeeded();
@@ -143,6 +146,7 @@ export default function Home() {
   };
 
   const handleSuggestionSelect = async (suggestion: AutocompleteSuggestion) => {
+    setHasInteracted(true);
     setAddressInput(suggestion.description);
     resetStatusIfNeeded();
     setSuggestions([]);
@@ -535,6 +539,7 @@ export default function Home() {
                     setDate={date => {
                       setStartDate(date);
                       clearDateError('startDate');
+                      setHasInteracted(true);
                     }}
                     minDate={new Date()}
                     className="w-full"
@@ -550,6 +555,7 @@ export default function Home() {
                     setDate={date => {
                       setEndDate(date);
                       clearDateError('endDate');
+                      setHasInteracted(true);
                     }}
                     minDate={startDate ?? new Date()}
                     className="w-full"
@@ -582,7 +588,10 @@ export default function Home() {
             <button
                   key={car.id}
                 type="button"
-                onClick={() => setSelectedCarId(car.id)}
+                onClick={() => {
+                  setSelectedCarId(car.id);
+                  setHasInteracted(true);
+                }}
                 className={`text-left rounded-2xl border p-5 transition-all ${
                   isActive
                     ? 'border-gray-900 shadow-2xl shadow-gray-200 bg-white'
@@ -668,6 +677,7 @@ export default function Home() {
                       value={addressInput}
                       onChange={event => {
                         setAddressInput(event.target.value);
+                        setHasInteracted(true);
                         resetStatusIfNeeded();
                       }}
                       onFocus={() => {
@@ -912,7 +922,7 @@ export default function Home() {
       </section>
 
       {/* Mobile sticky summary */}
-      {!isInReserveSection && !isFooterVisible && (
+      {!isInReserveSection && !isFooterVisible && hasInteracted && (
       <div
         className="fixed inset-x-0 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 md:hidden pointer-events-none"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
