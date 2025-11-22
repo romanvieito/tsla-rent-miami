@@ -953,7 +953,7 @@ export default function Home() {
       {/* Mobile sticky summary */}
       {!isInReserveSection && !isFooterVisible && hasInteracted && (
       <div
-        className="fixed inset-x-0 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 md:hidden pointer-events-none"
+        className="fixed inset-x-0 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 pointer-events-none"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
       >
         <div className="w-full">
