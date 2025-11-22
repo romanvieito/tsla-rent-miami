@@ -53,6 +53,15 @@ function GoogleMapsMap({
   const [infoWindowOpen, setInfoWindowOpen] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
 
+  // Guard against rendering if google maps is not available
+  if (typeof window === 'undefined' || !window.google?.maps) {
+    return (
+      <div className="h-[300px] md:h-[500px] w-full rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center">
+        <p className="text-gray-500">Loading map...</p>
+      </div>
+    );
+  }
+
   // Find selected location coordinates
   const selectedLoc = locations.find(loc => loc.value === selectedLocation);
   const isCustomSelected = selectedLocation === 'Custom Pin';
@@ -130,24 +139,29 @@ function GoogleMapsMap({
       return undefined; // Return undefined to use default marker
     }
 
-    if (isCustom) {
+    try {
+      if (isCustom) {
+        return {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 12,
+          fillColor: '#3b82f6',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 3,
+        };
+      }
       return {
         path: window.google.maps.SymbolPath.CIRCLE,
-        scale: 12,
-        fillColor: '#3b82f6',
+        scale: isSelected ? 14 : 10,
+        fillColor: isSelected ? '#10b981' : '#ef4444',
         fillOpacity: 1,
         strokeColor: '#ffffff',
-        strokeWeight: 3,
+        strokeWeight: isSelected ? 3 : 2,
       };
+    } catch (error) {
+      console.warn('Error creating marker icon, using default:', error);
+      return undefined;
     }
-    return {
-      path: window.google.maps.SymbolPath.CIRCLE,
-      scale: isSelected ? 14 : 10,
-      fillColor: isSelected ? '#10b981' : '#ef4444',
-      fillOpacity: 1,
-      strokeColor: '#ffffff',
-      strokeWeight: isSelected ? 3 : 2,
-    };
   };
 
   return (
@@ -173,7 +187,7 @@ function GoogleMapsMap({
             key={location.value}
             position={{ lat: location.latitude, lng: location.longitude }}
             icon={getMarkerIcon(isSelected)}
-            animation={typeof window !== 'undefined' ? window.google?.maps?.Animation?.DROP : undefined}
+            animation={typeof window !== 'undefined' && window.google?.maps?.Animation ? window.google.maps.Animation.DROP : undefined}
             onClick={() => {
               setInfoWindowOpen(location.value);
               onSelect(location.value);
@@ -201,7 +215,7 @@ function GoogleMapsMap({
         <Marker
           position={{ lat: customCoordinates.lat, lng: customCoordinates.lng }}
           icon={getMarkerIcon(false, true)}
-          animation={typeof window !== 'undefined' ? window.google?.maps?.Animation?.DROP : undefined}
+          animation={typeof window !== 'undefined' && window.google?.maps?.Animation ? window.google.maps.Animation.DROP : undefined}
           onClick={() => {
             setInfoWindowOpen('Custom Pin');
             onSelect('Custom Pin');
@@ -297,13 +311,16 @@ export default function LocationMap(props: LocationMapProps) {
   return (
     <div className="h-[300px] md:h-[500px] w-full rounded-2xl overflow-hidden">
       <LoadScript
+        key={`google-maps-${apiKey}`}
         googleMapsApiKey={apiKey}
+        libraries={['places']}
         onLoad={() => {
-          if (typeof window !== 'undefined' && (window as typeof window & { google?: typeof google }).google?.maps) {
+          if (typeof window !== 'undefined' && window.google?.maps) {
             setIsGoogleReady(true);
           }
         }}
-        onError={() => {
+        onError={(error) => {
+          console.warn('Google Maps failed to load:', error);
           setGoogleLoadError(true);
           setUseGoogleMaps(false);
         }}

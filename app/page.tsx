@@ -989,7 +989,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={scrollToReserve}
-                  className="bg-white text-gray-900 font-semibold px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl shadow-lg shadow-gray-900/20 text-sm sm:text-base whitespace-nowrap"
+                  className="bg-white text-gray-900 font-semibold px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl shadow-lg shadow-gray-900/20 text-sm sm:text-base whitespace-nowrap mr-12"
                   aria-label="Scroll to reservation form"
                 >
                   Reserve
