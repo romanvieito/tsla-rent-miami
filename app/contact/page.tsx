@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { usePageTracking } from '@/lib/use-mixpanel';
@@ -8,8 +9,35 @@ import { usePageTracking } from '@/lib/use-mixpanel';
 export default function Contact() {
   usePageTracking('Contact Page');
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <Header />
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900">
+      {/* Hero */}
+      <section className="relative bg-white overflow-hidden">
+        {/* Header */}
+        <Header />
+        <div className="relative w-full h-[500px] md:h-[600px] lg:h-[700px]">
+          <Image
+            src="/TeslaModels.jpg"
+            alt="Tesla lineup in Miami"
+            fill
+            className="object-cover"
+            priority
+          />
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+
+          {/* Text content at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-16 md:pb-8 lg:pb-10">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
+                Contact
+              </h2>
+              <p className="text-white/95 text-xl sm:text-2xl max-w-2xl mx-auto drop-shadow-md">
+                Ready to experience the future of driving? Get in touch with us.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Contact Section */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
