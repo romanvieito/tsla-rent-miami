@@ -53,15 +53,6 @@ function GoogleMapsMap({
   const [infoWindowOpen, setInfoWindowOpen] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
 
-  // Guard against rendering if google maps is not available
-  if (typeof window === 'undefined' || !window.google?.maps) {
-    return (
-      <div className="h-[300px] md:h-[500px] w-full rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center">
-        <p className="text-gray-500">Loading map...</p>
-      </div>
-    );
-  }
-
   // Find selected location coordinates
   const selectedLoc = locations.find(loc => loc.value === selectedLocation);
   const isCustomSelected = selectedLocation === 'Custom Pin';
@@ -131,6 +122,15 @@ function GoogleMapsMap({
       onCustomSelect(e.latLng.lat(), e.latLng.lng());
     }
   }, [onCustomSelect]);
+
+  // Guard against rendering if google maps is not available
+  if (typeof window === 'undefined' || !window.google?.maps) {
+    return (
+      <div className="h-[300px] md:h-[500px] w-full rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center">
+        <p className="text-gray-500">Loading map...</p>
+      </div>
+    );
+  }
 
   // Create marker icon options
   const getMarkerIcon = (isSelected: boolean, isCustom: boolean = false) => {
