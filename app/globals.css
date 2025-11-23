@@ -79,4 +79,25 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
   }
+
+  /* TODO: Move this to the layout.tsx file */
+  /* Tawk.to Chat Widget Positioning */
+  /* Target the first iframe inside div.widget-visible */
+  div.widget-visible iframe {
+    position: fixed !important;
+    right: 5px !important;
+    left: auto !important;
+    bottom: 130px !important;
+    top: auto !important;
+  }
+
+  /* Also target the widget-visible container itself */
+  div.widget-visible {
+    position: fixed !important;
+    right: 5px !important;
+    left: auto !important;
+    bottom: 130px !important;
+    top: auto !important;
+  }
+  
 }
