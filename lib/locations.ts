@@ -6,8 +6,14 @@ export const pickupLocations = [
     longitude: -80.2870,
   },
   {
+    value: 'Carnival Celebration',
+    address: 'Port of Miami, Miami, FL 33132',
+    latitude: 25.779007827122527,
+    longitude: -80.17590954795386,
+  },
+  {
     value: 'Edgewater',
-    address: '2000 Biscayne Blvd, Miami, FL 33132',
+    address: '2000 Biscayne Boulevard, Miami, FL 33137',
     latitude: 25.7987,
     longitude: -80.1900,
   },
