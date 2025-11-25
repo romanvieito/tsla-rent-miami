@@ -91,6 +91,13 @@ export default function Header() {
             >
               About
             </a>
+            <a
+              href="/contact"
+              onClick={() => handleNavigation('/contact')}
+              className="block py-2 text-white hover:text-gray-200 font-medium"
+            >
+              Contact
+            </a>
           </nav>
         )}
       </div>
