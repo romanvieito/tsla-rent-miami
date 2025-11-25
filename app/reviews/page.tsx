@@ -57,10 +57,10 @@ export default function ReviewsPage() {
           <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-16 md:pb-8 lg:pb-10">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
-                What our clients say
+                What our guests say
               </h2>
               <p className="text-white/95 text-xl sm:text-2xl max-w-2xl mx-auto drop-shadow-md">
-                Recent experiences from real people who chose us to enjoy a Tesla in Miami.
+                Recent reviews from real people
               </p>
             </div>
           </div>

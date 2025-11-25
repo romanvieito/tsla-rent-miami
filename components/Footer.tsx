@@ -8,6 +8,9 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600">
           <p>&copy; {new Date().getFullYear()} Tsla.miami</p>
           <div className="flex gap-6">
+            <Link href="/reviews" className="hover:text-gray-900 transition-colors">
+              Reviews
+            </Link>
             <Link href="/about" className="hover:text-gray-900 transition-colors">
               About
             </Link>

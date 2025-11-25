@@ -82,7 +82,7 @@ export default function Header() {
               onClick={() => handleNavigation('/reviews')}
               className="block py-2 text-white hover:text-gray-200 font-medium"
             >
-              What our clients say
+              What our guests say
             </a>
             <a
               href="/about"
