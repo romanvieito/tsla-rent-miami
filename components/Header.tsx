@@ -25,7 +25,6 @@ export default function Header() {
       case '/': return 'Homepage';
       case '/about': return 'About Page';
       case '/reviews': return 'Reviews Page';
-      case '/book': return 'Book Page';
       case '/contact': return 'Contact Page';
       case '/fsd': return 'FSD Page';
       default: return path;
