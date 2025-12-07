@@ -59,12 +59,14 @@ export default function Home() {
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
   const [isInReserveSection, setIsInReserveSection] = useState(false);
-  const [isFooterVisible, setIsFooterVisible] = useState(false);
+  const [isReserveButtonVisible, setIsReserveButtonVisible] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestionsRef = useRef<HTMLDivElement | null>(null);
   const footerRef = useRef<HTMLElement | null>(null);
   const endDateRef = useRef<HTMLDivElement | null>(null);
+  const reserveButtonRef = useRef<HTMLButtonElement | null>(null);
+  const reserveButtonMobileRef = useRef<HTMLButtonElement | null>(null);
   const suggestionsListId = 'pickup-location-suggestions';
 
   const resetStatusIfNeeded = () => {
@@ -337,9 +339,10 @@ export default function Home() {
 
   useEffect(() => {
     const reserveSection = document.getElementById('reserve');
-    const footerElement = footerRef.current;
+    const desktopButton = reserveButtonRef.current;
+    const mobileButton = reserveButtonMobileRef.current;
 
-    if (!reserveSection && !footerElement) {
+    if (!reserveSection) {
       return;
     }
 
@@ -349,8 +352,9 @@ export default function Home() {
           if (reserveSection && entry.target === reserveSection) {
             setIsInReserveSection(entry.isIntersecting);
           }
-          if (footerElement && entry.target === footerElement) {
-            setIsFooterVisible(entry.isIntersecting);
+          if ((desktopButton && entry.target === desktopButton) || 
+              (mobileButton && entry.target === mobileButton)) {
+            setIsReserveButtonVisible(entry.isIntersecting);
           }
         });
       },
@@ -362,8 +366,11 @@ export default function Home() {
     if (reserveSection) {
       observer.observe(reserveSection);
     }
-    if (footerElement) {
-      observer.observe(footerElement);
+    if (desktopButton) {
+      observer.observe(desktopButton);
+    }
+    if (mobileButton) {
+      observer.observe(mobileButton);
     }
 
     return () => {
@@ -509,8 +516,19 @@ export default function Home() {
     date ? format(date, 'MMM d, h:mm aa') : '--';
 
   const scrollToReserve = () => {
-    const reserveSection = document.getElementById('reserve');
-    reserveSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Check if we're on mobile (viewport width < 768px, which is md breakpoint)
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    
+    // On mobile, scroll to mobile button; on desktop, scroll to desktop button
+    const targetButton = isMobile ? reserveButtonMobileRef.current : reserveButtonRef.current;
+    
+    if (targetButton) {
+      targetButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      // Fallback: if button ref isn't available, scroll to section
+      const reserveSection = document.getElementById('reserve');
+      reserveSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const scrollToStep1 = () => {
@@ -899,6 +917,7 @@ export default function Home() {
                 {/* Submit Button - Desktop */}
                 <div className="hidden md:block pt-2">
                   <button
+                    ref={reserveButtonRef}
                     type="submit"
                     className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors"
                   >
@@ -969,6 +988,7 @@ export default function Home() {
             {/* Submit Button - Mobile */}
             <div className="md:hidden mt-6">
               <button
+                ref={reserveButtonMobileRef}
                 type="submit"
                 className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors"
               >
@@ -984,8 +1004,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Mobile sticky summary */}
-      {!isInReserveSection && !isFooterVisible && hasInteracted && (
+      {/* Sticky summary */}
+      {hasInteracted && !isReserveButtonVisible && (
       <div
         className="fixed inset-x-0 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 pointer-events-none"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
