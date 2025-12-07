@@ -848,62 +848,14 @@ export default function Home() {
 
           <form
             onSubmit={handleSubmit}
-            className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 sm:p-10 space-y-8"
+            className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 sm:p-10"
           >
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-gray-400">Selected Model</p>
-                    <p className="text-lg font-semibold text-gray-900">{selectedCar.model}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="inline-flex flex-col items-end bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 px-5 py-3 rounded-2xl shadow-sm">
-                      <div className="flex items-center gap-2 text-gray-900">
-                        <span className="text-lg font-bold">${selectedCar.price}</span>
-                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        <span className="text-sm font-semibold text-gray-600">{rentalDays} {rentalDays === 1 ? 'day' : 'days'}</span>
-                      </div>
-                      <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-2.5"></div>
-                      <div className="flex flex-col items-end">
-                        <span className="text-xs uppercase tracking-wider text-gray-500 font-medium mb-0.5">Total</span>
-                        <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                          ${totalPrice.toLocaleString()}
-                  </span>
-                      </div>
-                    </div>
-                  </div>
+              {/* Left Column - Contact Form */}
+              <div className="space-y-5 order-2 md:order-1">
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">Your Details</h4>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                  <div>
-                    <p className="font-semibold text-gray-500 text-xs uppercase mb-1">Pickup</p>
-                    <p>{formatDate(startDate)}</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-500 text-xs uppercase mb-1">Return</p>
-                    <p>{formatDate(endDate)}</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-500 text-xs uppercase mb-1">Location</p>
-                    <p>{location}</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-500 text-xs uppercase mb-1">Address</p>
-                    <p>
-                      {location === 'Custom Pin'
-                        ? addressInput || 'Pending'
-                        : pickupLocations.find(loc => loc.value === location)?.address || addressInput || 'Pending'}
-              </p>
-            </div>
-          </div>
-                {/* <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
-                  We&apos;ll reach out to confirm the details and share arrival instructions.
-                </div> */}
-              </div>
-
-              <div className="space-y-5">
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
                     Full Name
@@ -912,7 +864,7 @@ export default function Home() {
                     type="text"
                     value={formData.name}
                     onChange={event => handleInputChange('name', event.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 transition-shadow"
                     placeholder="Jane Doe"
                   />
                   {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
@@ -925,7 +877,7 @@ export default function Home() {
                     type="tel"
                     value={formData.phone}
                     onChange={event => handleInputChange('phone', event.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 transition-shadow"
                     placeholder="(305) 555-0101"
                   />
                   {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
@@ -938,23 +890,92 @@ export default function Home() {
                     type="email"
                     value={formData.email}
                     onChange={event => handleInputChange('email', event.target.value)}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20 transition-shadow"
                     placeholder="you@email.com"
                   />
                   {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
                 </div>
+
+                {/* Submit Button - Desktop */}
+                <div className="hidden md:block pt-2">
+                  <button
+                    type="submit"
+                    className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors"
+                  >
+                    Reserve Now
+                  </button>
+                  {status === 'success' && (
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 mt-3">
+                      Thanks! We will reach out to confirm the details and share arrival instructions.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column - Car Summary */}
+              <div className="space-y-5 order-1 md:order-2">
+                {/* Car Image */}
+                <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                  <Image
+                    src={selectedCar.image}
+                    alt={selectedCar.model}
+                    fill
+                    className="object-cover"
+                  />
+                  {/* Price Badge */}
+                  <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+                    <span className="text-sm font-bold text-gray-900">${selectedCar.price}/day</span>
+                  </div>
+                </div>
+
+                {/* Car Info Card */}
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100/80 rounded-2xl p-5 border border-gray-200/80">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Selected Model</p>
+                      <p className="text-xl font-bold text-gray-900">{selectedCar.model}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Total</p>
+                      <p className="text-2xl font-bold text-gray-900">${totalPrice.toLocaleString()}</p>
+                      <p className="text-xs text-gray-500">{rentalDays} {rentalDays === 1 ? 'day' : 'days'}</p>
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-4"></div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Pickup</p>
+                      <p className="font-medium text-gray-900">{formatDate(startDate)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Return</p>
+                      <p className="font-medium text-gray-900">{formatDate(endDate)}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Location</p>
+                      <p className="font-medium text-gray-900">
+                        {location === 'Custom Pin'
+                          ? addressInput || 'Pending'
+                          : pickupLocations.find(loc => loc.value === location)?.address || addressInput || 'Pending'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-3">
+            {/* Submit Button - Mobile */}
+            <div className="md:hidden mt-6">
               <button
                 type="submit"
                 className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors"
               >
-                Reserve
+                Reserve Now
               </button>
               {status === 'success' && (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 mt-3">
                   Thanks! We will reach out to confirm the details and share arrival instructions.
                 </div>
               )}
