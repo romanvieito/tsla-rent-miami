@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 import { DateTimePicker } from '@/components/DateTimePicker';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { addDays, format, setHours, setMinutes, differenceInDays } from 'date-fns';
+import { addDays, format, setHours, setMinutes, differenceInDays, differenceInHours } from 'date-fns';
 import { usePageTracking } from '@/lib/use-mixpanel';
 import { trackCarSelection, trackFormSubmission, trackBookingInquiry } from '@/lib/mixpanel';
 
@@ -64,6 +64,7 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestionsRef = useRef<HTMLDivElement | null>(null);
   const footerRef = useRef<HTMLElement | null>(null);
+  const endDateRef = useRef<HTMLDivElement | null>(null);
   const suggestionsListId = 'pickup-location-suggestions';
 
   const resetStatusIfNeeded = () => {
@@ -370,6 +371,13 @@ export default function Home() {
     };
   }, []);
 
+  // Scroll to endDate field when validation error appears
+  useEffect(() => {
+    if (errors.endDate && endDateRef.current) {
+      endDateRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [errors.endDate]);
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -395,6 +403,11 @@ export default function Home() {
       newErrors.endDate = 'Return date is required';
     } else if (startDate && endDate < startDate) {
       newErrors.endDate = 'Return must be after pickup';
+    } else if (startDate && endDate) {
+      const durationHours = differenceInHours(endDate, startDate);
+      if (durationHours < 25) {
+        newErrors.endDate = '*Booking must be at least 2 days';
+      }
     }
 
     setErrors(newErrors);
@@ -574,7 +587,7 @@ export default function Home() {
                   />
                   {errors.startDate && <p className="text-sm text-red-600 mt-1">{errors.startDate}</p>}
                 </div>
-                <div>
+                <div ref={endDateRef}>
                   <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
                     Return
                   </label>
