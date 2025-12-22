@@ -11,6 +11,12 @@ import Footer from '@/components/Footer';
 import { addDays, format, setHours, setMinutes, differenceInDays, differenceInHours } from 'date-fns';
 import { usePageTracking } from '@/lib/use-mixpanel';
 import { trackCarSelection, trackFormSubmission, trackBookingInquiry } from '@/lib/mixpanel';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 // Dynamically import LocationMap to avoid SSR issues with Leaflet
 const LocationMap = dynamic(() => import('@/components/LocationMap'), {
@@ -61,6 +67,7 @@ export default function Home() {
   const [isInReserveSection, setIsInReserveSection] = useState(false);
   const [isReserveButtonVisible, setIsReserveButtonVisible] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestionsRef = useRef<HTMLDivElement | null>(null);
   const footerRef = useRef<HTMLElement | null>(null);
@@ -506,6 +513,7 @@ export default function Home() {
       }
 
       setStatus('success');
+      setShowSuccessModal(true);
     } catch (error) {
       console.error('Reservation submission error:', error);
       setStatus('idle');
@@ -923,11 +931,6 @@ export default function Home() {
                   >
                     Reserve Now
                   </button>
-                  {status === 'success' && (
-                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 mt-3">
-                      Thanks! We will reach out to confirm the details and share arrival instructions.
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -994,11 +997,6 @@ export default function Home() {
               >
                 Reserve Now
               </button>
-              {status === 'success' && (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 mt-3">
-                  Thanks! We will reach out to confirm the details and share arrival instructions.
-                </div>
-              )}
             </div>
           </form>
         </div>
@@ -1054,6 +1052,105 @@ export default function Home() {
         </div>
       </div>
       )}
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <div className="flex flex-col items-center text-center py-4">
+            {/* Animated Checkmark */}
+            <div className="relative mb-6">
+              <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center animate-[scaleIn_0.3s_ease-out]">
+                <svg
+                  className="w-10 h-10 text-emerald-600 animate-[checkmark_0.4s_ease-out_0.2s_both]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={3}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                    className="[stroke-dasharray:24] [stroke-dashoffset:24] animate-[dash_0.4s_ease-out_0.3s_forwards]"
+                  />
+                </svg>
+              </div>
+              <div className="absolute inset-0 w-20 h-20 rounded-full bg-emerald-400/20 animate-ping" />
+            </div>
+
+            <DialogTitle className="text-2xl font-bold text-gray-900 mb-2">
+              Reservation Received!
+            </DialogTitle>
+            
+            <DialogDescription className="text-gray-600 mb-6">
+              We&apos;ll reach out shortly to confirm the details and share arrival instructions.
+            </DialogDescription>
+
+            {/* Booking Summary */}
+            <div className="w-full bg-gray-50 rounded-xl p-4 mb-6 text-left">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Vehicle</p>
+                    <p className="font-semibold text-gray-900">{selectedCar.model}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Dates</p>
+                    <p className="font-semibold text-gray-900">
+                      {formatDate(startDate)} → {formatDate(endDate)}
+                    </p>
+                    <p className="text-xs text-gray-500">{rentalDays} {rentalDays === 1 ? 'day' : 'days'}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-gray-500">Pickup Location</p>
+                    <p className="font-semibold text-gray-900 truncate">
+                      {location === 'Custom Pin'
+                        ? addressInput || 'Custom location'
+                        : pickupLocations.find(loc => loc.value === location)?.value || location}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="pt-3 border-t border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Total</span>
+                    <span className="text-xl font-bold text-gray-900">${totalPrice.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors"
+            >
+              Got it
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer ref={footerRef} />
     </main>
