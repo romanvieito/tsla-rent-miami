@@ -644,7 +644,7 @@ export default function Home() {
           <p className="text-sm font-semibold text-red-600 tracking-widest uppercase mb-3">Step 2 of 4</p>
           <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Select a Model</h3>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Every vehicle includes Full Self-Driving, premium connectivity, and concierge delivery.
+            Every vehicle includes Full Self-Driving, premium connectivity, and free delivery to your door.
           </p>
         </div>
 
@@ -713,7 +713,7 @@ export default function Home() {
             <p className="text-sm font-semibold tracking-widest uppercase text-red-600 mb-3">Step 3 of 4</p>
             <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Where?</h3>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Choose a location.
+              Choose a location. Free delivered to your door.
             </p>
           </div>
 
@@ -721,8 +721,8 @@ export default function Home() {
             <div className="grid lg:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 tracking-widest uppercase mb-2">
-                    Pickup Location
+                  <label className="block text-xs font-semibold text-gray-500 tracking-widest mb-2">
+                    PICKUP LOCATION <span className="ml-2 text-xs text-gray-400 italic">(Let your rental come to you)</span>
                   </label>
                   <div className="relative">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
