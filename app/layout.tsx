@@ -35,14 +35,59 @@ export default function RootLayout({
         <Script id="tawk-to-chat" strategy="lazyOnload">
           {`
             var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-            // Official placement API: top-right with offsets (keeps default behavior otherwise)
-            // Docs: https://help.tawk.to/article/customizing-your-widget-placement-with-the-javascript-api
+            // Official API: only zIndex is documented for customStyle
+            // Docs: https://developer.tawk.to/jsapi/#customStyle
             Tawk_API.customStyle = {
-              position: 'tr',
-              xOffset: '16px',
-              // keep clear of the site header/menu button area
-              yOffset: '88px'
+              zIndex: 1000  // Above other content, below sticky booking bar
             };
+
+            // Position widget at top-right using CSS (works with Tawk's iframe structure)
+            function positionTawkWidget() {
+              const widgetSelectors = [
+                'div.widget-visible',
+                'div.widget-visible iframe',
+                '[id^="tawkchat"]',
+                'iframe[src*="tawk.to"]'
+              ];
+
+              widgetSelectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                  // Position at top-right with safe margins
+                  element.style.position = 'fixed';
+                  element.style.top = '16px';
+                  element.style.right = '16px';
+                  element.style.left = 'auto';
+                  element.style.bottom = 'auto';
+                  element.style.zIndex = '1000';
+                });
+              });
+            }
+
+            // Wait for Tawk to load, then apply positioning
+            Tawk_API.onLoad = function() {
+              // Initial positioning
+              setTimeout(positionTawkWidget, 100);
+
+              // Re-apply positioning when chat state changes
+              Tawk_API.onChatMaximized = positionTawkWidget;
+              Tawk_API.onChatMinimized = positionTawkWidget;
+
+              // Watch for DOM changes (Tawk sometimes re-injects elements)
+              const observer = new MutationObserver(function(mutations) {
+                let needsUpdate = false;
+                mutations.forEach(mutation => {
+                  if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                    needsUpdate = true;
+                  }
+                });
+                if (needsUpdate) {
+                  setTimeout(positionTawkWidget, 100);
+                }
+              });
+              observer.observe(document.body, { childList: true, subtree: true });
+            };
+
             (function(){
             var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
             s1.async=true;
