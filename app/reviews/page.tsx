@@ -87,21 +87,23 @@ export default function ReviewsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {reviews.length > 0 ? (
             <>
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-8 grid-cols-1">
                 {visibleReviews.map((review) => (
-                  <div key={review.id} className="space-y-4">
+                  <div key={review.id} className="space-y-4 text-center mb-14">
                     {/* Star rating */}
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       <StarRating rating={review.rating} />
                     </div>
 
-                    {/* Quote */}
-                    <blockquote className="text-lg text-gray-700 leading-relaxed">
-                      &ldquo;{review.text}&rdquo;
-                    </blockquote>
+                    {/* Quote - only show if text exists */}
+                    {review.text.trim() && (
+                      <blockquote className="text-lg text-gray-700 leading-relaxed">
+                        &ldquo;{review.text}&rdquo;
+                      </blockquote>
+                    )}
 
                     {/* Author info */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-center gap-4">
                       <div className="flex-shrink-0">
                         {review.photo ? (
                           <Image
