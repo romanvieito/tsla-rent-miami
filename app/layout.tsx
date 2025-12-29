@@ -45,7 +45,9 @@ export default function RootLayout({
             })();
 
             // Clean positioning system using CSS custom properties
-            function applyBottomOffsetToTawkDom(bottomOffset, rightOffset) {
+            var __tawkChatIsMaximized = false;
+
+            function applyBottomOffsetToTawkDom(bottomOffset, rightOffset, isMaximized) {
               // Tawk often sets inline styles with !important. CSS cannot override inline !important,
               // so we also set inline styles (with the "important" priority) on the relevant nodes.
               const bottomValue = 'calc(' + bottomOffset + ' + env(safe-area-inset-bottom))';
@@ -79,8 +81,8 @@ export default function RootLayout({
                 }
               }
 
-              // Clamp the bottom offset for larger panels so their header/top never gets pushed off-screen.
-              // This matters when the chat is expanded and the desired bottom offset is large.
+              // When the chat is maximized, do NOT lower it into the sticky booking bar.
+              // Instead, keep the bottom offset and cap the widget height so it fits on screen.
               requestAnimationFrame(function() {
                 for (const node of nodes) {
                   try {
@@ -91,15 +93,25 @@ export default function RootLayout({
 
                     if (rect.height <= 0) continue;
 
-                    // If the top is cut off, reduce the bottom offset until it fits.
-                    if (rect.top < topPadding) {
-                      const maxBottom = Math.max(
-                        0,
-                        Math.floor(window.innerHeight - rect.height - topPadding - bottomPadding)
-                      );
-                      const clamped = Math.min(desiredBottomPx, maxBottom);
-                      node.style.setProperty('bottom', clamped + 'px', 'important');
-                      node.style.setProperty('top', 'auto', 'important');
+                    const maxHeightAllowed = Math.max(
+                      120,
+                      Math.floor(window.innerHeight - topPadding - bottomPadding - desiredBottomPx)
+                    );
+
+                    if (isMaximized) {
+                      // Cap height above the sticky UI; keep bottom offset intact.
+                      if (rect.height > maxHeightAllowed) {
+                        node.style.setProperty('height', maxHeightAllowed + 'px', 'important');
+                        node.style.setProperty('max-height', maxHeightAllowed + 'px', 'important');
+                      } else {
+                        // Ensure we don't carry a previous cap when it's no longer needed.
+                        node.style.removeProperty('height');
+                        node.style.removeProperty('max-height');
+                      }
+                    } else {
+                      // When minimized, don't constrain size.
+                      node.style.removeProperty('height');
+                      node.style.removeProperty('max-height');
                     }
                   } catch (e) {
                     // Ignore measurement errors
@@ -125,7 +137,7 @@ export default function RootLayout({
               // Set CSS custom property for positioning
               document.documentElement.style.setProperty('--tawk-bottom-offset', bottomOffset);
               // Also apply inline styles so we override Tawk's inline !important styles reliably
-              applyBottomOffsetToTawkDom(bottomOffset, rightOffset);
+              applyBottomOffsetToTawkDom(bottomOffset, rightOffset, __tawkChatIsMaximized);
             }
 
             // Listen for custom events from the page
@@ -179,9 +191,11 @@ export default function RootLayout({
               // Re-apply positioning when the chat is opened/closed (dimensions change).
               // (These callbacks are supported by Tawk's JS API.)
               Tawk_API.onChatMaximized = function() {
+                __tawkChatIsMaximized = true;
                 updateTawkPosition();
               };
               Tawk_API.onChatMinimized = function() {
+                __tawkChatIsMaximized = false;
                 updateTawkPosition();
               };
             };
