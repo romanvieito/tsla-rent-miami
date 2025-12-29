@@ -44,75 +44,112 @@ export default function RootLayout({
             s0.parentNode.insertBefore(s1,s0);
             })();
 
-            // TODO: Aggressive function to reposition Tawk.to iframe
-            function repositionTawkIframe() {
-              // Target the first iframe inside div.widget-visible
-              const widgetVisible = document.querySelector('div.widget-visible');
-              if (widgetVisible) {
-                const iframe = widgetVisible.querySelector('iframe');
-                if (iframe) {
-                  // Use setProperty with 'important' flag to override inline !important styles
-                  iframe.style.setProperty('position', 'fixed', 'important');
-                  iframe.style.setProperty('left', 'auto', 'important');
-                  iframe.style.setProperty('right', '5px', 'important');
-                  iframe.style.setProperty('bottom', '130px', 'important');
-                  iframe.style.setProperty('top', 'auto', 'important');
-                  return true; // Successfully repositioned
+            // Clean positioning system using CSS custom properties
+            function applyBottomOffsetToTawkDom(bottomOffset, rightOffset) {
+              // Tawk often sets inline styles with !important. CSS cannot override inline !important,
+              // so we also set inline styles (with the "important" priority) on the relevant nodes.
+              const bottomValue = 'calc(' + bottomOffset + ' + env(safe-area-inset-bottom))';
+
+              const nodes = Array.from(
+                document.querySelectorAll(
+                  [
+                    // Common Tawk containers/iframes
+                    'div.widget-visible',
+                    'div.widget-visible iframe',
+                    '[id^="tawkchat"]',
+                    'iframe[src*="tawk.to"]',
+                  ].join(',')
+                )
+              );
+
+              for (const node of nodes) {
+                try {
+                  // Keep Tawk pinned to bottom-right, but lifted above sticky UI when needed
+                  node.style.setProperty('position', 'fixed', 'important');
+                  node.style.setProperty('right', rightOffset, 'important');
+                  node.style.setProperty('left', 'auto', 'important');
+                  node.style.setProperty('bottom', bottomValue, 'important');
+                  node.style.setProperty('top', 'auto', 'important');
+                } catch (e) {
+                  // Ignore nodes that don't support style mutations
                 }
               }
-              return false; // Not found yet
             }
 
-            // Continuously check and reposition the iframe
-            let repositionInterval;
-            function startRepositioning() {
-              // Try immediately
-              if (repositionTawkIframe()) {
-                // If successful, set up a monitor to keep it in place
-                repositionInterval = setInterval(function() {
-                  repositionTawkIframe();
-                }, 500); // Check every 500ms
-              } else {
-                // If not found, check again after a short delay
-                setTimeout(startRepositioning, 200);
+            function updateTawkPosition() {
+              const stickyBarVisible = document.body.getAttribute('data-sticky-bar-visible') === 'true';
+              const isMobile = window.innerWidth < 768;
+              
+              // Calculate bottom offset based on sticky bar visibility
+              let bottomOffset = '20px'; // Default position
+              let rightOffset = isMobile ? '8px' : '16px';
+              
+              if (stickyBarVisible) {
+                // When sticky bar is visible, position above it (mobile + desktop)
+                // Note: safe-area inset is handled in CSS via env(safe-area-inset-bottom)
+                bottomOffset = isMobile ? '180px' : '160px';
               }
+              
+              // Set CSS custom property for positioning
+              document.documentElement.style.setProperty('--tawk-bottom-offset', bottomOffset);
+              // Also apply inline styles so we override Tawk's inline !important styles reliably
+              applyBottomOffsetToTawkDom(bottomOffset, rightOffset);
             }
 
-            // Use MutationObserver to watch for when the iframe is added/changed
-            function setupMutationObserver() {
-              const observer = new MutationObserver(function(mutations) {
-                if (repositionTawkIframe()) {
-                  if (!repositionInterval) {
-                    repositionInterval = setInterval(function() {
-                      repositionTawkIframe();
-                    }, 500);
+            // Listen for custom events from the page
+            window.addEventListener('sticky-bar-visibility-change', function(event) {
+              updateTawkPosition();
+            });
+
+            // Watch for Tawk DOM nodes being injected, then apply positioning once they exist.
+            (function setupTawkDomObserver() {
+              let scheduled = false;
+              const schedule = function() {
+                if (scheduled) return;
+                scheduled = true;
+                setTimeout(function() {
+                  scheduled = false;
+                  updateTawkPosition();
+                }, 50);
+              };
+
+              try {
+                const observer = new MutationObserver(function(mutations) {
+                  for (const m of mutations) {
+                    if (m.type === 'childList' && (m.addedNodes && m.addedNodes.length)) {
+                      schedule();
+                      break;
+                    }
                   }
-                }
-              });
+                });
+                observer.observe(document.documentElement, { childList: true, subtree: true });
+              } catch (e) {
+                // If MutationObserver is unavailable, we still update on load/resize/events.
+              }
+            })();
 
-              observer.observe(document.body, {
-                childList: true,
-                subtree: true,
-                attributes: true,
-                attributeFilter: ['style']
-              });
-            }
+            // Listen for resize events
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+              clearTimeout(resizeTimeout);
+              resizeTimeout = setTimeout(updateTawkPosition, 150);
+            });
 
-            // Start when Tawk.to loads
+            // Initialize position when Tawk.to loads
             Tawk_API.onLoad = function() {
-              startRepositioning();
-              setupMutationObserver();
+              updateTawkPosition();
+              
+              // Use Tawk.to's API to customize widget appearance
+              Tawk_API.customStyle = {
+                zIndex: 40 // Below sticky bar (z-50) but above content
+              };
             };
 
-            // Also start immediately and on DOM ready
+            // Initialize on DOM ready
             if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', function() {
-                startRepositioning();
-                setupMutationObserver();
-              });
+              document.addEventListener('DOMContentLoaded', updateTawkPosition);
             } else {
-              startRepositioning();
-              setupMutationObserver();
+              updateTawkPosition();
             }
           `}
         </Script>

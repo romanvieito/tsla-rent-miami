@@ -98,24 +98,62 @@
     scrollbar-width: none;  /* Firefox */
   }
 
-  /* TODO: Move this to the layout.tsx file */
   /* Tawk.to Chat Widget Positioning */
-  /* Target the first iframe inside div.widget-visible */
-  div.widget-visible iframe {
-    position: fixed !important;
-    right: 5px !important;
-    left: auto !important;
-    bottom: 130px !important;
-    top: auto !important;
+  /* Use CSS custom property for dynamic positioning */
+  :root {
+    --tawk-bottom-offset: 20px;
   }
 
-  /* Also target the widget-visible container itself */
+  /* Target the widget container */
   div.widget-visible {
     position: fixed !important;
-    right: 5px !important;
+    right: 16px !important;
     left: auto !important;
-    bottom: 130px !important;
+    bottom: calc(var(--tawk-bottom-offset) + env(safe-area-inset-bottom)) !important;
     top: auto !important;
+    z-index: 40 !important; /* Below sticky bar (z-50) but above content */
+    transition: bottom 0.3s ease-in-out;
+  }
+
+  /* Target the iframe inside the widget */
+  div.widget-visible iframe {
+    position: fixed !important;
+    right: 16px !important;
+    left: auto !important;
+    bottom: calc(var(--tawk-bottom-offset) + env(safe-area-inset-bottom)) !important;
+    top: auto !important;
+    transition: bottom 0.3s ease-in-out;
+  }
+
+  /*
+   * Fallback selectors (Tawk DOM varies). These catch common Tawk containers/iframes
+   * even if `div.widget-visible` isn’t present.
+   */
+  [id^="tawkchat"] {
+    bottom: calc(var(--tawk-bottom-offset) + env(safe-area-inset-bottom)) !important;
+  }
+
+  iframe[src*="tawk.to"] {
+    bottom: calc(var(--tawk-bottom-offset) + env(safe-area-inset-bottom)) !important;
+  }
+
+  /* Mobile-specific adjustments */
+  @media (max-width: 767px) {
+    div.widget-visible,
+    div.widget-visible iframe {
+      right: 8px !important;
+      /* Bottom offset is controlled dynamically via --tawk-bottom-offset */
+    }
+
+    [id^="tawkchat"],
+    iframe[src*="tawk.to"] {
+      right: 8px !important;
+    }
+  }
+
+  /* Ensure smooth transitions when sticky bar appears/disappears */
+  div.widget-visible * {
+    transition: bottom 0.3s ease-in-out;
   }
   
 }

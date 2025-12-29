@@ -392,6 +392,21 @@ export default function Home() {
     }
   }, [errors.endDate]);
 
+  // Sync sticky bar visibility state to body for Tawk.to positioning
+  useEffect(() => {
+    const stickyBarVisible = hasInteracted && !isReserveButtonVisible;
+    
+    // Set data attribute on body for CSS targeting
+    if (typeof document !== 'undefined') {
+      document.body.setAttribute('data-sticky-bar-visible', String(stickyBarVisible));
+      
+      // Dispatch custom event for Tawk.to script to listen to
+      window.dispatchEvent(new CustomEvent('sticky-bar-visibility-change', {
+        detail: { visible: stickyBarVisible }
+      }));
+    }
+  }, [hasInteracted, isReserveButtonVisible]);
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
