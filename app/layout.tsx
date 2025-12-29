@@ -49,6 +49,10 @@ export default function RootLayout({
               // Tawk often sets inline styles with !important. CSS cannot override inline !important,
               // so we also set inline styles (with the "important" priority) on the relevant nodes.
               const bottomValue = 'calc(' + bottomOffset + ' + env(safe-area-inset-bottom))';
+              const desiredBottomPx = (function() {
+                const n = parseInt(bottomOffset, 10);
+                return Number.isFinite(n) ? n : 20;
+              })();
 
               const nodes = Array.from(
                 document.querySelectorAll(
@@ -74,6 +78,34 @@ export default function RootLayout({
                   // Ignore nodes that don't support style mutations
                 }
               }
+
+              // Clamp the bottom offset for larger panels so their header/top never gets pushed off-screen.
+              // This matters when the chat is expanded and the desired bottom offset is large.
+              requestAnimationFrame(function() {
+                for (const node of nodes) {
+                  try {
+                    if (!node.getBoundingClientRect) continue;
+                    const rect = node.getBoundingClientRect();
+                    const topPadding = 8;
+                    const bottomPadding = 8;
+
+                    if (rect.height <= 0) continue;
+
+                    // If the top is cut off, reduce the bottom offset until it fits.
+                    if (rect.top < topPadding) {
+                      const maxBottom = Math.max(
+                        0,
+                        Math.floor(window.innerHeight - rect.height - topPadding - bottomPadding)
+                      );
+                      const clamped = Math.min(desiredBottomPx, maxBottom);
+                      node.style.setProperty('bottom', clamped + 'px', 'important');
+                      node.style.setProperty('top', 'auto', 'important');
+                    }
+                  } catch (e) {
+                    // Ignore measurement errors
+                  }
+                }
+              });
             }
 
             function updateTawkPosition() {
@@ -142,6 +174,15 @@ export default function RootLayout({
               // Use Tawk.to's API to customize widget appearance
               Tawk_API.customStyle = {
                 zIndex: 40 // Below sticky bar (z-50) but above content
+              };
+
+              // Re-apply positioning when the chat is opened/closed (dimensions change).
+              // (These callbacks are supported by Tawk's JS API.)
+              Tawk_API.onChatMaximized = function() {
+                updateTawkPosition();
+              };
+              Tawk_API.onChatMinimized = function() {
+                updateTawkPosition();
               };
             };
 
