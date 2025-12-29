@@ -392,21 +392,6 @@ export default function Home() {
     }
   }, [errors.endDate]);
 
-  // Sync sticky bar visibility state to body for Tawk.to positioning
-  useEffect(() => {
-    const stickyBarVisible = hasInteracted && !isReserveButtonVisible;
-    
-    // Set data attribute on body for CSS targeting
-    if (typeof document !== 'undefined') {
-      document.body.setAttribute('data-sticky-bar-visible', String(stickyBarVisible));
-      
-      // Dispatch custom event for Tawk.to script to listen to
-      window.dispatchEvent(new CustomEvent('sticky-bar-visibility-change', {
-        detail: { visible: stickyBarVisible }
-      }));
-    }
-  }, [hasInteracted, isReserveButtonVisible]);
-
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -1020,7 +1005,7 @@ export default function Home() {
       {/* Sticky summary */}
       {hasInteracted && !isReserveButtonVisible && (
       <div
-        className="fixed inset-x-0 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 pointer-events-none"
+        className="fixed left-0 right-24 sm:right-28 md:right-32 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 pointer-events-none"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
       >
         <div className="w-full">
