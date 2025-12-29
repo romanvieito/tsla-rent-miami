@@ -55,8 +55,8 @@ export default function RootLayout({
                 elements.forEach(element => {
                   // Position at top-right with safe margins
                   element.style.position = 'fixed';
-                  element.style.top = '16px';
-                  element.style.right = '16px';
+                  element.style.top = '10px';
+                  element.style.right = '50px';
                   element.style.left = 'auto';
                   element.style.bottom = 'auto';
                   element.style.zIndex = '1000';
