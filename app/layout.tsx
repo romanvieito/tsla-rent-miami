@@ -70,8 +70,12 @@ export default function RootLayout({
               setTimeout(positionTawkWidget, 100);
 
               // Re-apply positioning when chat state changes
-              Tawk_API.onChatMaximized = positionTawkWidget;
-              Tawk_API.onChatMinimized = positionTawkWidget;
+              Tawk_API.onChatMaximized = function() {
+                setTimeout(positionTawkWidget, 100);
+              };
+              Tawk_API.onChatMinimized = function() {
+                setTimeout(positionTawkWidget, 200); // Extra delay for minimize
+              };
 
               // Watch for DOM changes (Tawk sometimes re-injects elements)
               const observer = new MutationObserver(function(mutations) {
@@ -80,12 +84,24 @@ export default function RootLayout({
                   if (mutation.type === 'childList' && mutation.addedNodes.length) {
                     needsUpdate = true;
                   }
+                  // Also watch for style attribute changes
+                  if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    needsUpdate = true;
+                  }
                 });
                 if (needsUpdate) {
-                  setTimeout(positionTawkWidget, 100);
+                  setTimeout(positionTawkWidget, 50);
                 }
               });
-              observer.observe(document.body, { childList: true, subtree: true });
+              observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ['style']
+              });
+
+              // Continuous positioning check (fallback for any missed repositioning)
+              setInterval(positionTawkWidget, 1000);
             };
 
             (function(){
