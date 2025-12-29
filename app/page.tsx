@@ -644,7 +644,7 @@ export default function Home() {
           <p className="text-sm font-semibold text-red-600 tracking-widest uppercase mb-3">Step 2 of 4</p>
           <h3 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Select a Model</h3>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Every vehicle includes Full Self-Driving, premium connectivity, and free delivery to your door.
+            Every vehicle includes Full Self-Driving, and free delivery to your door.
           </p>
         </div>
 

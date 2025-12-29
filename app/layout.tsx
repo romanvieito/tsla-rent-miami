@@ -56,7 +56,7 @@ export default function RootLayout({
                   // Position at top-right with safe margins
                   element.style.position = 'fixed';
                   element.style.top = '10px';
-                  element.style.right = '50px';
+                  element.style.right = '20px';
                   element.style.left = 'auto';
                   element.style.bottom = 'auto';
                   element.style.zIndex = '1000';
