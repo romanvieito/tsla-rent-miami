@@ -6,7 +6,15 @@ import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'TSLA Rent Miami',
-  description: 'A Next.js application',
+  description: 'Rent a Tesla in Miami with TSLA.miami',
+  keywords: ['Tesla', 'Rent', 'Miami', 'TSLA.miami', 'Tesla.miami', 'Tesla Rent', 'Rent a Tesla', 'Rent a Tesla in Miami'],
+  authors: [{ name: 'TSLA.miami', url: 'https://tsla.miami' }],
+  creator: 'TSLA.miami',
+  publisher: 'TSLA.miami',
+  openGraph: {
+    title: 'TSLA.miami',
+    description: 'Rent a Tesla in Miami with TSLA.miami',
+  },
 }
 
 export default function RootLayout({
