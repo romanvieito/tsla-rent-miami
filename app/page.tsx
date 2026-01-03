@@ -23,6 +23,8 @@ const LocationMap = dynamic(() => import('@/components/LocationMap'), {
   ssr: false,
 });
 
+import TawkChat from '@/components/TawkChat';
+
 type FormState = {
   name: string;
   email: string;
@@ -357,6 +359,7 @@ export default function Home() {
       entries => {
         entries.forEach(entry => {
           if (reserveSection && entry.target === reserveSection) {
+            // Trigger when any part is visible (threshold 0) but maybe check intersectionRatio or isIntersecting
             setIsInReserveSection(entry.isIntersecting);
           }
           if ((desktopButton && entry.target === desktopButton) || 
@@ -366,7 +369,8 @@ export default function Home() {
         });
       },
       {
-        threshold: 0.7, // Trigger when 70% of the target is visible
+        threshold: 0.1, // Trigger when 10% is visible, much more reliable than 0.7
+        rootMargin: '0px',
       }
     );
 
@@ -1151,6 +1155,8 @@ export default function Home() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <TawkChat isVisible={isInReserveSection} />
 
       <Footer ref={footerRef} />
     </main>
