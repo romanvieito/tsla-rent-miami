@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createBooking, bookings } from '@/lib/bookings-storage';
+import { createBooking } from '@/lib/bookings-storage';
 
 type BookingPayload = {
   name: string;
