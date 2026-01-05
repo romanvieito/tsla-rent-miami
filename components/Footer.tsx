@@ -6,25 +6,25 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
   return (
     <footer ref={ref} className="bg-white border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        {/* Primary Contact Section - Prominent but Secondary */}
+        {/* Primary Contact Section - Subtle Secondary */}
         <div className="flex flex-col items-center gap-4 mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 w-full sm:w-auto">
-            {/* Email - Prominent Contact */}
+            {/* Email - Subtle Contact */}
             <a 
               href="mailto:yai@tsla.miami" 
-              className="group flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white text-black border-2 border-gray-900 rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md active:scale-[0.98]"
+              className="group flex items-center justify-center gap-2.5 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
             >
-              <Mail className="h-5 w-5 group-hover:scale-110 transition-transform" />
-              <span className="font-semibold text-base">yai@tsla.miami</span>
+              <Mail className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span className="text-sm">yai@tsla.miami</span>
             </a>
             
-            {/* Phone - Prominent Contact */}
+            {/* Phone - Subtle Contact */}
             <a 
               href="tel:+17868179906" 
-              className="group flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white text-black border-2 border-gray-900 rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md active:scale-[0.98]"
+              className="group flex items-center justify-center gap-2.5 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
             >
-              <Phone className="h-5 w-5 group-hover:scale-110 transition-transform" />
-              <span className="font-semibold text-base">+1 (786) 817-9906</span>
+              <Phone className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              <span className="text-sm">+1 (786) 817-9906</span>
             </a>
           </div>
         </div>
