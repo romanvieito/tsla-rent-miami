@@ -605,7 +605,7 @@ export default function Home() {
                       clearDateError('startDate');
                       setHasInteracted(true);
                     }}
-                    minDate={new Date()}
+                    minDate={addDays(new Date(), 1)}
                     className="w-full"
                   />
                   {errors.startDate && <p className="text-sm text-red-600 mt-1">{errors.startDate}</p>}
