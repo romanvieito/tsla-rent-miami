@@ -59,13 +59,20 @@ export default function Contact() {
                     </div>
                   </div>
                   <div className="flex items-start">
+                    <span className="text-2xl mr-3">📧</span>
+                    <div>
+                      <p className="font-medium text-gray-900">Email</p>
+                      <a href="mailto:yai@tsla.miami" className="hover:text-gray-900">yai@tsla.miami</a>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
                     <span className="text-2xl mr-3">📞</span>
                     <div>
                       <p className="font-medium text-gray-900">Phone</p>
                       <a href="tel:7868179906" className="hover:text-gray-900">+1 (786) 817-9906</a>
                     </div>
                   </div>
-                
+
                 </div>
                 <div className="mt-6">
                   <Link 
