@@ -50,19 +50,26 @@ export default function ConfirmationPage() {
 
     const fetchBooking = async () => {
       try {
-        const response = await fetch(`/api/booking/${bookingId}`);
-        const data = await response.json();
+        // First, verify the payment session and update booking if needed
+        const verifyResponse = await fetch('/api/payment/verify-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId,
+            bookingId,
+          }),
+        });
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch booking');
+        const verifyData = await verifyResponse.json();
+
+        if (!verifyResponse.ok) {
+          throw new Error(verifyData.error || 'Failed to verify payment');
         }
 
-        if (data.booking.status !== 'confirmed') {
-          throw new Error('Booking is not confirmed');
-        }
-
-        setBooking(data.booking);
-        trackPaymentCompleted(data.booking.totalPrice, data.booking.paymentAmount);
+        setBooking(verifyData.booking);
+        trackPaymentCompleted(verifyData.booking.totalPrice, verifyData.booking.paymentAmount);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load booking confirmation');
       } finally {
