@@ -71,7 +71,7 @@ export default function PoliciesPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Driver Requirements</h3>
                   <ul className="space-y-2 text-gray-600">
-                    <li>• Valid driver's license</li>
+                    <li>• Valid driver&apos;s license</li>
                     <li>• Minimum age: 21 years old</li>
                     <li>• Primary driver must be present at pickup</li>
                   </ul>
@@ -100,7 +100,7 @@ export default function PoliciesPage() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Charging & Care</h3>
                   <ul className="space-y-2 text-gray-600">
                     <li>• Return with similar battery level (Tesla Superchargers available)</li>
-                    <li>• We love our Teslas, so we'll take care of them</li>
+                    <li>• We love our Teslas, so we&apos;ll take care of them</li>
                   </ul>
                 </div>
               </div>

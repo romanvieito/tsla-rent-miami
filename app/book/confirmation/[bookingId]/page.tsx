@@ -183,7 +183,7 @@ export default function ConfirmationPage() {
 
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Booking Confirmed!</h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-2">
-              Tesla details coming to you...we'll contact you as soon as possible.
+              Tesla details coming to you...we&apos;ll contact you as soon as possible.
             </p>
             <p className="text-gray-500">Booking ID: <span className="font-mono font-semibold">{booking.bookingId}</span></p>
           </div>
@@ -276,7 +276,7 @@ export default function ConfirmationPage() {
             {/* Next Steps */}
             <div className="space-y-6">
               <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">🎉 You're All Set!</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-6">🎉 You&apos;re All Set!</h3>
 
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">

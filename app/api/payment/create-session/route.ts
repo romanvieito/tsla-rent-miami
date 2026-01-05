@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { getBooking } from '@/lib/bookings-storage';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-12-15.clover',
 });
 
 type PaymentPayload = {
@@ -79,7 +79,8 @@ export async function POST(request: Request) {
   }
 }
 
-function formatDate(dateStr: string) {
+function formatDate(dateStr: string | null): string {
+  if (!dateStr) return 'TBD';
   try {
     const date = new Date(dateStr);
     return new Intl.DateTimeFormat('en-US', {

@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 import { getBooking, updateBooking } from '@/lib/bookings-storage';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2020-08-27',
+  apiVersion: '2025-12-15.clover',
 });
 
 export async function POST(request: Request) {
