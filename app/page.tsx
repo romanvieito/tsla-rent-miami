@@ -1086,9 +1086,16 @@ export default function Home() {
               Reservation Received!
             </DialogTitle>
             
-            <DialogDescription className="text-gray-600 mb-6">
+            <DialogDescription className="text-gray-600 mb-4">
               We&apos;ll reach out shortly to confirm the details and share arrival instructions.
             </DialogDescription>
+
+            <div className="text-sm text-gray-500 mb-6">
+              Questions? Contact us at{' '}
+              <a href="mailto:yai@tsla.miami" className="text-blue-600 hover:text-blue-800 font-medium">
+                yai@tsla.miami
+              </a>
+            </div>
 
             {/* Booking Summary */}
             <div className="w-full bg-gray-50 rounded-xl p-4 mb-6 text-left">

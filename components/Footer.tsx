@@ -17,6 +17,9 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
             <Link href="/contact" className="hover:text-gray-900 transition-colors">
               Contact
             </Link>
+            <a href="mailto:yai@tsla.miami" className="hover:text-gray-900 transition-colors">
+              yai@tsla.miami
+            </a>
             <a href="tel:+17868179906" className="hover:text-gray-900 transition-colors">
               +1 (786) 817-9906
             </a>
