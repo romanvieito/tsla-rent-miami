@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { usePageTracking } from '@/lib/use-mixpanel';
+import { MapPin, Mail, Phone } from 'lucide-react';
 
 export default function Contact() {
   usePageTracking('Contact Page');
@@ -51,7 +52,7 @@ export default function Contact() {
                 <h3 className="text-2xl font-semibold text-gray-900 mb-4">Get in Touch</h3>
                 <div className="space-y-4 text-gray-700">
                   <div className="flex items-start">
-                    <span className="text-2xl mr-3">📍</span>
+                    <MapPin className="h-6 w-6 mr-3 mt-0.5 text-gray-600" />
                     <div>
                       <p className="font-medium text-gray-900">Address</p>
                       <p>2000 Biscayne Blvd</p>
@@ -59,14 +60,14 @@ export default function Contact() {
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <span className="text-2xl mr-3">📧</span>
+                    <Mail className="h-6 w-6 mr-3 mt-0.5 text-gray-600" />
                     <div>
                       <p className="font-medium text-gray-900">Email</p>
                       <a href="mailto:yai@tsla.miami" className="hover:text-gray-900">yai@tsla.miami</a>
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <span className="text-2xl mr-3">📞</span>
+                    <Phone className="h-6 w-6 mr-3 mt-0.5 text-gray-600" />
                     <div>
                       <p className="font-medium text-gray-900">Phone</p>
                       <a href="tel:7868179906" className="hover:text-gray-900">+1 (786) 817-9906</a>

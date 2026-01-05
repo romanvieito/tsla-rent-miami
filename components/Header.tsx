@@ -2,6 +2,7 @@
 
 import { useState, useLayoutEffect } from 'react';
 import { trackNavigation } from '@/lib/mixpanel';
+import { Mail, Phone } from 'lucide-react';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -75,28 +76,50 @@ export default function Header() {
 
         {/* Menu */}
         {mobileMenuOpen && (
-          <nav className="mt-4 pb-4 space-y-3 animate-in slide-in-from-top bg-black/80 backdrop-blur-md rounded-lg p-4">
-            <a
-              href="/reviews"
-              onClick={() => handleNavigation('/reviews')}
-              className="block py-2 text-white hover:text-gray-200 font-medium"
-            >
-              What our guests say
-            </a>
-            <a
-              href="/about"
-              onClick={() => handleNavigation('/about')}
-              className="block py-2 text-white hover:text-gray-200 font-medium"
-            >
-              About
-            </a>
-            <a
-              href="/contact"
-              onClick={() => handleNavigation('/contact')}
-              className="block py-2 text-white hover:text-gray-200 font-medium"
-            >
-              Contact
-            </a>
+          <nav className="mt-4 pb-4 space-y-3 animate-in slide-in-from-top bg-black/80 backdrop-blur-md rounded-lg p-4 flex flex-col items-center">
+            {/* Contact Info - Priority Section */}
+            <div className="flex flex-col gap-2 pb-3 mb-3 border-b border-white/20 w-full max-w-sm">
+              <a 
+                href="mailto:yai@tsla.miami" 
+                className="flex items-center justify-center gap-2.5 px-4 py-3 bg-white text-black rounded-lg hover:bg-gray-100 transition-all font-semibold active:scale-[0.98]"
+              >
+                <Mail className="h-5 w-5" />
+                <span>yai@tsla.miami</span>
+              </a>
+              
+              <a 
+                href="tel:+17868179906" 
+                className="flex items-center justify-center gap-2.5 px-4 py-3 bg-white text-black rounded-lg hover:bg-gray-100 transition-all font-semibold active:scale-[0.98]"
+              >
+                <Phone className="h-5 w-5" />
+                <span>+1 (786) 817-9906</span>
+              </a>
+            </div>
+
+            {/* Navigation Links */}
+            <div className="flex flex-col items-center w-full max-w-sm space-y-3">
+              <a
+                href="/reviews"
+                onClick={() => handleNavigation('/reviews')}
+                className="block py-2 text-white hover:text-gray-200 font-medium text-center w-full"
+              >
+                What our guests say
+              </a>
+              <a
+                href="/about"
+                onClick={() => handleNavigation('/about')}
+                className="block py-2 text-white hover:text-gray-200 font-medium text-center w-full"
+              >
+                About
+              </a>
+              <a
+                href="/contact"
+                onClick={() => handleNavigation('/contact')}
+                className="block py-2 text-white hover:text-gray-200 font-medium text-center w-full"
+              >
+                Contact
+              </a>
+            </div>
           </nav>
         )}
       </div>
