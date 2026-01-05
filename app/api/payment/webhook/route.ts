@@ -11,11 +11,17 @@ function getStripeClient(): Stripe {
     throw new Error('STRIPE_SECRET_KEY is not configured');
   }
   
-  // Trim any whitespace that might cause issues
-  const cleanKey = key.trim();
+  // Trim whitespace and remove quotes that might have been added
+  let cleanKey = key.trim();
+  
+  // Remove surrounding quotes if present
+  if ((cleanKey.startsWith('"') && cleanKey.endsWith('"')) || 
+      (cleanKey.startsWith("'") && cleanKey.endsWith("'"))) {
+    cleanKey = cleanKey.slice(1, -1);
+  }
   
   if (!cleanKey.startsWith('sk_')) {
-    throw new Error('STRIPE_SECRET_KEY appears to be invalid (should start with sk_)');
+    throw new Error(`STRIPE_SECRET_KEY appears to be invalid (should start with sk_, got: ${cleanKey.substring(0, 10)}...)`);
   }
   
   return new Stripe(cleanKey, {
