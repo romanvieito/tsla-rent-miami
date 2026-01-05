@@ -45,6 +45,20 @@ export async function POST(request: Request) {
       );
     }
 
+    // Clean the BASE_URL (remove quotes, newlines, whitespace)
+    let baseUrl = process.env.NEXT_PUBLIC_BASE_URL.trim();
+    
+    // Remove surrounding quotes if present
+    if ((baseUrl.startsWith('"') && baseUrl.endsWith('"')) || 
+        (baseUrl.startsWith("'") && baseUrl.endsWith("'"))) {
+      baseUrl = baseUrl.slice(1, -1);
+    }
+    
+    // Remove any newline characters
+    baseUrl = baseUrl.replace(/[\r\n]+/g, '').trim();
+    
+    console.log('Using BASE_URL:', baseUrl);
+
     const payload: PaymentPayload = await request.json();
 
     if (!payload.bookingId || !payload.amount || !payload.customerEmail) {
@@ -106,8 +120,8 @@ export async function POST(request: Request) {
       ],
       customer_email: payload.customerEmail,
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/book/confirmation/${payload.bookingId}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/book/payment/${payload.bookingId}`,
+      success_url: `${baseUrl}/book/confirmation/${payload.bookingId}?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/book/payment/${payload.bookingId}`,
       metadata: {
         bookingId: payload.bookingId,
       },
