@@ -73,11 +73,17 @@ export async function POST(request: Request) {
     // Initialize Stripe client
     let stripe: Stripe;
     try {
+      console.log('Initializing Stripe client...');
       stripe = getStripeClient();
+      console.log('Stripe client initialized successfully');
     } catch (stripeError) {
       console.error('Stripe initialization error:', stripeError);
+      console.error('Stripe init error message:', stripeError instanceof Error ? stripeError.message : 'Unknown');
       return NextResponse.json(
-        { error: 'Payment system configuration error' },
+        { 
+          error: 'Payment system configuration error',
+          details: stripeError instanceof Error ? stripeError.message : 'Unknown'
+        },
         { status: 500 }
       );
     }
@@ -116,8 +122,20 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Payment session creation error:', error);
     console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
+    
+    // Log more details about the error
+    if (error && typeof error === 'object') {
+      console.error('Error type:', (error as any).type);
+      console.error('Error code:', (error as any).code);
+      console.error('Error raw:', JSON.stringify((error as any).raw, null, 2));
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to create payment session' },
+      { 
+        error: 'Failed to create payment session',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
