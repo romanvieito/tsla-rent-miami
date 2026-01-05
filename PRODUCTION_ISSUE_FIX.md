@@ -1,9 +1,16 @@
-# Production Booking Issue - Diagnosis & Fix
+# Production Booking Issues - Complete Diagnosis & Fix
 
-## Issue Summary
+## Issues Summary
+
+### Issue #1: Payment Session Creation Fails (500 Error)
 **URL**: https://www.tsla.miami/book/payment/BK-EAC2B6586BB51B55
 **Error**: 500 Internal Server Error on payment button click
 **User-facing message**: "Booking Not Found" / "Failed to create payment session"
+
+### Issue #2: Confirmation Page Fails After Payment
+**URL**: http://localhost:3000/book/confirmation/BK-XXX?session_id=cs_test_...
+**Error**: "Booking is not confirmed"
+**User-facing message**: "Confirmation Failed" / "Booking is not confirmed"
 
 ## Root Cause Analysis
 
@@ -17,28 +24,51 @@
 1. **Payment session creation API** (`/api/payment/create-session`) - Returns 500 error
 2. When user clicks "Pay $50 Booking Fee" button, the Stripe checkout session creation fails
 
-## Identified Issues
+## Root Causes Identified
 
-### 1. Invalid Stripe API Version
-**File**: `app/api/payment/create-session/route.ts` & `app/api/payment/webhook/route.ts`
-**Problem**: Using non-existent API version `'2025-12-15.clover'`
-**Fix**: Changed to valid version `'2024-11-20.acacia'`
+### Issue #1 Root Causes
+
+### 1. Stripe Secret Key Has Quotes
+**Problem**: The `STRIPE_SECRET_KEY` environment variable in Vercel has quotes around it
+- Stored as: `"sk_live_..."`
+- Should be: `sk_live_...`
+- This causes: `Invalid character in header content ["Authorization"]` error
+
+**Fix**: Added code to strip surrounding quotes from the key
 
 ```typescript
-// Before (WRONG)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-12-15.clover',  // This version doesn't exist
-});
-
-// After (CORRECT)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-11-20.acacia',  // Valid Stripe API version
-});
+// Added quote stripping
+function getStripeClient(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  let cleanKey = key.trim();
+  
+  // Remove surrounding quotes if present
+  if ((cleanKey.startsWith('"') && cleanKey.endsWith('"')) || 
+      (cleanKey.startsWith("'") && cleanKey.endsWith("'"))) {
+    cleanKey = cleanKey.slice(1, -1);
+  }
+  
+  return new Stripe(cleanKey, {
+    apiVersion: '2025-12-15.clover',
+  });
+}
 ```
 
-### 2. Missing Environment Variable Validation
-**Problem**: No validation for required environment variables
-**Fix**: Added validation checks at the start of the POST handler
+### 2. Module-Level Stripe Initialization
+**Problem**: Stripe was initialized at module level, causing crashes if env var had issues
+**Fix**: Changed to lazy initialization (initialize only when needed)
+
+### Issue #2 Root Cause
+
+### 3. Confirmation Page Relies on Webhook
+**Problem**: The confirmation page expected the booking to already be confirmed by the webhook
+- Webhooks don't work on localhost (Stripe can't reach local machine)
+- Even in production, there can be a delay between payment and webhook firing
+**Fix**: Added `/api/payment/verify-session` endpoint that:
+1. Verifies the Stripe payment session
+2. Updates the booking status to confirmed if payment is successful
+3. Sends confirmation notification
+4. Returns the confirmed booking
 
 ```typescript
 // Added validation
@@ -59,20 +89,24 @@ if (!process.env.NEXT_PUBLIC_BASE_URL) {
 }
 ```
 
-### 3. Insufficient Error Logging
-**Problem**: Generic error messages without details
-**Fix**: Enhanced error logging
+## Files Changed
 
-```typescript
-catch (error) {
-  console.error('Payment session creation error:', error);
-  console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
-  return NextResponse.json(
-    { error: 'Failed to create payment session' },
-    { status: 500 }
-  );
-}
-```
+### 1. `app/api/payment/create-session/route.ts`
+- Added lazy Stripe initialization with quote stripping
+- Added environment variable validation
+- Improved error logging
+
+### 2. `app/api/payment/webhook/route.ts`
+- Added lazy Stripe initialization with quote stripping
+
+### 3. `app/api/payment/verify-session/route.ts` (NEW)
+- Created endpoint to verify Stripe payment sessions
+- Updates booking status to confirmed
+- Sends confirmation notifications
+
+### 4. `app/book/confirmation/[bookingId]/page.tsx`
+- Changed to call verify-session endpoint instead of just fetching booking
+- Now works even if webhook hasn't fired yet
 
 ## Required Environment Variables
 
