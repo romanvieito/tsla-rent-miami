@@ -36,6 +36,16 @@
 
 **Fix**: Added code to strip surrounding quotes from the key
 
+### 2. BASE_URL Has Newline Character ⚠️ **CRITICAL**
+**Problem**: The `NEXT_PUBLIC_BASE_URL` environment variable has a newline character at the end
+- Stored as: `"https://www.tsla.miami\n"`
+- Should be: `https://www.tsla.miami`
+- This causes: `Not a valid URL` error from Stripe
+
+**Fix**: 
+1. Removed and re-added the environment variable in Vercel without newline
+2. Added code to clean the BASE_URL (strip quotes, newlines, whitespace)
+
 ```typescript
 // Added quote stripping
 function getStripeClient(): Stripe {
@@ -54,13 +64,13 @@ function getStripeClient(): Stripe {
 }
 ```
 
-### 2. Module-Level Stripe Initialization
+### 3. Module-Level Stripe Initialization
 **Problem**: Stripe was initialized at module level, causing crashes if env var had issues
 **Fix**: Changed to lazy initialization (initialize only when needed)
 
 ### Issue #2 Root Cause
 
-### 3. Confirmation Page Relies on Webhook
+### 4. Confirmation Page Relies on Webhook
 **Problem**: The confirmation page expected the booking to already be confirmed by the webhook
 - Webhooks don't work on localhost (Stripe can't reach local machine)
 - Even in production, there can be a delay between payment and webhook firing
@@ -194,9 +204,11 @@ Add user-friendly error messages on the frontend for different error scenarios.
 
 ## Timeline
 - **Issue Reported**: January 5, 2026, 19:10 UTC
-- **Diagnosis Completed**: January 5, 2026, 19:15 UTC
-- **Fix Applied**: January 5, 2026, 19:20 UTC
-- **Status**: Ready for deployment
+- **Initial Diagnosis**: January 5, 2026, 19:15 UTC (Stripe API version)
+- **Second Issue Found**: January 5, 2026, 19:43 UTC (Stripe key with quotes)
+- **Third Issue Found**: January 5, 2026, 20:00 UTC (BASE_URL with newline)
+- **Final Fix Applied**: January 5, 2026, 20:10 UTC
+- **Status**: ✅ **DEPLOYED AND WORKING**
 
 ## Contact
 For questions or issues, contact the development team.
