@@ -2,36 +2,35 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getBooking } from '@/lib/bookings-storage';
 
-// Validate environment variables
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.error('STRIPE_SECRET_KEY is not set');
-}
-
-if (!process.env.NEXT_PUBLIC_BASE_URL) {
-  console.error('NEXT_PUBLIC_BASE_URL is not set');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-12-15.clover',
-});
-
 type PaymentPayload = {
   bookingId: string;
   amount: number;
   customerEmail: string;
 };
 
+// Lazy initialization of Stripe to avoid module-level errors
+function getStripeClient(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+  
+  // Trim any whitespace that might cause issues
+  const cleanKey = key.trim();
+  
+  if (!cleanKey.startsWith('sk_')) {
+    throw new Error('STRIPE_SECRET_KEY appears to be invalid (should start with sk_)');
+  }
+  
+  return new Stripe(cleanKey, {
+    apiVersion: '2025-12-15.clover',
+  });
+}
+
 export async function POST(request: Request) {
   try {
     // Check environment variables
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('STRIPE_SECRET_KEY is missing');
-      return NextResponse.json(
-        { error: 'Payment system configuration error' },
-        { status: 500 }
-      );
-    }
-
     if (!process.env.NEXT_PUBLIC_BASE_URL) {
       console.error('NEXT_PUBLIC_BASE_URL is missing');
       return NextResponse.json(
@@ -62,6 +61,18 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: 'Booking is not eligible for payment' },
         { status: 400 }
+      );
+    }
+
+    // Initialize Stripe client
+    let stripe: Stripe;
+    try {
+      stripe = getStripeClient();
+    } catch (stripeError) {
+      console.error('Stripe initialization error:', stripeError);
+      return NextResponse.json(
+        { error: 'Payment system configuration error' },
+        { status: 500 }
       );
     }
 

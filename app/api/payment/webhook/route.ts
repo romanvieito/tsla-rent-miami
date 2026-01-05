@@ -3,9 +3,25 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { getBooking, updateBooking } from '@/lib/bookings-storage';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-12-15.clover',
-});
+// Lazy initialization of Stripe to avoid module-level errors
+function getStripeClient(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  
+  if (!key) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+  
+  // Trim any whitespace that might cause issues
+  const cleanKey = key.trim();
+  
+  if (!cleanKey.startsWith('sk_')) {
+    throw new Error('STRIPE_SECRET_KEY appears to be invalid (should start with sk_)');
+  }
+  
+  return new Stripe(cleanKey, {
+    apiVersion: '2025-12-15.clover',
+  });
+}
 
 export async function POST(request: Request) {
   try {
@@ -20,6 +36,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // Initialize Stripe client
+    const stripe = getStripeClient();
 
     try {
       event = stripe.webhooks.constructEvent(

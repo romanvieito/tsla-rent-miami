@@ -32,27 +32,27 @@ model trips {
 }
 
 model Booking {
-  id               String    @id @default(cuid())
-  bookingId        String    @unique
-  name             String
-  email            String
-  phone            String
-  carModel         String
-  carPricePerDay   Int
-  rentalDays       Int
-  totalPrice       Int
-  depositAmount    Int
-  location         String
-  address          String
-  startDate        DateTime?
-  endDate          DateTime?
+  id                String        @id @default(cuid())
+  bookingId         String        @unique
+  name              String
+  email             String
+  phone             String
+  carModel          String
+  carPricePerDay    Int
+  rentalDays        Int
+  totalPrice        Int
+  depositAmount     Int
+  location          String
+  address           String
+  startDate         DateTime?
+  endDate           DateTime?
   customCoordinates Json?
-  status           BookingStatus @default(draft)
-  createdAt        DateTime @default(now())
-  expiresAt        DateTime
-  paymentId        String?
-  paymentAmount    Int?
-  confirmedAt      DateTime?
+  status            BookingStatus @default(draft)
+  createdAt         DateTime      @default(now())
+  expiresAt         DateTime
+  paymentId         String?
+  paymentAmount     Int?
+  confirmedAt       DateTime?
 
   @@map("bookings")
 }
