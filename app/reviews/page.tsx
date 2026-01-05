@@ -139,7 +139,7 @@ export default function ReviewsPage() {
                 <div className="text-center mt-12">
                   <button
                     onClick={handleSeeMore}
-                    className="inline-flex items-center px-8 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+                    className="inline-flex items-center px-8 py-3 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 font-medium rounded-xl transition-colors"
                   >
                     See More Reviews
                     <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
