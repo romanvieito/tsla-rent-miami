@@ -33,20 +33,26 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-gray-100">
           {/* Navigation Links - Subdued */}
           <nav className="flex gap-6 order-2 sm:order-1">
-            <Link 
-              href="/reviews" 
+            <Link
+              href="/reviews"
               className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
               Reviews
             </Link>
-            <Link 
-              href="/about" 
+            <Link
+              href="/about"
               className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
               About
             </Link>
-            <Link 
-              href="/contact" 
+            <Link
+              href="/policies"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              Policies
+            </Link>
+            <Link
+              href="/contact"
               className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
               Contact

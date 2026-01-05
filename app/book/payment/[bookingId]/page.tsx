@@ -1,0 +1,357 @@
+'use client';
+
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { format } from 'date-fns';
+import Link from 'next/link';
+import { cars } from '@/lib/cars';
+import { pickupLocations } from '@/lib/locations';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { trackPaymentInitiated, trackPaymentCompleted } from '@/lib/mixpanel';
+
+type BookingDetails = {
+  bookingId: string;
+  name: string;
+  email: string;
+  phone: string;
+  carModel: string;
+  carPricePerDay: number;
+  rentalDays: number;
+  totalPrice: number;
+  depositAmount: number;
+  location: string;
+  address: string;
+  startDate: string;
+  endDate: string;
+  customCoordinates?: { lat: number; lng: number };
+  status: 'draft' | 'confirmed' | 'cancelled';
+};
+
+export default function PaymentPage() {
+  const params = useParams();
+  const router = useRouter();
+  const bookingId = params.bookingId as string;
+
+  const [booking, setBooking] = useState<BookingDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState(false);
+
+  useEffect(() => {
+    if (!bookingId) return;
+
+    const fetchBooking = async () => {
+      try {
+        const response = await fetch(`/api/booking/${bookingId}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch booking');
+        }
+
+        setBooking(data.booking);
+        trackPaymentInitiated(data.booking.totalPrice);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load booking');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooking();
+  }, [bookingId]);
+
+  const handlePayment = async () => {
+    if (!booking) return;
+
+    setProcessing(true);
+    try {
+      const response = await fetch('/api/payment/create-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookingId: booking.bookingId,
+          amount: booking.depositAmount,
+          customerEmail: booking.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create payment session');
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.checkoutUrl;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Payment failed');
+      setProcessing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading your booking...</p>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  if (error || !booking) {
+    return (
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center max-w-md mx-auto px-4">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Booking Not Found</h2>
+            <p className="text-gray-600 mb-6">{error || 'Unable to load your booking details.'}</p>
+            <button
+              onClick={() => router.push('/')}
+              className="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors"
+            >
+              Start Over
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  const selectedCar = cars.find(car => car.model === booking.carModel) || cars[0];
+  const formatDate = (dateStr: string) => format(new Date(dateStr), 'MMM d, h:mm aa');
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      <Header />
+
+      {/* Progress Indicator */}
+      <section className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="ml-2 text-sm font-medium text-emerald-700">Details</span>
+              </div>
+              <div className="w-8 h-px bg-gray-300"></div>
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                </div>
+                <span className="ml-2 text-sm font-medium text-blue-700">Payment</span>
+              </div>
+              <div className="w-8 h-px bg-gray-300"></div>
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="ml-2 text-sm font-medium text-gray-500">Confirmation</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Secure Your Booking</h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Pay a ${booking.depositAmount} booking fee to secure your Tesla rental reservation.
+              <span className="block text-sm text-gray-500 mt-2">
+                Flexible cancellation
+              </span>
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Booking Summary */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-6">Booking Summary</h3>
+
+                {/* Car Details */}
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="relative w-20 h-16 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                    <Image
+                      src={selectedCar.image}
+                      alt={selectedCar.model}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-gray-900">{selectedCar.model}</h4>
+                    <p className="text-sm text-gray-600 mt-1">{selectedCar.description}</p>
+                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        {selectedCar.seats} seats
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <rect x="2" y="7" width="16" height="10" rx="1" />
+                          <rect x="18" y="10" width="2" height="4" rx="0.5" />
+                          <path d="M10.5 9L8 12h4l-2.5 3" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" />
+                        </svg>
+                        {selectedCar.range}mi range
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Booking Details */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                    <span className="text-gray-600">Rental Period</span>
+                    <span className="font-medium text-gray-900">
+                      {formatDate(booking.startDate)} → {formatDate(booking.endDate)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                    <span className="text-gray-600">Duration</span>
+                    <span className="font-medium text-gray-900">{booking.rentalDays} days</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                    <span className="text-gray-600">Pickup Location</span>
+                    <span className="font-medium text-gray-900 text-right max-w-[200px] truncate">
+                      {booking.location === 'Custom Pin'
+                        ? booking.address || 'Custom location'
+                        : pickupLocations.find(loc => loc.value === booking.location)?.value || booking.location}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                    <span className="text-gray-600">Daily Rate</span>
+                    <span className="font-medium text-gray-900">${booking.carPricePerDay}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3">
+                    <span className="text-gray-600">Total Rental Cost</span>
+                    <span className="font-bold text-lg text-gray-900">${booking.totalPrice.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Customer Details */}
+              <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-6">Customer Details</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Name</span>
+                    <span className="font-medium text-gray-900">{booking.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Email</span>
+                    <span className="font-medium text-gray-900">{booking.email}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Phone</span>
+                    <span className="font-medium text-gray-900">{booking.phone}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Section */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-6">Payment Details</h3>
+
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-lg font-semibold text-gray-900">Booking Fee</span>
+                    <span className="text-2xl font-bold text-blue-600">${booking.depositAmount}</span>
+                  </div>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p>• Secures your rental reservation</p>
+                    <p>• Flexible cancellation</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">SSL Encrypted</p>
+                      <p className="text-sm text-gray-600">Secure payment processing</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Flexible Cancellation</p>
+                      <p className="text-sm text-gray-600">Free cancellation within 24 hours after booking fee payment</p>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handlePayment}
+                  disabled={processing}
+                  className="w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-bold text-lg hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  {processing ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Processing...
+                    </div>
+                  ) : (
+                    `Pay $${booking.depositAmount} Booking Fee`
+                  )}
+                </button>
+
+                <p className="text-xs text-gray-500 text-center mt-4">
+                  Secure checkout via Stripe
+                </p>
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  By proceeding, you agree to our{' '}
+                  <Link href="/policies" className="text-blue-600 hover:text-blue-800 underline">
+                    cancellation policy
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
+}

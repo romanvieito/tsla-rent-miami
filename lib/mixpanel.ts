@@ -72,6 +72,23 @@ export const trackBookingInquiry = (bookingData: {
   trackEvent('Booking Inquiry', bookingData);
 };
 
+export const trackPaymentInitiated = (totalAmount: number, depositAmount?: number) => {
+  trackEvent('Payment Initiated', {
+    total_amount: totalAmount,
+    deposit_amount: depositAmount || Math.max(50, Math.round(totalAmount * 0.25)),
+    currency: 'USD'
+  });
+};
+
+export const trackPaymentCompleted = (totalAmount: number, paidAmount: number) => {
+  trackEvent('Payment Completed', {
+    total_amount: totalAmount,
+    paid_amount: paidAmount,
+    remaining_balance: totalAmount - paidAmount,
+    currency: 'USD'
+  });
+};
+
 export const trackNavigation = (fromPage: string, toPage: string) => {
   trackEvent('Navigation', {
     from_page: fromPage,

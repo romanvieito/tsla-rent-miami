@@ -477,7 +477,8 @@ export default function Home() {
     };
 
     try {
-      const response = await fetch('/api/notify', {
+      // First, create a booking draft to get a booking ID
+      const draftResponse = await fetch('/api/booking/create-draft', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -485,16 +486,13 @@ export default function Home() {
         body: JSON.stringify(payload),
       });
 
-      const data = (await response.json().catch(() => ({}))) as {
-        success?: boolean;
-        error?: string;
-      };
+      const draftData = await draftResponse.json();
 
-      if (!response.ok || data?.success !== true) {
-        throw new Error(data?.error ?? 'Notification request failed');
+      if (!draftResponse.ok || !draftData.bookingId) {
+        throw new Error(draftData?.error ?? 'Failed to create booking draft');
       }
 
-      // Track successful form submission
+      // Track form submission (before payment)
       trackFormSubmission('homepage_inquiry');
       trackBookingInquiry({
         car_id: selectedCar.id,
@@ -502,7 +500,7 @@ export default function Home() {
         start_date: startDate?.toISOString() ?? '',
         end_date: endDate?.toISOString() ?? '',
         pickup_location: location,
-        dropoff_location: location, // Same as pickup for now
+        dropoff_location: location,
         contact_info: {
           name: formData.name.trim(),
           email: formData.email.trim(),
@@ -510,35 +508,9 @@ export default function Home() {
         }
       });
 
-      // Track Google Ads conversion
-      const isDevelopment = process.env.NODE_ENV === 'development';
-      
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        const conversionData = {
-          conversionId: 'AW-16510475658/pSTTCMb298QbEIq758A9',
-          value: totalPrice,
-          currency: 'USD',
-        };
-        
-        if (isDevelopment) {
-          // In development, only log - don't send to Google Ads
-          console.log('🧪 [TEST MODE] Google Ads conversion would fire:', conversionData);
-          console.log('✅ Conversion tracking is working! (Not sent to Google Ads in dev mode)');
-        } else {
-          // In production, actually fire the conversion
-          console.log('🎯 Firing Google Ads conversion:', conversionData);
-          (window as any).gtag('event', 'conversion', {
-            'send_to': 'AW-16510475658/pSTTCMb298QbEIq758A9',
-            'value': totalPrice,
-            'currency': 'USD',
-          });
-        }
-      } else {
-        console.warn('⚠️ Google Ads conversion not fired: gtag not available');
-      }
+      // Navigate to payment step instead of showing success modal
+      window.location.href = `/book/payment/${draftData.bookingId}`;
 
-      setStatus('success');
-      setShowSuccessModal(true);
     } catch (error) {
       console.error('Reservation submission error:', error);
       setStatus('idle');
