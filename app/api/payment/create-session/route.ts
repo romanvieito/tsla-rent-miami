@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     }
 
     // Verify booking exists and is in draft status
-    const booking = getBooking(payload.bookingId);
+    const booking = await getBooking(payload.bookingId);
     if (!booking) {
       return NextResponse.json(
         { error: 'Booking not found' },

@@ -119,7 +119,9 @@ export default function ConfirmationPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <Header />
+      <div className="bg-black/20 backdrop-blur-sm">
+        <Header />
+      </div>
 
       {/* Progress Indicator */}
       <section className="bg-white border-b border-gray-200">

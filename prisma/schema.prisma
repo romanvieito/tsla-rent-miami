@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model trips {
+  key                String
+  reservation_id     String
+  guest              String?
+  vehicle            String?
+  vehicle_name       String?
+  vehicle_id         String?
+  vin                String?
+  trip_start         DateTime? @db.Timestamptz(6)
+  trip_end           DateTime? @db.Timestamptz(6)
+  pickup_location    String?
+  return_location    String?
+  status             String?
+  check_in_odometer  Float?
+  check_out_odometer Float?
+  distance_traveled  Float?
+  trip_days          Float?
+  total_earnings     Float?
+  raw                Json?
+
+  @@id([key, reservation_id])
+  @@index([key, trip_start], map: "trips_key_start_idx")
+}
+
+model Booking {
+  id               String    @id @default(cuid())
+  bookingId        String    @unique
+  name             String
+  email            String
+  phone            String
+  carModel         String
+  carPricePerDay   Int
+  rentalDays       Int
+  totalPrice       Int
+  depositAmount    Int
+  location         String
+  address          String
+  startDate        DateTime?
+  endDate          DateTime?
+  customCoordinates Json?
+  status           BookingStatus @default(draft)
+  createdAt        DateTime @default(now())
+  expiresAt        DateTime
+  paymentId        String?
+  paymentAmount    Int?
+  confirmedAt      DateTime?
+
+  @@map("bookings")
+}
+
+enum BookingStatus {
+  draft
+  confirmed
+  cancelled
+}

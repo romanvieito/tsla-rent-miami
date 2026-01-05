@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const depositAmount = 50;
 
     // Create and store booking
-    const booking = createBooking({
+    const booking = await createBooking({
       ...payload,
       depositAmount,
       status: 'draft',

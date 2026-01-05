@@ -97,7 +97,9 @@ export default function PaymentPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-        <Header />
+        <div className="bg-black/20 backdrop-blur-sm">
+          <Header />
+        </div>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
@@ -112,7 +114,9 @@ export default function PaymentPage() {
   if (error || !booking) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-        <Header />
+        <div className="bg-black/20 backdrop-blur-sm">
+          <Header />
+        </div>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center max-w-md mx-auto px-4">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -140,7 +144,9 @@ export default function PaymentPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <Header />
+      <div className="bg-black/20 backdrop-blur-sm">
+        <Header />
+      </div>
 
       {/* Progress Indicator */}
       <section className="bg-white border-b border-gray-200">

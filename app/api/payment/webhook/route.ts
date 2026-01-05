@@ -68,7 +68,7 @@ export async function POST(request: Request) {
 
 async function handleSuccessfulPayment(bookingId: string, session: Stripe.Checkout.Session) {
   try {
-    const booking = getBooking(bookingId);
+    const booking = await getBooking(bookingId);
 
     if (!booking) {
       console.error(`Booking ${bookingId} not found`);
@@ -77,7 +77,7 @@ async function handleSuccessfulPayment(bookingId: string, session: Stripe.Checko
 
     // Update booking status to confirmed
     const paymentAmount = session.amount_total ? session.amount_total / 100 : booking.depositAmount;
-    updateBooking(bookingId, {
+    await updateBooking(bookingId, {
       status: 'confirmed',
       paymentId: session.id,
       paymentAmount,
