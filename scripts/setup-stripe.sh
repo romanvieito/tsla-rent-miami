@@ -9,8 +9,8 @@ if [ ! -f .env.local ]; then
     echo "📝 Creating .env.local file..."
     cat > .env.local << EOF
 # Stripe Configuration
-STRIPE_SECRET_KEY=sk_test_51C73lAAagQf93B5vVKH8BYtTmWIa91LVT1teLfvxrkeUqH38XNXNAkFWmOcsu3Sg3v2feZ7KLTYFvQSA5dtU3IaA00OVTVd5pr
-STRIPE_WEBHOOK_SECRET=whsec_4c2736d4179663a64c358a16c1bb2a502bff2a311b51f179e1f8a0387c4b5f
+STRIPE_SECRET_KEY=sk_test_YOUR_TEST_STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET=whsec_YOUR_TEST_WEBHOOK_SECRET
 
 # App Configuration
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
