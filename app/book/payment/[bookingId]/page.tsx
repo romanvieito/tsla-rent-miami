@@ -341,7 +341,7 @@ export default function PaymentPage() {
                 </p>
                 <p className="text-xs text-gray-500 text-center mt-2">
                   By proceeding, you agree to our{' '}
-                  <Link href="/policies" className="text-blue-600 hover:text-blue-800 underline">
+                  <Link href="/policies" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
                     cancellation policy
                   </Link>
                 </p>
