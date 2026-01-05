@@ -2,8 +2,17 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getBooking } from '@/lib/bookings-storage';
 
+// Validate environment variables
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.error('STRIPE_SECRET_KEY is not set');
+}
+
+if (!process.env.NEXT_PUBLIC_BASE_URL) {
+  console.error('NEXT_PUBLIC_BASE_URL is not set');
+}
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-12-15.clover',
+  apiVersion: '2024-11-20.acacia',
 });
 
 type PaymentPayload = {
@@ -14,6 +23,23 @@ type PaymentPayload = {
 
 export async function POST(request: Request) {
   try {
+    // Check environment variables
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('STRIPE_SECRET_KEY is missing');
+      return NextResponse.json(
+        { error: 'Payment system configuration error' },
+        { status: 500 }
+      );
+    }
+
+    if (!process.env.NEXT_PUBLIC_BASE_URL) {
+      console.error('NEXT_PUBLIC_BASE_URL is missing');
+      return NextResponse.json(
+        { error: 'Payment system configuration error' },
+        { status: 500 }
+      );
+    }
+
     const payload: PaymentPayload = await request.json();
 
     if (!payload.bookingId || !payload.amount || !payload.customerEmail) {
@@ -72,6 +98,7 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error('Payment session creation error:', error);
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json(
       { error: 'Failed to create payment session' },
       { status: 500 }
