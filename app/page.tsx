@@ -69,6 +69,7 @@ export default function Home() {
   const [isInReserveSection, setIsInReserveSection] = useState(false);
   const [isReserveButtonVisible, setIsReserveButtonVisible] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestionsRef = useRef<HTMLDivElement | null>(null);
@@ -346,6 +347,26 @@ export default function Home() {
     };
   }, [addressInput]);
 
+  // Track if user has scrolled
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setHasScrolled(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Check initial scroll position
+    if (window.scrollY > 0) {
+      setHasScrolled(true);
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   useEffect(() => {
     const reserveSection = document.getElementById('reserve');
     const desktopButton = reserveButtonRef.current;
@@ -362,7 +383,7 @@ export default function Home() {
             // Trigger when any part is visible (threshold 0) but maybe check intersectionRatio or isIntersecting
             setIsInReserveSection(entry.isIntersecting);
           }
-          if ((desktopButton && entry.target === desktopButton) || 
+          if ((desktopButton && entry.target === desktopButton) ||
               (mobileButton && entry.target === mobileButton)) {
             setIsReserveButtonVisible(entry.isIntersecting);
           }
@@ -1163,7 +1184,7 @@ export default function Home() {
         </DialogContent>
       </Dialog>
 
-      <TawkChat isVisible={isInReserveSection} />
+      <TawkChat isVisible={hasScrolled && isInReserveSection} />
 
       <Footer ref={footerRef} />
     </main>
