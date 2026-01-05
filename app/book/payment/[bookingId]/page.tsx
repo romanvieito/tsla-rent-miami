@@ -97,9 +97,9 @@ export default function PaymentPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-        <div className="bg-black/20 backdrop-blur-sm">
+        {/* <div className="bg-black/20 backdrop-blur-sm">
           <Header />
-        </div>
+        </div> */}
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
@@ -144,9 +144,9 @@ export default function PaymentPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <div className="bg-black/20 backdrop-blur-sm">
+      {/* <div className="bg-black/20 backdrop-blur-sm">
         <Header />
-      </div>
+      </div> */}
 
       {/* Progress Indicator */}
       <section className="bg-white border-b border-gray-200">

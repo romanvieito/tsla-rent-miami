@@ -5,9 +5,9 @@ import Link from 'next/link';
 export default function PoliciesPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <div className="bg-black/20 backdrop-blur-sm">
+      {/* <div className="bg-black/20 backdrop-blur-sm">
         <Header />
-      </div>
+      </div> */}
 
       <section className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
