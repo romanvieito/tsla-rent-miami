@@ -29,11 +29,14 @@ export default function ReviewsPage() {
 
   const [visibleCount, setVisibleCount] = useState(9);
 
-  const visibleReviews = reviews.slice(0, visibleCount);
-  const hasMore = reviews.length > visibleCount;
+  // Filter out reviews without meaningful text content
+  const reviewsWithText = reviews.filter(review => review.text.trim().length > 0);
+
+  const visibleReviews = reviewsWithText.slice(0, visibleCount);
+  const hasMore = reviewsWithText.length > visibleCount;
 
   const handleSeeMore = () => {
-    setVisibleCount(reviews.length);
+    setVisibleCount(reviewsWithText.length);
   };
 
   return (
