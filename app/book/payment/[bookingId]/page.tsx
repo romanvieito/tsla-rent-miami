@@ -9,7 +9,7 @@ import { cars } from '@/lib/cars';
 import { pickupLocations } from '@/lib/locations';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { trackPaymentInitiated, trackPaymentCompleted } from '@/lib/mixpanel';
+import { trackPaymentInitiated, trackPaymentCompleted, trackEvent } from '@/lib/mixpanel';
 
 type BookingDetails = {
   bookingId: string;
@@ -38,6 +38,7 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [paymentStarted, setPaymentStarted] = useState(false);
 
   useEffect(() => {
     if (!bookingId) return;
@@ -53,6 +54,24 @@ export default function PaymentPage() {
 
         setBooking(data.booking);
         trackPaymentInitiated(data.booking.totalPrice);
+
+        // Track payment page view
+        trackEvent('Payment Page Viewed', {
+          booking_id: data.booking.bookingId,
+          car_model: data.booking.carModel,
+          total_amount: data.booking.totalPrice,
+          deposit_amount: data.booking.depositAmount,
+          currency: 'USD'
+        });
+
+        // Track payment flow step reached
+        trackEvent('Payment Flow Step', {
+          step: 'payment_page_loaded',
+          booking_id: data.booking.bookingId,
+          car_model: data.booking.carModel,
+          total_amount: data.booking.totalPrice,
+          deposit_amount: data.booking.depositAmount
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load booking');
       } finally {
@@ -63,10 +82,45 @@ export default function PaymentPage() {
     fetchBooking();
   }, [bookingId]);
 
+  // Track payment abandonment when user leaves page
+  useEffect(() => {
+    if (!booking || loading) return;
+
+    const handleBeforeUnload = () => {
+      if (!paymentStarted) {
+        trackEvent('Payment Abandoned', {
+          booking_id: booking.bookingId,
+          car_model: booking.carModel,
+          total_amount: booking.totalPrice,
+          deposit_amount: booking.depositAmount,
+          page: 'payment',
+          abandonment_stage: 'payment_page'
+        });
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [booking, loading, paymentStarted]);
+
   const handlePayment = async () => {
     if (!booking) return;
 
+    setPaymentStarted(true);
     setProcessing(true);
+
+    // Track payment button click
+    trackEvent('Payment Button Clicked', {
+      booking_id: booking.bookingId,
+      car_model: booking.carModel,
+      total_amount: booking.totalPrice,
+      deposit_amount: booking.depositAmount,
+      currency: 'USD'
+    });
+
     try {
       const response = await fetch('/api/payment/create-session', {
         method: 'POST',
@@ -347,7 +401,19 @@ export default function PaymentPage() {
                 </p>
                 <p className="text-xs text-gray-500 text-center mt-2">
                   By proceeding, you agree to our{' '}
-                  <Link href="/policies" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                  <Link
+                    href="/policies"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 underline"
+                    onClick={() => {
+                      trackEvent('Cancellation Policy Viewed', {
+                        booking_id: booking.bookingId,
+                        car_model: booking.carModel,
+                        from_page: 'payment'
+                      });
+                    }}
+                  >
                     cancellation policy
                   </Link>
                 </p>

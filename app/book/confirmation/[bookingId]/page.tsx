@@ -9,7 +9,7 @@ import { cars } from '@/lib/cars';
 import { pickupLocations } from '@/lib/locations';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { trackPaymentCompleted } from '@/lib/mixpanel';
+import { trackPaymentCompleted, trackEvent } from '@/lib/mixpanel';
 
 type BookingDetails = {
   bookingId: string;
@@ -69,7 +69,29 @@ export default function ConfirmationPage() {
         }
 
         setBooking(verifyData.booking);
+
+        // Track payment completion and navigation to confirmation
         trackPaymentCompleted(verifyData.booking.totalPrice, verifyData.booking.paymentAmount);
+        trackEvent('Navigation', {
+          from_page: 'payment',
+          to_page: 'confirmation',
+          booking_id: verifyData.booking.bookingId,
+          car_model: verifyData.booking.carModel,
+          total_amount: verifyData.booking.totalPrice,
+          paid_amount: verifyData.booking.paymentAmount,
+          currency: 'USD'
+        });
+        trackEvent('Booking Confirmed', {
+          booking_id: verifyData.booking.bookingId,
+          car_model: verifyData.booking.carModel,
+          total_amount: verifyData.booking.totalPrice,
+          deposit_amount: verifyData.booking.depositAmount,
+          paid_amount: verifyData.booking.paymentAmount,
+          currency: 'USD',
+          customer_email: verifyData.booking.email,
+          rental_days: verifyData.booking.rentalDays,
+          pickup_location: verifyData.booking.location
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load booking confirmation');
       } finally {

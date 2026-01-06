@@ -10,7 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { addDays, format, setHours, setMinutes, differenceInDays, differenceInHours } from 'date-fns';
 import { usePageTracking } from '@/lib/use-mixpanel';
-import { trackCarSelection, trackFormSubmission, trackBookingInquiry } from '@/lib/mixpanel';
+import { trackCarSelection, trackFormSubmission, trackBookingInquiry, trackEvent } from '@/lib/mixpanel';
 import {
   Dialog,
   DialogContent,
@@ -506,6 +506,17 @@ export default function Home() {
           email: formData.email.trim(),
           phone: formData.phone.trim(),
         }
+      });
+
+      // Track navigation to payment page
+      trackEvent('Navigation', {
+        from_page: 'homepage',
+        to_page: 'payment',
+        booking_id: draftData.bookingId,
+        car_model: selectedCar.model,
+        total_amount: totalPrice,
+        deposit_amount: Math.max(50, Math.round(totalPrice * 0.25)),
+        currency: 'USD'
       });
 
       // Navigate to payment step instead of showing success modal
