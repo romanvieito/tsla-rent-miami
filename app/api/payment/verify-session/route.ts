@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getBooking, updateBooking } from '@/lib/bookings-storage';
+import { trackPaymentVerified, trackPaymentCompleted, trackNotificationSent, trackApiError } from '@/lib/mixpanel-server';
 
 // Lazy initialization of Stripe to avoid module-level errors
 function getStripeClient(): Stripe {
@@ -29,8 +30,12 @@ function getStripeClient(): Stripe {
 }
 
 export async function POST(request: Request) {
+  let sessionId: string | undefined;
+  let bookingId: string | undefined;
   try {
-    const { sessionId, bookingId } = await request.json();
+    const body = await request.json();
+    sessionId = body.sessionId;
+    bookingId = body.bookingId;
 
     if (!sessionId || !bookingId) {
       return NextResponse.json(
@@ -86,6 +91,25 @@ export async function POST(request: Request) {
     // Send confirmation notification
     await sendConfirmationNotification(updatedBooking);
 
+    // Track payment verification and completion
+    trackPaymentVerified({
+      bookingId: bookingId,
+      sessionId: sessionId,
+      totalAmount: booking.totalPrice,
+      paidAmount: paymentAmount,
+      paymentStatus: 'paid',
+      userEmail: booking.email,
+    });
+
+    trackPaymentCompleted({
+      bookingId: bookingId,
+      sessionId: sessionId,
+      totalAmount: booking.totalPrice,
+      paidAmount: paymentAmount,
+      userEmail: booking.email,
+      userName: booking.name,
+    });
+
     return NextResponse.json({
       success: true,
       booking: updatedBooking,
@@ -93,6 +117,14 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error('Payment verification error:', error);
+
+    // Track API error
+    trackApiError({
+      endpoint: '/api/payment/verify-session',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      statusCode: 500,
+    });
+
     return NextResponse.json(
       { error: 'Failed to verify payment' },
       { status: 500 }
@@ -128,6 +160,14 @@ async function sendConfirmationNotification(booking: any) {
         'Content-Type': 'text/plain',
       },
       body: message,
+    });
+
+    // Track notification sent
+    trackNotificationSent({
+      type: 'booking_confirmation',
+      bookingId: booking.bookingId,
+      recipient: booking.email,
+      subject: 'Booking Confirmed',
     });
 
   } catch (error) {

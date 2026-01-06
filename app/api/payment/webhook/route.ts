@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { getBooking, updateBooking } from '@/lib/bookings-storage';
+import { trackWebhookReceived, trackPaymentCompleted, trackNotificationSent, trackApiError } from '@/lib/mixpanel-server';
 
 // Lazy initialization of Stripe to avoid module-level errors
 function getStripeClient(): Stripe {
@@ -60,6 +61,15 @@ export async function POST(request: Request) {
       );
     }
 
+    // Track webhook received
+    trackWebhookReceived({
+      eventType: event.type,
+      sessionId: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).id : undefined,
+      bookingId: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).metadata?.bookingId : undefined,
+      amount: event.type === 'checkout.session.completed' ? ((event.data.object as Stripe.Checkout.Session).amount_total || 0) / 100 : undefined,
+      paymentStatus: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).payment_status : undefined,
+    });
+
     // Handle the event
     switch (event.type) {
       case 'checkout.session.completed':
@@ -84,6 +94,14 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error('Webhook processing error:', error);
+
+    // Track webhook error
+    trackApiError({
+      endpoint: '/api/payment/webhook',
+      error: error instanceof Error ? error.message : 'Unknown webhook error',
+      statusCode: 500,
+    });
+
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -107,6 +125,16 @@ async function handleSuccessfulPayment(bookingId: string, session: Stripe.Checko
       paymentId: session.id,
       paymentAmount,
       confirmedAt: new Date().toISOString(),
+    });
+
+    // Track payment completion from webhook
+    trackPaymentCompleted({
+      bookingId: bookingId,
+      sessionId: session.id,
+      totalAmount: booking.totalPrice,
+      paidAmount: paymentAmount,
+      userEmail: booking.email,
+      userName: booking.name,
     });
 
     // Send confirmation notification
@@ -147,6 +175,14 @@ async function sendConfirmationNotification(booking: any) {
         'Content-Type': 'text/plain',
       },
       body: message,
+    });
+
+    // Track notification sent
+    trackNotificationSent({
+      type: 'booking_confirmation_webhook',
+      bookingId: booking.bookingId,
+      recipient: booking.email,
+      subject: 'Booking Confirmed (Webhook)',
     });
 
   } catch (error) {

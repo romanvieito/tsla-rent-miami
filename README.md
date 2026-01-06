@@ -44,25 +44,40 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YOUR_API_KEY
 
 ### Mixpanel Analytics Setup
 
-The app includes Mixpanel analytics for tracking user behavior and conversions.
+The app includes comprehensive Mixpanel analytics for tracking user behavior and conversions on both client and server sides.
 
 1. Create a Mixpanel account at [mixpanel.com](https://mixpanel.com)
 2. Create a new project for your website
 3. Copy your Project Token from the project settings
-4. Add to your `.env.local` file:
+4. Add to your `.env.local` file and Vercel environment variables:
 
 ```
+# Client-side tracking (browser events)
 NEXT_PUBLIC_MIXPANEL_TOKEN=your_mixpanel_project_token_here
+
+# Server-side tracking (API events)
+MIXPANEL_TOKEN=your_mixpanel_project_token_here
 ```
 
-**Note:** The `NEXT_PUBLIC_` prefix is required because this token is used in browser code.
+**Important:** Both tokens should use the same Mixpanel project token. The `NEXT_PUBLIC_` prefix exposes the token to browser code, while the server-side token remains secure.
 
 **Analytics Events Tracked:**
+
+**Client-Side Events:**
 - Page views (all pages)
 - Car selection (homepage and book page)
 - Form submissions (inquiry forms)
 - Booking inquiries (detailed booking data)
 - Navigation between pages
+- Payment initiation and completion
+
+**Server-Side Events:**
+- Booking creation and validation
+- Payment session creation
+- Payment verification and completion
+- Stripe webhook processing
+- API errors and failures
+- Notification sending
 
 ## Setup with GitHub
 

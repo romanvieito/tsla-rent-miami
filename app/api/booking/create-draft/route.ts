@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createBooking } from '@/lib/bookings-storage';
+import { trackBookingCreated, trackApiError } from '@/lib/mixpanel-server';
 
 type BookingPayload = {
   name: string;
@@ -17,8 +18,11 @@ type BookingPayload = {
 };
 
 export async function POST(request: Request) {
+  let payload: BookingPayload | undefined;
+  let userEmail: string | undefined;
   try {
-    const payload: BookingPayload = await request.json();
+    payload = await request.json();
+    userEmail = payload.email;
 
     // Validate required fields
     const requiredFields = ['name', 'email', 'phone', 'carModel'];
@@ -41,6 +45,21 @@ export async function POST(request: Request) {
       status: 'draft',
     });
 
+    // Track booking creation
+    trackBookingCreated({
+      bookingId: booking.bookingId,
+      carId: payload.carModel, // Using carModel as identifier
+      carName: payload.carModel, // carModel contains the model name
+      startDate: payload.startDate || '',
+      endDate: payload.endDate || '',
+      pickupLocation: payload.location,
+      dropoffLocation: payload.location, // Assuming same location for now
+      totalPrice: payload.totalPrice,
+      depositAmount,
+      userEmail: payload.email,
+      userName: payload.name,
+    });
+
     return NextResponse.json({
       success: true,
       bookingId: booking.bookingId,
@@ -49,6 +68,15 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error('Booking creation error:', error);
+
+    // Track API error
+    trackApiError({
+      endpoint: '/api/booking/create-draft',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      statusCode: 500,
+      userEmail,
+    });
+
     return NextResponse.json(
       { error: 'Failed to create booking draft' },
       { status: 500 }

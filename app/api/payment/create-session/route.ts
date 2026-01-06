@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getBooking } from '@/lib/bookings-storage';
+import { trackPaymentSessionCreated, trackApiError } from '@/lib/mixpanel-server';
 
 type PaymentPayload = {
   bookingId: string;
@@ -35,6 +36,8 @@ function getStripeClient(): Stripe {
 }
 
 export async function POST(request: Request) {
+  let payload: PaymentPayload | undefined;
+  let customerEmail: string | undefined;
   try {
     // Check environment variables
     if (!process.env.NEXT_PUBLIC_BASE_URL) {
@@ -59,7 +62,8 @@ export async function POST(request: Request) {
     
     console.log('Using BASE_URL:', baseUrl);
 
-    const payload: PaymentPayload = await request.json();
+    payload = await request.json();
+    customerEmail = payload.customerEmail;
 
     if (!payload.bookingId || !payload.amount || !payload.customerEmail) {
       return NextResponse.json(
@@ -127,6 +131,15 @@ export async function POST(request: Request) {
       },
     });
 
+    // Track payment session creation
+    trackPaymentSessionCreated({
+      bookingId: payload.bookingId,
+      sessionId: session.id,
+      totalAmount: booking.totalPrice,
+      depositAmount: payload.amount,
+      userEmail: payload.customerEmail,
+    });
+
     return NextResponse.json({
       success: true,
       checkoutUrl: session.url,
@@ -137,16 +150,24 @@ export async function POST(request: Request) {
     console.error('Payment session creation error:', error);
     console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
-    
+
     // Log more details about the error
     if (error && typeof error === 'object') {
       console.error('Error type:', (error as any).type);
       console.error('Error code:', (error as any).code);
       console.error('Error raw:', JSON.stringify((error as any).raw, null, 2));
     }
-    
+
+    // Track API error
+    trackApiError({
+      endpoint: '/api/payment/create-session',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      statusCode: 500,
+      userEmail: customerEmail,
+    });
+
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to create payment session',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
