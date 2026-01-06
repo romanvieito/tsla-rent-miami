@@ -36,8 +36,8 @@ function getStripeClient(): Stripe {
 }
 
 export async function POST(request: Request) {
-  let payload: PaymentPayload | undefined;
   let customerEmail: string | undefined;
+
   try {
     // Check environment variables
     if (!process.env.NEXT_PUBLIC_BASE_URL) {
@@ -50,19 +50,19 @@ export async function POST(request: Request) {
 
     // Clean the BASE_URL (remove quotes, newlines, whitespace)
     let baseUrl = process.env.NEXT_PUBLIC_BASE_URL.trim();
-    
+
     // Remove surrounding quotes if present
-    if ((baseUrl.startsWith('"') && baseUrl.endsWith('"')) || 
+    if ((baseUrl.startsWith('"') && baseUrl.endsWith('"')) ||
         (baseUrl.startsWith("'") && baseUrl.endsWith("'"))) {
       baseUrl = baseUrl.slice(1, -1);
     }
-    
+
     // Remove any newline characters
     baseUrl = baseUrl.replace(/[\r\n]+/g, '').trim();
-    
+
     console.log('Using BASE_URL:', baseUrl);
 
-    payload = await request.json();
+    const payload: PaymentPayload = await request.json();
     customerEmail = payload.customerEmail;
 
     if (!payload.bookingId || !payload.amount || !payload.customerEmail) {

@@ -22,6 +22,12 @@ export async function POST(request: Request) {
   let userEmail: string | undefined;
   try {
     payload = await request.json();
+    if (!payload) {
+      return NextResponse.json(
+        { error: 'Invalid request body' },
+        { status: 400 }
+      );
+    }
     userEmail = payload.email;
 
     // Validate required fields

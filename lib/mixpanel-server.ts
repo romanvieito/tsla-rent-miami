@@ -26,7 +26,11 @@ export const trackServerEvent = (eventName: string, properties?: Record<string, 
           ...properties,
         });
       } else {
-        instance.track(eventName, properties);
+        if (properties) {
+          instance.track(eventName, properties);
+        } else {
+          instance.track(eventName);
+        }
       }
     } catch (error) {
       console.error('Server-side Mixpanel tracking error:', error);
