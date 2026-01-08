@@ -4,20 +4,26 @@ let isInitialized = false;
 
 const isDev = process.env.NODE_ENV === 'development';
 
+const cleanEnvVar = (value: string | undefined): string | undefined => {
+  if (!value) return value;
+  // Remove surrounding quotes and whitespace
+  let cleaned = value.trim();
+  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) ||
+      (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+    cleaned = cleaned.slice(1, -1);
+  }
+  // Remove any newlines or carriage returns
+  cleaned = cleaned.replace(/[\r\n]/g, '');
+  return cleaned;
+};
+
 export const initMixpanel = () => {
   if (typeof window !== 'undefined' && !isInitialized) {
-    const token = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
-
-    console.log('Mixpanel init check:', {
-      isClient: typeof window !== 'undefined',
-      isInitialized,
-      hasToken: !!token,
-      tokenLength: token?.length,
-      nodeEnv: process.env.NODE_ENV
-    });
+    let token = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
+    token = cleanEnvVar(token);
 
     if (!token) {
-      console.error('Mixpanel token not found. Please set NEXT_PUBLIC_MIXPANEL_TOKEN environment variable.');
+      console.warn('Mixpanel token not found. Please set NEXT_PUBLIC_MIXPANEL_TOKEN environment variable.');
       return;
     }
 
@@ -28,7 +34,7 @@ export const initMixpanel = () => {
         persistence: 'localStorage'
       });
       isInitialized = true;
-      console.log('Mixpanel initialized successfully with token:', token.substring(0, 10) + '...');
+      if (isDev) console.log('Mixpanel initialized successfully');
     } catch (error) {
       console.error('Mixpanel initialization failed:', error);
     }
@@ -36,18 +42,15 @@ export const initMixpanel = () => {
 };
 
 export const trackEvent = (eventName: string, properties?: Record<string, any>) => {
-  console.log('trackEvent called:', eventName, { isInitialized, isClient: typeof window !== 'undefined' });
-
   if (typeof window !== 'undefined') {
     if (isInitialized) {
       try {
         mixpanel.track(eventName, properties);
-        console.log('Mixpanel track success:', eventName, properties);
+        if (isDev) console.log('Mixpanel track:', eventName, properties);
       } catch (error) {
         console.error('Mixpanel tracking failed:', eventName, error);
       }
     } else {
-      console.warn('Mixpanel not initialized, attempting to init and retry for event:', eventName);
       // Try to initialize if not already done
       initMixpanel();
       // Retry after a short delay
@@ -55,12 +58,12 @@ export const trackEvent = (eventName: string, properties?: Record<string, any>) 
         if (isInitialized) {
           try {
             mixpanel.track(eventName, properties);
-            console.log('Mixpanel track success (retry):', eventName, properties);
+            if (isDev) console.log('Mixpanel track (retry):', eventName, properties);
           } catch (error) {
             console.error('Mixpanel tracking failed on retry:', eventName, error);
           }
         } else {
-          console.error('Mixpanel not initialized after retry; skipped event:', eventName);
+          if (isDev) console.warn('Mixpanel not initialized after retry; skipped event:', eventName);
         }
       }, 500);
     }

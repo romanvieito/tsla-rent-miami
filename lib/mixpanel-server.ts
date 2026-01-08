@@ -2,24 +2,31 @@ import Mixpanel from 'mixpanel';
 
 let mixpanel: Mixpanel.Mixpanel | null = null;
 
+const cleanEnvVar = (value: string | undefined): string | undefined => {
+  if (!value) return value;
+  // Remove surrounding quotes and whitespace
+  let cleaned = value.trim();
+  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) ||
+      (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+    cleaned = cleaned.slice(1, -1);
+  }
+  // Remove any newlines or carriage returns
+  cleaned = cleaned.replace(/[\r\n]/g, '');
+  return cleaned;
+};
+
 const initMixpanelServer = () => {
   if (!mixpanel) {
-    const token = process.env.MIXPANEL_TOKEN;
-
-    console.log('Server Mixpanel init check:', {
-      hasToken: !!token,
-      tokenLength: token?.length,
-      nodeEnv: process.env.NODE_ENV
-    });
+    let token = process.env.MIXPANEL_TOKEN;
+    token = cleanEnvVar(token);
 
     if (!token) {
-      console.error('Server-side Mixpanel token not found. Please set MIXPANEL_TOKEN environment variable.');
+      console.warn('Server-side Mixpanel token not found. Please set MIXPANEL_TOKEN environment variable.');
       return;
     }
 
     try {
       mixpanel = Mixpanel.init(token);
-      console.log('Server-side Mixpanel initialized successfully');
     } catch (error) {
       console.error('Server-side Mixpanel initialization failed:', error);
     }
