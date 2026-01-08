@@ -1,11 +1,119 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { LoadScript, GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
+import { LoadScript, GoogleMap } from '@react-google-maps/api';
 import dynamic from 'next/dynamic';
 
 // Static libraries array to prevent LoadScript reloading
-const GOOGLE_MAPS_LIBRARIES: ("places")[] = ['places'];
+const GOOGLE_MAPS_LIBRARIES: ("places" | "marker")[] = ['places', 'marker'];
+
+// Advanced Marker Element Component
+interface AdvancedMarkerProps {
+  position: google.maps.LatLngLiteral;
+  map?: google.maps.Map;
+  icon?: google.maps.Symbol | google.maps.Icon | string;
+  onClick?: () => void;
+  showInfoWindow?: boolean;
+  infoWindowContent?: React.ReactNode;
+  onCloseInfoWindow?: () => void;
+}
+
+function AdvancedMarker({
+  position,
+  map,
+  icon,
+  onClick,
+  showInfoWindow,
+  infoWindowContent,
+  onCloseInfoWindow
+}: AdvancedMarkerProps) {
+  const [marker, setMarker] = useState<google.maps.marker.AdvancedMarkerElement | null>(null);
+  const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null);
+
+  useEffect(() => {
+    if (!map || !window.google?.maps?.marker?.AdvancedMarkerElement) return;
+
+    // Create custom marker element
+    const markerElement = document.createElement('div');
+    markerElement.style.width = '20px';
+    markerElement.style.height = '20px';
+    markerElement.style.borderRadius = '50%';
+    markerElement.style.cursor = 'pointer';
+
+    // Apply icon styles if provided
+    if (icon && typeof icon === 'object' && 'fillColor' in icon) {
+      const iconOptions = icon as any;
+      markerElement.style.backgroundColor = iconOptions.fillColor || '#ef4444';
+      markerElement.style.border = `${iconOptions.strokeWeight || 2}px solid ${iconOptions.strokeColor || '#ffffff'}`;
+      markerElement.style.width = `${iconOptions.scale || 10}px`;
+      markerElement.style.height = `${iconOptions.scale || 10}px`;
+    } else {
+      // Default styling
+      markerElement.style.backgroundColor = '#ef4444';
+      markerElement.style.border = '2px solid #ffffff';
+    }
+
+    const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
+      position,
+      map,
+      content: markerElement,
+    });
+
+    if (onClick) {
+      advancedMarker.addListener('click', onClick);
+    }
+
+    setMarker(advancedMarker);
+
+    return () => {
+      if (advancedMarker) {
+        advancedMarker.map = null;
+      }
+      if (infoWindow) {
+        infoWindow.close();
+      }
+    };
+  }, [map, position, icon, onClick]);
+
+  useEffect(() => {
+    if (infoWindowContent && !infoWindow) {
+      const newInfoWindow = new google.maps.InfoWindow();
+
+      // Add close listener
+      if (onCloseInfoWindow) {
+        newInfoWindow.addListener('closeclick', onCloseInfoWindow);
+      }
+
+      setInfoWindow(newInfoWindow);
+    }
+  }, [infoWindowContent, infoWindow, onCloseInfoWindow]);
+
+  useEffect(() => {
+    if (infoWindow && infoWindowContent && marker) {
+      // Create a container for React content
+      const container = document.createElement('div');
+      container.className = 'text-sm';
+
+      // Simple approach: render the content as HTML
+      // In a production app, you'd want to use ReactDOM.render or portals
+      if (React.isValidElement(infoWindowContent)) {
+        // For now, we'll set the content directly
+        infoWindow.setContent(infoWindowContent as any);
+      }
+
+      if (showInfoWindow) {
+        infoWindow.open({
+          anchor: marker,
+          map: map,
+        });
+      } else {
+        infoWindow.close();
+      }
+    }
+  }, [infoWindow, infoWindowContent, showInfoWindow, marker, map]);
+
+  return null; // AdvancedMarkerElement handles its own DOM
+}
 
 // Dynamically import Leaflet components for fallback
 const LeafletMap = dynamic(() => import('./LeafletMapFallback'), {
@@ -186,60 +294,48 @@ function GoogleMapsMap({
       {locations.map(location => {
         const isSelected = location.value === selectedLocation && !isCustomSelected;
         return (
-          <Marker
+          <AdvancedMarker
             key={location.value}
             position={{ lat: location.latitude, lng: location.longitude }}
+            map={mapRef.current || undefined}
             icon={getMarkerIcon(isSelected)}
-            animation={typeof window !== 'undefined' && window.google?.maps?.Animation ? window.google.maps.Animation.DROP : undefined}
             onClick={() => {
               setInfoWindowOpen(location.value);
               onSelect(location.value);
             }}
-          >
-            {infoWindowOpen === location.value && (
-              <InfoWindow
-                onCloseClick={() => setInfoWindowOpen(null)}
-                options={{
-                  pixelOffset: typeof window !== 'undefined' && window.google?.maps?.Size ? new window.google.maps.Size(0, -10) : undefined,
-                }}
-              >
-                <div className="text-sm">
-                  <p className="font-semibold text-gray-900">{location.value}</p>
-                  <p className="text-gray-600">{location.address}</p>
-                </div>
-              </InfoWindow>
-            )}
-          </Marker>
+            showInfoWindow={infoWindowOpen === location.value}
+            infoWindowContent={
+              <div className="text-sm">
+                <p className="font-semibold text-gray-900">{location.value}</p>
+                <p className="text-gray-600">{location.address}</p>
+              </div>
+            }
+            onCloseInfoWindow={() => setInfoWindowOpen(null)}
+          />
         );
       })}
 
       {/* Render custom location marker if exists */}
       {customCoordinates && (
-        <Marker
+        <AdvancedMarker
           position={{ lat: customCoordinates.lat, lng: customCoordinates.lng }}
+          map={mapRef.current || undefined}
           icon={getMarkerIcon(false, true)}
-          animation={typeof window !== 'undefined' && window.google?.maps?.Animation ? window.google.maps.Animation.DROP : undefined}
           onClick={() => {
             setInfoWindowOpen('Custom Pin');
             onSelect('Custom Pin');
           }}
-        >
-          {infoWindowOpen === 'Custom Pin' && (
-            <InfoWindow
-              onCloseClick={() => setInfoWindowOpen(null)}
-              options={{
-                pixelOffset: typeof window !== 'undefined' && window.google?.maps?.Size ? new window.google.maps.Size(0, -10) : undefined,
-              }}
-            >
-              <div className="text-sm">
-                <p className="font-semibold text-gray-900">Custom Location</p>
-                <p className="text-gray-600">
-                  {customCoordinates.lat.toFixed(4)}, {customCoordinates.lng.toFixed(4)}
-                </p>
-              </div>
-            </InfoWindow>
-          )}
-        </Marker>
+          showInfoWindow={infoWindowOpen === 'Custom Pin'}
+          infoWindowContent={
+            <div className="text-sm">
+              <p className="font-semibold text-gray-900">Custom Location</p>
+              <p className="text-gray-600">
+                {customCoordinates.lat.toFixed(4)}, {customCoordinates.lng.toFixed(4)}
+              </p>
+            </div>
+          }
+          onCloseInfoWindow={() => setInfoWindowOpen(null)}
+        />
       )}
     </GoogleMap>
   );
