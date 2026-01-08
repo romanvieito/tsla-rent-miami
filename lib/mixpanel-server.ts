@@ -6,12 +6,23 @@ const initMixpanelServer = () => {
   if (!mixpanel) {
     const token = process.env.MIXPANEL_TOKEN;
 
+    console.log('Server Mixpanel init check:', {
+      hasToken: !!token,
+      tokenLength: token?.length,
+      nodeEnv: process.env.NODE_ENV
+    });
+
     if (!token) {
-      console.warn('Server-side Mixpanel token not found. Please set MIXPANEL_TOKEN environment variable.');
+      console.error('Server-side Mixpanel token not found. Please set MIXPANEL_TOKEN environment variable.');
       return;
     }
 
-    mixpanel = Mixpanel.init(token);
+    try {
+      mixpanel = Mixpanel.init(token);
+      console.log('Server-side Mixpanel initialized successfully');
+    } catch (error) {
+      console.error('Server-side Mixpanel initialization failed:', error);
+    }
   }
   return mixpanel;
 };
