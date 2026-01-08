@@ -118,10 +118,14 @@ export default function Home() {
     }
   };
 
-  // Only treat a car as "selected" after an explicit user action.
-  // Avoid defaulting to the first car, since that makes the Reserve UI appear on initial load.
-  const selectedCar =
-    selectedCarId !== null ? (cars.find(car => car.id === selectedCarId) ?? null) : null;
+  // Default-select the first model once cars load.
+  useEffect(() => {
+    if (selectedCarId === null && cars.length > 0) {
+      setSelectedCarId(cars[0].id);
+    }
+  }, [cars, selectedCarId]);
+
+  const selectedCar = selectedCarId !== null ? (cars.find(car => car.id === selectedCarId) ?? null) : null;
   const rentalDays =
     startDate && endDate ? Math.max(1, differenceInDays(endDate, startDate)) : 1;
   const totalPrice = selectedCar ? rentalDays * selectedCar.price : 0;
@@ -419,47 +423,38 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // The Reserve section may render before/after a car is selected.
+    // Re-attach observers when selection changes so sticky CTA + chat visibility stay accurate.
     const reserveSection = document.getElementById('reserve');
-    const desktopButton = reserveButtonRef.current;
-    const mobileButton = reserveButtonMobileRef.current;
-
-    if (!reserveSection) {
-      return;
-    }
+    if (!reserveSection) return;
 
     const observer = new IntersectionObserver(
       entries => {
-        entries.forEach(entry => {
-          if (reserveSection && entry.target === reserveSection) {
-            // Trigger when any part is visible (threshold 0) but maybe check intersectionRatio or isIntersecting
+        for (const entry of entries) {
+          if (entry.target === reserveSection) {
             setIsInReserveSection(entry.isIntersecting);
+            continue;
           }
-          if ((desktopButton && entry.target === desktopButton) ||
-              (mobileButton && entry.target === mobileButton)) {
+          if (
+            entry.target === reserveButtonRef.current ||
+            entry.target === reserveButtonMobileRef.current
+          ) {
             setIsReserveButtonVisible(entry.isIntersecting);
           }
-        });
+        }
       },
       {
-        threshold: 0.1, // Trigger when 10% is visible, much more reliable than 0.7
+        threshold: 0.1,
         rootMargin: '0px',
       }
     );
 
-    if (reserveSection) {
-      observer.observe(reserveSection);
-    }
-    if (desktopButton) {
-      observer.observe(desktopButton);
-    }
-    if (mobileButton) {
-      observer.observe(mobileButton);
-    }
+    observer.observe(reserveSection);
+    if (reserveButtonRef.current) observer.observe(reserveButtonRef.current);
+    if (reserveButtonMobileRef.current) observer.observe(reserveButtonMobileRef.current);
 
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
+    return () => observer.disconnect();
+  }, [selectedCarId]);
 
   // Scroll to endDate field when validation error appears
   useEffect(() => {
@@ -588,19 +583,25 @@ export default function Home() {
     date ? format(date, 'MMM d, h:mm aa') : '--';
 
   const scrollToReserve = () => {
+    // If no model is selected yet, the form buttons won't exist—scroll to the section itself.
+    if (!selectedCar) {
+      document.getElementById('reserve')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
     // Check if we're on mobile (viewport width < 768px, which is md breakpoint)
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    
+
     // On mobile, scroll to mobile button; on desktop, scroll to desktop button
     const targetButton = isMobile ? reserveButtonMobileRef.current : reserveButtonRef.current;
-    
+
     if (targetButton) {
       targetButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    } else {
-      // Fallback: if button ref isn't available, scroll to section
-      const reserveSection = document.getElementById('reserve');
-      reserveSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
     }
+
+    // Fallback: if button ref isn't available, scroll to section
+    document.getElementById('reserve')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const scrollToStep1 = () => {
@@ -967,19 +968,29 @@ export default function Home() {
       </section>
 
       {/* Step 4 – Reserve */}
-      {selectedCar && (
-        <section id="reserve" className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white py-16">
+      <section id="reserve" className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-sm font-semibold text-red-400 tracking-widest uppercase mb-3">Step 4 of 4</p>
             <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4">Reserve</h3>
             <p className="text-white/80 max-w-2xl mx-auto">
-              Confirm your driver details so we can coordinate the handoff for your {selectedCar?.model.split(' ').slice(0, 2).join(' ') || 'Tesla vehicle'}.
+              {selectedCar
+                ? `Confirm your driver details so we can coordinate the handoff for your ${
+                    selectedCar.model.split(' ').slice(0, 2).join(' ')
+                  }.`
+                : 'Select a model in Step 2 to unlock your reservation form.'}
             </p>
           </div>
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={event => {
+              if (!selectedCar) {
+                event.preventDefault();
+                document.getElementById('models')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+              }
+              handleSubmit(event);
+            }}
             className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 sm:p-10"
           >
             <div className="grid md:grid-cols-2 gap-8">
@@ -1028,12 +1039,23 @@ export default function Home() {
                   {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
                 </div>
 
+                {!selectedCar && (
+                  <p className="text-sm text-gray-600">
+                    Select a vehicle in <span className="font-semibold">Step 2</span> to enable reservation.
+                  </p>
+                )}
+
                 {/* Submit Button - Desktop */}
                 <div className="hidden md:block pt-2">
                   <button
                     ref={reserveButtonRef}
                     type="submit"
-                    className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors"
+                    disabled={!selectedCar}
+                    className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors ${
+                      selectedCar
+                        ? 'bg-gray-900 text-white hover:bg-gray-800'
+                        : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    }`}
                   >
                     Reserve Now
                   </button>
@@ -1042,55 +1064,74 @@ export default function Home() {
 
               {/* Right Column - Car Summary */}
               <div className="space-y-5 order-1 md:order-2">
-                {/* Car Image */}
-                <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                  <Image
-                    src={selectedCar.image}
-                    alt={selectedCar.model}
-                    fill
-                    className="object-cover"
-                  />
-                  {/* Price Badge */}
-                  <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
-                    <span className="text-sm font-bold text-gray-900">${selectedCar.price}/day</span>
-                  </div>
-                </div>
+                {selectedCar ? (
+                  <>
+                    {/* Car Image */}
+                    <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                      <Image src={selectedCar.image} alt={selectedCar.model} fill className="object-cover" />
+                      {/* Price Badge */}
+                      <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg">
+                        <span className="text-sm font-bold text-gray-900">${selectedCar.price}/day</span>
+                      </div>
+                    </div>
 
-                {/* Car Info Card */}
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100/80 rounded-2xl p-5 border border-gray-200/80">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Selected Model</p>
-                      <p className="text-xl font-bold text-gray-900">{selectedCar.model}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Total</p>
-                      <p className="text-2xl font-bold text-gray-900">${totalPrice.toLocaleString()}</p>
-                      <p className="text-xs text-gray-500">{rentalDays} {rentalDays === 1 ? 'day' : 'days'}</p>
-                    </div>
-                  </div>
+                    {/* Car Info Card */}
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100/80 rounded-2xl p-5 border border-gray-200/80">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Selected Model</p>
+                          <p className="text-xl font-bold text-gray-900">{selectedCar.model}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Total</p>
+                          <p className="text-2xl font-bold text-gray-900">${totalPrice.toLocaleString()}</p>
+                          <p className="text-xs text-gray-500">
+                            {rentalDays} {rentalDays === 1 ? 'day' : 'days'}
+                          </p>
+                        </div>
+                      </div>
 
-                  <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-4"></div>
+                      <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-4"></div>
 
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Pickup</p>
-                      <p className="font-medium text-gray-900">{formatDate(startDate)}</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Pickup</p>
+                          <p className="font-medium text-gray-900">{formatDate(startDate)}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Return</p>
+                          <p className="font-medium text-gray-900">{formatDate(endDate)}</p>
+                        </div>
+                        <div className="col-span-2">
+                          <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Location</p>
+                          <p className="font-medium text-gray-900">
+                            {location === 'Custom Pin'
+                              ? addressInput || 'Pending'
+                              : pickupLocations.find(loc => loc.value === location)?.address ||
+                                addressInput ||
+                                'Pending'}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Return</p>
-                      <p className="font-medium text-gray-900">{formatDate(endDate)}</p>
-                    </div>
-                    <div className="col-span-2">
-                      <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Location</p>
-                      <p className="font-medium text-gray-900">
-                        {location === 'Custom Pin'
-                          ? addressInput || 'Pending'
-                          : pickupLocations.find(loc => loc.value === location)?.address || addressInput || 'Pending'}
-                      </p>
-                    </div>
+                  </>
+                ) : (
+                  <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 text-gray-900">
+                    <p className="text-sm text-gray-600 mb-4">
+                      No model selected yet. Choose a vehicle in <span className="font-semibold">Step 2</span> to see
+                      your booking summary here.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        document.getElementById('models')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      }
+                      className="bg-gray-900 text-white px-5 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors"
+                    >
+                      Go to Step 2: Select a Model
+                    </button>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -1099,7 +1140,12 @@ export default function Home() {
               <button
                 ref={reserveButtonMobileRef}
                 type="submit"
-                className="w-full bg-gray-900 text-white py-4 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-colors"
+                disabled={!selectedCar}
+                className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors ${
+                  selectedCar
+                    ? 'bg-gray-900 text-white hover:bg-gray-800'
+                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                }`}
               >
                 Reserve Now
               </button>
@@ -1107,7 +1153,6 @@ export default function Home() {
           </form>
         </div>
       </section>
-      )}
 
       {/* Sticky summary */}
       {selectedCar && !isReserveButtonVisible && (
