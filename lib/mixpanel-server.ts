@@ -2,23 +2,9 @@ import Mixpanel from 'mixpanel';
 
 let mixpanel: Mixpanel.Mixpanel | null = null;
 
-const cleanEnvVar = (value: string | undefined): string | undefined => {
-  if (!value) return value;
-  // Remove surrounding quotes and whitespace
-  let cleaned = value.trim();
-  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) ||
-      (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
-    cleaned = cleaned.slice(1, -1);
-  }
-  // Remove any newlines or carriage returns
-  cleaned = cleaned.replace(/[\r\n]/g, '');
-  return cleaned;
-};
-
 const initMixpanelServer = () => {
   if (!mixpanel) {
-    let token = process.env.MIXPANEL_TOKEN;
-    token = cleanEnvVar(token);
+    const token = process.env.MIXPANEL_TOKEN;
 
     if (!token) {
       console.warn('Server-side Mixpanel token not found. Please set MIXPANEL_TOKEN environment variable.');

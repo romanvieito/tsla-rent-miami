@@ -4,23 +4,9 @@ let isInitialized = false;
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const cleanEnvVar = (value: string | undefined): string | undefined => {
-  if (!value) return value;
-  // Remove surrounding quotes and whitespace
-  let cleaned = value.trim();
-  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) ||
-      (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
-    cleaned = cleaned.slice(1, -1);
-  }
-  // Remove any newlines or carriage returns
-  cleaned = cleaned.replace(/[\r\n]/g, '');
-  return cleaned;
-};
-
 export const initMixpanel = () => {
   if (typeof window !== 'undefined' && !isInitialized) {
-    let token = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
-    token = cleanEnvVar(token);
+    const token = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 
     if (!token) {
       console.warn('Mixpanel token not found. Please set NEXT_PUBLIC_MIXPANEL_TOKEN environment variable.');
