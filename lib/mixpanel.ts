@@ -109,3 +109,38 @@ export const trackNavigation = (fromPage: string, toPage: string) => {
     to_page: toPage
   });
 };
+
+export const trackBookNowClick = () => {
+  trackEvent('Book Now Clicked', {
+    page: 'homepage',
+    location: 'hero_section'
+  });
+};
+
+export const trackBookNowNavigation = (fromPage: string, location: string = 'navigation') => {
+  trackEvent('Book Now Navigation', {
+    from_page: fromPage,
+    location: location,
+    to_page: 'homepage'
+  });
+};
+
+export const trackDateSelection = (startDate: string | null, endDate: string | null, isValid: boolean) => {
+  trackEvent('Date Selection', {
+    step: 1,
+    start_date: startDate,
+    end_date: endDate,
+    is_valid: isValid,
+    page: 'homepage'
+  });
+};
+
+export const trackAddressSelection = (location: string, address: string, selectionType: 'preset' | 'custom' | 'autocomplete') => {
+  trackEvent('Address Selection', {
+    step: 3,
+    location: location,
+    address: address,
+    selection_type: selectionType,
+    page: 'homepage'
+  });
+};

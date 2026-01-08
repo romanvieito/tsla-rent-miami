@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Image from 'next/image';
 import { usePageTracking } from '@/lib/use-mixpanel';
+import { trackBookNowNavigation } from '@/lib/mixpanel';
 
 export default function About() {
   usePageTracking('About Page');
@@ -63,6 +64,7 @@ export default function About() {
           </p>
           <a
             href="/"
+            onClick={() => trackBookNowNavigation('About Page', 'cta_section')}
             className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg inline-block"
           >
             Book Now

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useLayoutEffect } from 'react';
-import { trackNavigation } from '@/lib/mixpanel';
+import { trackNavigation, trackBookNowNavigation } from '@/lib/mixpanel';
 import { Mail, Phone } from 'lucide-react';
 
 export default function Header() {
@@ -51,7 +51,10 @@ export default function Header() {
             {isHydrated && (currentPage === '/reviews' || currentPage === '/about') && (
               <a
                 href="/"
-                onClick={() => handleNavigation('/')}
+                onClick={() => {
+                  handleNavigation('/');
+                  trackBookNowNavigation(currentPage, 'header');
+                }}
                 className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2 rounded-lg hover:shadow-2xl hover:scale-105 transition-all font-bold text-sm mr-2"
               >
                 Book Now

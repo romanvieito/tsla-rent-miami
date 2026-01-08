@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import Footer from '@/components/Footer';
 import { usePageTracking } from '@/lib/use-mixpanel';
+import { trackBookNowNavigation } from '@/lib/mixpanel';
 
 export default function Home() {
   usePageTracking('FSD Page');
@@ -37,7 +38,11 @@ export default function Home() {
               <a href="#fleet" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Fleet</a>
               <a href="#why-us" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Why Us</a>
               <a href="/about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</a>
-              <a href="/" className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all font-medium">
+              <a
+                href="/"
+                onClick={() => trackBookNowNavigation('FSD Page', 'desktop_nav')}
+                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all font-medium"
+              >
                 Book Now
               </a>
             </nav>
@@ -63,7 +68,11 @@ export default function Home() {
               <a href="#fleet" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">Our Fleet</a>
               <a href="#why-us" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">Why Us</a>
               <a href="/about" className="block py-2 text-gray-600 hover:text-gray-900 font-medium">About</a>
-              <a href="/contact" className="block text-center bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-lg font-medium">
+              <a
+                href="/contact"
+                onClick={() => trackBookNowNavigation('FSD Page', 'mobile_nav')}
+                className="block text-center bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-2.5 rounded-lg font-medium"
+              >
                 Book Now
               </a>
             </nav>

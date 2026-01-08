@@ -6,6 +6,7 @@ import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { usePageTracking } from '@/lib/use-mixpanel';
+import { trackBookNowNavigation } from '@/lib/mixpanel';
 
 // Star rating component
 function StarRating({ rating }: { rating: number }) {
@@ -177,6 +178,7 @@ export default function ReviewsPage() {
           </p>
           <a
             href="/"
+            onClick={() => trackBookNowNavigation('Reviews Page', 'cta_section')}
             className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg inline-block"
           >
             Book Now

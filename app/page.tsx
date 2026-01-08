@@ -10,7 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { addDays, format, setHours, setMinutes, differenceInDays, differenceInHours } from 'date-fns';
 import { usePageTracking } from '@/lib/use-mixpanel';
-import { trackCarSelection, trackFormSubmission, trackBookingInquiry, trackEvent } from '@/lib/mixpanel';
+import { trackCarSelection, trackFormSubmission, trackBookingInquiry, trackEvent, trackBookNowClick, trackDateSelection, trackAddressSelection } from '@/lib/mixpanel';
 import {
   Dialog,
   DialogContent,
@@ -116,6 +116,13 @@ export default function Home() {
     resetStatusIfNeeded();
   };
 
+  const areDatesValid = (start: Date | null, end: Date | null) => {
+    if (!start || !end) return false;
+    if (end <= start) return false;
+    const durationHours = differenceInHours(end, start);
+    return durationHours >= 25;
+  };
+
   const handlePresetLocationChange = (value: string) => {
     setHasInteracted(true);
     setLocation(value);
@@ -124,6 +131,7 @@ export default function Home() {
     const selectedPickupLocation = pickupLocations.find(loc => loc.value === value);
     if (selectedPickupLocation) {
       setAddressInput(selectedPickupLocation.address);
+      trackAddressSelection(value, selectedPickupLocation.address, 'preset');
     }
     // Close suggestions and clear them to avoid showing autocomplete
     setIsSuggestionsOpen(false);
@@ -137,6 +145,7 @@ export default function Home() {
     setHasInteracted(true);
     setCustomCoordinates({ lat, lng });
     setLocation('Custom Pin');
+    trackAddressSelection('Custom Pin', `Custom location (${lat.toFixed(4)}, ${lng.toFixed(4)})`, 'custom');
     resetStatusIfNeeded();
   };
 
@@ -183,6 +192,13 @@ export default function Home() {
       ) {
         handleCustomLocationChange(data.coordinates.lat, data.coordinates.lng);
       }
+
+      // Track autocomplete selection
+      trackAddressSelection(
+        data.address || suggestion.description,
+        data.address || suggestion.description,
+        'autocomplete'
+      );
     } catch (error) {
       console.error('Place selection error:', error);
       setSuggestionError('Unable to load that spot. Try again or drop a pin on the map.');
@@ -582,7 +598,10 @@ export default function Home() {
               </p>
               <div className="flex justify-center">
                 <button
-                  onClick={scrollToStep1}
+                  onClick={() => {
+                    trackBookNowClick();
+                    scrollToStep1();
+                  }}
                   className="bg-gradient-to-r from-red-600 to-red-700 text-white px-10 py-4 rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-bold text-lg"
                 >
                   Book Now
@@ -617,6 +636,14 @@ export default function Home() {
                       setStartDate(date);
                       clearDateError('startDate');
                       setHasInteracted(true);
+                      // Track date selection after state update
+                      setTimeout(() => {
+                        trackDateSelection(
+                          date?.toISOString() ?? null,
+                          endDate?.toISOString() ?? null,
+                          areDatesValid(date, endDate)
+                        );
+                      }, 0);
                     }}
                     minDate={addDays(new Date(), 1)}
                     className="w-full"
@@ -633,6 +660,14 @@ export default function Home() {
                       setEndDate(date);
                       clearDateError('endDate');
                       setHasInteracted(true);
+                      // Track date selection after state update
+                      setTimeout(() => {
+                        trackDateSelection(
+                          startDate?.toISOString() ?? null,
+                          date?.toISOString() ?? null,
+                          areDatesValid(startDate, date)
+                        );
+                      }, 0);
                     }}
                     minDate={startDate ?? new Date()}
                     className="w-full"

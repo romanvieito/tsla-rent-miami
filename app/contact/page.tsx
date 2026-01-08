@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { usePageTracking } from '@/lib/use-mixpanel';
+import { trackBookNowNavigation } from '@/lib/mixpanel';
 import { MapPin, Mail, Phone } from 'lucide-react';
 
 export default function Contact() {
@@ -76,12 +77,13 @@ export default function Contact() {
 
                 </div>
                 <div className="mt-6">
-                  <Link 
-                    href="/"
-                    className="inline-block bg-gradient-to-r from-gray-900 to-gray-700 text-white px-8 py-3 rounded-xl hover:shadow-lg hover:scale-105 transition-all font-semibold text-base"
-                  >
-                    Book Now
-                  </Link>
+                <Link
+                  href="/"
+                  onClick={() => trackBookNowNavigation('Contact Page', 'cta_section')}
+                  className="inline-block bg-gradient-to-r from-gray-900 to-gray-700 text-white px-8 py-3 rounded-xl hover:shadow-lg hover:scale-105 transition-all font-semibold text-base"
+                >
+                  Book Now
+                </Link>
                 </div>
               </div>
             </div>
