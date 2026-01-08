@@ -1,6 +1,5 @@
 'use client';
 
-import { cars } from '@/lib/cars';
 import { pickupLocations } from '@/lib/locations';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -25,6 +24,17 @@ const LocationMap = dynamic(() => import('@/components/LocationMap'), {
 
 import TawkChat from '@/components/TawkChat';
 
+type Car = {
+  id: number;
+  model: string;
+  year: number;
+  price: number;
+  description: string;
+  image: string;
+  seats: number;
+  range: number;
+};
+
 type FormState = {
   name: string;
   email: string;
@@ -43,7 +53,9 @@ type AutocompleteSuggestion = {
 export default function Home() {
   usePageTracking('Homepage');
 
-  const [selectedCarId, setSelectedCarId] = useState(cars[0].id);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [isLoadingCars, setIsLoadingCars] = useState(true);
+  const [selectedCarId, setSelectedCarId] = useState<number | null>(null);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [location, setLocation] = useState(pickupLocations[0].value);
@@ -81,17 +93,38 @@ export default function Home() {
     setEndDate(setHours(setMinutes(addDays(new Date(), 4), 0), 10));
   }, []);
 
+  // Fetch cars from API
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const response = await fetch('/api/cars');
+        if (response.ok) {
+          const carsData = await response.json();
+          setCars(carsData);
+        }
+      } catch (error) {
+        console.error('Error fetching cars:', error);
+      } finally {
+        setIsLoadingCars(false);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
   const resetStatusIfNeeded = () => {
     if (status === 'success') {
       setStatus('idle');
     }
   };
 
+  // Only treat a car as "selected" after an explicit user action.
+  // Avoid defaulting to the first car, since that makes the Reserve UI appear on initial load.
   const selectedCar =
-    cars.find(car => car.id === selectedCarId) ?? cars[0];
+    selectedCarId !== null ? (cars.find(car => car.id === selectedCarId) ?? null) : null;
   const rentalDays =
     startDate && endDate ? Math.max(1, differenceInDays(endDate, startDate)) : 1;
-  const totalPrice = rentalDays * selectedCar.price;
+  const totalPrice = selectedCar ? rentalDays * selectedCar.price : 0;
 
   const handleInputChange = (field: keyof FormState, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -474,6 +507,11 @@ export default function Home() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (!selectedCar) {
+      console.error('No car selected');
+      return;
+    }
+
     if (!validateForm()) {
       setStatus('idle');
       return;
@@ -694,7 +732,28 @@ export default function Home() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {cars.map(car => {
+          {isLoadingCars ? (
+            // Loading skeleton
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="rounded-2xl border border-gray-200 bg-white p-5 animate-pulse">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="h-6 bg-gray-200 rounded w-32 mb-1"></div>
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  </div>
+                  <div className="h-6 bg-gray-200 rounded w-16"></div>
+                </div>
+                <div className="h-4 bg-gray-200 rounded w-full mb-3"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="flex justify-between text-sm mb-4">
+                  <div className="h-4 bg-gray-200 rounded w-16"></div>
+                  <div className="h-4 bg-gray-200 rounded w-16"></div>
+                </div>
+                <div className="h-32 bg-gray-200 rounded mb-4"></div>
+              </div>
+            ))
+          ) : (
+            cars.map(car => {
             const isActive = selectedCarId === car.id;
             return (
             <button
@@ -747,7 +806,8 @@ export default function Home() {
                 </div>
               </button>
             );
-          })}
+            })
+          )}
         </div>
       </section>
 
@@ -907,13 +967,14 @@ export default function Home() {
       </section>
 
       {/* Step 4 – Reserve */}
-      <section id="reserve" className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white py-16">
+      {selectedCar && (
+        <section id="reserve" className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-sm font-semibold text-red-400 tracking-widest uppercase mb-3">Step 4 of 4</p>
             <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4">Reserve</h3>
             <p className="text-white/80 max-w-2xl mx-auto">
-              Confirm your driver details so we can coordinate the handoff for your {selectedCar.model.split(' ').slice(0, 2).join(' ')}.
+              Confirm your driver details so we can coordinate the handoff for your {selectedCar?.model.split(' ').slice(0, 2).join(' ') || 'Tesla vehicle'}.
             </p>
           </div>
 
@@ -1046,9 +1107,10 @@ export default function Home() {
           </form>
         </div>
       </section>
+      )}
 
       {/* Sticky summary */}
-      {hasInteracted && !isReserveButtonVisible && (
+      {selectedCar && !isReserveButtonVisible && (
       <div
         className="fixed inset-x-0 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 pointer-events-none"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
@@ -1057,7 +1119,7 @@ export default function Home() {
           <div className="pointer-events-auto bg-gray-900 text-white rounded-2xl shadow-2xl border border-gray-800/50 px-4 sm:px-5 py-3 sm:py-4">
             <div className="flex items-start justify-between gap-3 sm:gap-4">
               <div className="flex-1 min-w-0 space-y-2">
-                <p className="text-base sm:text-lg font-semibold truncate">{selectedCar.model}</p>
+                <p className="text-base sm:text-lg font-semibold truncate">{selectedCar?.model || 'Loading...'}</p>
                 <div className="flex items-center gap-1.5 text-xs text-gray-300 truncate">
                   <svg className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -1149,7 +1211,7 @@ export default function Home() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Vehicle</p>
-                    <p className="font-semibold text-gray-900">{selectedCar.model}</p>
+                    <p className="font-semibold text-gray-900">{selectedCar?.model || 'Loading...'}</p>
                   </div>
                 </div>
                 

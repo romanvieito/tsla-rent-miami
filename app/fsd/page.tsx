@@ -1,16 +1,46 @@
 'use client';
 
-import { cars } from '@/lib/cars';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Footer from '@/components/Footer';
 import { usePageTracking } from '@/lib/use-mixpanel';
+
+type Car = {
+  id: number;
+  model: string;
+  year: number;
+  price: number;
+  description: string;
+  image: string;
+  seats: number;
+  range: number;
+};
 import { trackBookNowNavigation } from '@/lib/mixpanel';
 
 export default function Home() {
   usePageTracking('FSD Page');
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [isLoadingCars, setIsLoadingCars] = useState(true);
+
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const response = await fetch('/api/cars');
+        if (response.ok) {
+          const carsData = await response.json();
+          setCars(carsData);
+        }
+      } catch (error) {
+        console.error('Error fetching cars:', error);
+      } finally {
+        setIsLoadingCars(false);
+      }
+    };
+
+    fetchCars();
+  }, []);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -200,7 +230,25 @@ export default function Home() {
 
         {/* Cars Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {cars.map((car) => (
+          {isLoadingCars ? (
+            // Loading skeleton
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 animate-pulse">
+                <div className="h-48 bg-gray-200"></div>
+                <div className="p-6">
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full mb-1"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3 mb-4"></div>
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="h-4 bg-gray-200 rounded w-16"></div>
+                    <div className="h-6 bg-gray-200 rounded w-20"></div>
+                  </div>
+                  <div className="h-10 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+            ))
+          ) : (
+            cars.map((car) => (
             <div
               key={car.id}
               className="group bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-red-200 hover:-translate-y-1"
@@ -269,7 +317,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          ))}
+            ))
+          )}
         </div>
       </section>
 

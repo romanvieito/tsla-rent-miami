@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, type ReactNode } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
 import { LoadScript, GoogleMap } from '@react-google-maps/api';
 import dynamic from 'next/dynamic';
 
@@ -14,8 +15,9 @@ interface AdvancedMarkerProps {
   icon?: google.maps.Symbol | google.maps.Icon | string;
   onClick?: () => void;
   showInfoWindow?: boolean;
-  infoWindowContent?: React.ReactNode;
+  infoWindowContent?: ReactNode;
   onCloseInfoWindow?: () => void;
+  useAdvancedMarker?: boolean;
 }
 
 function AdvancedMarker({
@@ -25,55 +27,96 @@ function AdvancedMarker({
   onClick,
   showInfoWindow,
   infoWindowContent,
-  onCloseInfoWindow
+  onCloseInfoWindow,
+  useAdvancedMarker = true,
 }: AdvancedMarkerProps) {
-  const [marker, setMarker] = useState<google.maps.marker.AdvancedMarkerElement | null>(null);
+  const [marker, setMarker] = useState<google.maps.marker.AdvancedMarkerElement | google.maps.Marker | null>(null);
   const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(null);
+  const infoWindowContainerRef = useRef<HTMLDivElement | null>(null);
+  const infoWindowRootRef = useRef<Root | null>(null);
 
   useEffect(() => {
-    if (!map || !window.google?.maps?.marker?.AdvancedMarkerElement) return;
+    if (!map || !window.google?.maps) return;
 
-    // Create custom marker element
-    const markerElement = document.createElement('div');
-    markerElement.style.width = '20px';
-    markerElement.style.height = '20px';
-    markerElement.style.borderRadius = '50%';
-    markerElement.style.cursor = 'pointer';
+    const canUseAdvanced =
+      useAdvancedMarker && !!window.google.maps.marker?.AdvancedMarkerElement;
 
-    // Apply icon styles if provided
-    if (icon && typeof icon === 'object' && 'fillColor' in icon) {
-      const iconOptions = icon as any;
-      markerElement.style.backgroundColor = iconOptions.fillColor || '#ef4444';
-      markerElement.style.border = `${iconOptions.strokeWeight || 2}px solid ${iconOptions.strokeColor || '#ffffff'}`;
-      markerElement.style.width = `${iconOptions.scale || 10}px`;
-      markerElement.style.height = `${iconOptions.scale || 10}px`;
+    let createdMarker: google.maps.marker.AdvancedMarkerElement | google.maps.Marker;
+
+    if (canUseAdvanced) {
+      // Create custom marker element (Advanced Marker)
+      const markerElement = document.createElement('div');
+      markerElement.style.width = '20px';
+      markerElement.style.height = '20px';
+      markerElement.style.borderRadius = '50%';
+      markerElement.style.cursor = 'pointer';
+
+      // Apply icon styles if provided
+      if (icon && typeof icon === 'object' && 'fillColor' in icon) {
+        const iconOptions = icon as any;
+        markerElement.style.backgroundColor = iconOptions.fillColor || '#ef4444';
+        markerElement.style.border = `${iconOptions.strokeWeight || 2}px solid ${iconOptions.strokeColor || '#ffffff'}`;
+        markerElement.style.width = `${iconOptions.scale || 10}px`;
+        markerElement.style.height = `${iconOptions.scale || 10}px`;
+      } else {
+        // Default styling
+        markerElement.style.backgroundColor = '#ef4444';
+        markerElement.style.border = '2px solid #ffffff';
+      }
+
+      createdMarker = new window.google.maps.marker.AdvancedMarkerElement({
+        position,
+        map,
+        content: markerElement,
+      });
     } else {
-      // Default styling
-      markerElement.style.backgroundColor = '#ef4444';
-      markerElement.style.border = '2px solid #ffffff';
+      // Fallback to classic Marker when no Map ID is configured (Advanced Markers require a valid Map ID)
+      createdMarker = new window.google.maps.Marker({
+        position,
+        map,
+        icon: typeof icon === 'string' || typeof icon === 'object' ? (icon as any) : undefined,
+      });
     }
-
-    const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
-      position,
-      map,
-      content: markerElement,
-    });
 
     if (onClick) {
-      advancedMarker.addListener('click', onClick);
+      createdMarker.addListener('click', onClick);
     }
 
-    setMarker(advancedMarker);
+    setMarker(createdMarker);
 
     return () => {
-      if (advancedMarker) {
-        advancedMarker.map = null;
-      }
       if (infoWindow) {
         infoWindow.close();
       }
+      if (createdMarker) {
+        // AdvancedMarkerElement uses `.map = null`; classic Marker uses `.setMap(null)`
+        if ('setMap' in createdMarker) {
+          createdMarker.setMap(null);
+        } else {
+          createdMarker.map = null;
+        }
+      }
     };
-  }, [map, position, icon, onClick]);
+  }, [map, position, icon, onClick, useAdvancedMarker, infoWindow]);
+
+  // Cleanup React root on unmount, but do it asynchronously to avoid React 18 warnings
+  // about unmounting a root while another render is in progress.
+  useEffect(() => {
+    return () => {
+      const root = infoWindowRootRef.current;
+      infoWindowRootRef.current = null;
+      infoWindowContainerRef.current = null;
+      if (root) {
+        setTimeout(() => {
+          try {
+            root.unmount();
+          } catch {
+            // ignore
+          }
+        }, 0);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (infoWindowContent && !infoWindow) {
@@ -90,16 +133,17 @@ function AdvancedMarker({
 
   useEffect(() => {
     if (infoWindow && infoWindowContent && marker) {
-      // Create a container for React content
-      const container = document.createElement('div');
-      container.className = 'text-sm';
-
-      // Simple approach: render the content as HTML
-      // In a production app, you'd want to use ReactDOM.render or portals
-      if (React.isValidElement(infoWindowContent)) {
-        // For now, we'll set the content directly
-        infoWindow.setContent(infoWindowContent as any);
+      // Render React content into a DOM container, then pass that DOM node to Google Maps.
+      if (!infoWindowContainerRef.current) {
+        const container = document.createElement('div');
+        container.className = 'text-sm';
+        infoWindowContainerRef.current = container;
       }
+      if (!infoWindowRootRef.current) {
+        infoWindowRootRef.current = createRoot(infoWindowContainerRef.current);
+      }
+      infoWindowRootRef.current.render(infoWindowContent);
+      infoWindow.setContent(infoWindowContainerRef.current);
 
       if (showInfoWindow) {
         infoWindow.open({
@@ -163,6 +207,7 @@ function GoogleMapsMap({
 }: LocationMapProps & { apiKey: string }) {
   const [infoWindowOpen, setInfoWindowOpen] = useState<string | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const mapId = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID?.trim() || undefined;
 
   // Find selected location coordinates
   const selectedLoc = locations.find(loc => loc.value === selectedLocation);
@@ -283,6 +328,7 @@ function GoogleMapsMap({
       onLoad={onMapLoad}
       onClick={handleMapClick}
       options={{
+        ...(mapId ? { mapId } : {}),
         disableDefaultUI: false,
         zoomControl: true,
         streetViewControl: false,
@@ -299,6 +345,7 @@ function GoogleMapsMap({
             position={{ lat: location.latitude, lng: location.longitude }}
             map={mapRef.current || undefined}
             icon={getMarkerIcon(isSelected)}
+            useAdvancedMarker={!!mapId}
             onClick={() => {
               setInfoWindowOpen(location.value);
               onSelect(location.value);
@@ -321,6 +368,7 @@ function GoogleMapsMap({
           position={{ lat: customCoordinates.lat, lng: customCoordinates.lng }}
           map={mapRef.current || undefined}
           icon={getMarkerIcon(false, true)}
+          useAdvancedMarker={!!mapId}
           onClick={() => {
             setInfoWindowOpen('Custom Pin');
             onSelect('Custom Pin');
