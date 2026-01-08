@@ -1155,7 +1155,7 @@ export default function Home() {
       </section>
 
       {/* Sticky summary */}
-      {selectedCar && !isReserveButtonVisible && (
+      {selectedCar && hasInteracted && !isReserveButtonVisible && (
       <div
         className="fixed inset-x-0 bottom-0 z-50 px-2 sm:px-4 pb-2 sm:pb-4 pointer-events-none"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}
