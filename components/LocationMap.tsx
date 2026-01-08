@@ -4,6 +4,9 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { LoadScript, GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
 import dynamic from 'next/dynamic';
 
+// Static libraries array to prevent LoadScript reloading
+const GOOGLE_MAPS_LIBRARIES: ("places")[] = ['places'];
+
 // Dynamically import Leaflet components for fallback
 const LeafletMap = dynamic(() => import('./LeafletMapFallback'), {
   ssr: false,
@@ -313,7 +316,7 @@ export default function LocationMap(props: LocationMapProps) {
       <LoadScript
         key={`google-maps-${apiKey}`}
         googleMapsApiKey={apiKey}
-        libraries={['places']}
+        libraries={GOOGLE_MAPS_LIBRARIES}
         onLoad={() => {
           if (typeof window !== 'undefined' && window.google?.maps) {
             setIsGoogleReady(true);
