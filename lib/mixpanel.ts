@@ -2,6 +2,8 @@ import mixpanel from 'mixpanel-browser';
 
 let isInitialized = false;
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export const initMixpanel = () => {
   if (typeof window !== 'undefined' && !isInitialized) {
     const token = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
@@ -11,18 +13,30 @@ export const initMixpanel = () => {
       return;
     }
 
-    mixpanel.init(token, {
-      debug: process.env.NODE_ENV === 'development',
-      track_pageview: false, // We'll handle page views manually
-      persistence: 'localStorage'
-    });
-    isInitialized = true;
+    try {
+      mixpanel.init(token, {
+        debug: process.env.NODE_ENV === 'development',
+        track_pageview: false, // We'll handle page views manually
+        persistence: 'localStorage'
+      });
+      isInitialized = true;
+      if (isDev) console.log('Mixpanel initialized');
+    } catch (error) {
+      console.error('Mixpanel initialization failed:', error);
+    }
   }
 };
 
 export const trackEvent = (eventName: string, properties?: Record<string, any>) => {
   if (typeof window !== 'undefined' && isInitialized) {
-    mixpanel.track(eventName, properties);
+    try {
+      mixpanel.track(eventName, properties);
+      if (isDev) console.log('Mixpanel track:', eventName, properties);
+    } catch (error) {
+      console.error('Mixpanel tracking failed:', eventName, error);
+    }
+  } else {
+    if (isDev) console.warn('Mixpanel not initialized; skipped event:', eventName);
   }
 };
 

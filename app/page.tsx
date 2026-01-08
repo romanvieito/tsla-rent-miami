@@ -44,12 +44,8 @@ export default function Home() {
   usePageTracking('Homepage');
 
   const [selectedCarId, setSelectedCarId] = useState(cars[0].id);
-  const [startDate, setStartDate] = useState<Date | null>(
-    setHours(setMinutes(addDays(new Date(), 1), 0), 10)
-  );
-  const [endDate, setEndDate] = useState<Date | null>(
-    setHours(setMinutes(addDays(new Date(), 4), 0), 10)
-  );
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [location, setLocation] = useState(pickupLocations[0].value);
   const [addressInput, setAddressInput] = useState(pickupLocations[0].address);
   const [customCoordinates, setCustomCoordinates] = useState<{ lat: number; lng: number } | null>(null);
@@ -78,6 +74,12 @@ export default function Home() {
   const reserveButtonRef = useRef<HTMLButtonElement | null>(null);
   const reserveButtonMobileRef = useRef<HTMLButtonElement | null>(null);
   const suggestionsListId = 'pickup-location-suggestions';
+
+  // Initialize dates on client side only to prevent hydration mismatches
+  useEffect(() => {
+    setStartDate(setHours(setMinutes(addDays(new Date(), 1), 0), 10));
+    setEndDate(setHours(setMinutes(addDays(new Date(), 4), 0), 10));
+  }, []);
 
   const resetStatusIfNeeded = () => {
     if (status === 'success') {
