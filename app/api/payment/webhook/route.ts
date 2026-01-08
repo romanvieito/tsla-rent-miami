@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     }
 
     // Track webhook received
-    trackWebhookReceived({
+    await trackWebhookReceived({
       eventType: event.type,
       sessionId: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).id : undefined,
       bookingId: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).metadata?.bookingId : undefined,
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     console.error('Webhook processing error:', error);
 
     // Track webhook error
-    trackApiError({
+    await trackApiError({
       endpoint: '/api/payment/webhook',
       error: error instanceof Error ? error.message : 'Unknown webhook error',
       statusCode: 500,
@@ -128,7 +128,7 @@ async function handleSuccessfulPayment(bookingId: string, session: Stripe.Checko
     });
 
     // Track payment completion from webhook
-    trackPaymentCompleted({
+    await trackPaymentCompleted({
       bookingId: bookingId,
       sessionId: session.id,
       totalAmount: booking.totalPrice,
@@ -178,7 +178,7 @@ async function sendConfirmationNotification(booking: any) {
     });
 
     // Track notification sent
-    trackNotificationSent({
+    await trackNotificationSent({
       type: 'booking_confirmation_webhook',
       bookingId: booking.bookingId,
       recipient: booking.email,

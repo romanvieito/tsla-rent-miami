@@ -20,29 +20,56 @@ const initMixpanelServer = () => {
   return mixpanel;
 };
 
-export const trackServerEvent = (eventName: string, properties?: Record<string, any>, distinctId?: string) => {
-  try {
-    const instance = initMixpanelServer();
-    if (instance) {
-      if (distinctId) {
-        instance.track(eventName, {
-          distinct_id: distinctId,
-          ...properties,
-        });
-      } else {
-        if (properties) {
-          instance.track(eventName, properties);
-        } else {
-          instance.track(eventName);
+const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number): Promise<T | undefined> => {
+  let timeoutHandle: NodeJS.Timeout | undefined;
+  const timeoutPromise = new Promise<undefined>((resolve) => {
+    timeoutHandle = setTimeout(() => resolve(undefined), timeoutMs);
+  });
+  const result = await Promise.race([promise, timeoutPromise]);
+  if (timeoutHandle) clearTimeout(timeoutHandle);
+  return result as T | undefined;
+};
+
+const trackAsync = (
+  instance: Mixpanel.Mixpanel,
+  eventName: string,
+  properties?: Record<string, any>
+): Promise<void> => {
+  return new Promise((resolve) => {
+    try {
+      instance.track(eventName, properties ?? {}, (err?: any) => {
+        if (err && process.env.NODE_ENV === 'development') {
+          console.error('Server-side Mixpanel track failed:', err);
         }
+        resolve();
+      });
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Server-side Mixpanel track threw:', error);
       }
+      resolve();
     }
-  } catch (error) {
-    // Silently fail - don't log errors in production
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Server-side Mixpanel tracking error:', error);
-    }
-  }
+  });
+};
+
+/**
+ * IMPORTANT: In serverless (Vercel), "fire-and-forget" analytics calls may be dropped if the function
+ * returns before the outbound request completes. This helper awaits delivery for up to `timeoutMs`.
+ */
+export const trackServerEvent = async (
+  eventName: string,
+  properties?: Record<string, any>,
+  distinctId?: string,
+  timeoutMs: number = 250
+): Promise<void> => {
+  const instance = initMixpanelServer();
+  if (!instance) return;
+
+  const payload: Record<string, any> = distinctId
+    ? { distinct_id: distinctId, ...(properties ?? {}) }
+    : (properties ?? {});
+
+  await withTimeout(trackAsync(instance, eventName, payload), timeoutMs);
 };
 
 export const trackBookingCreated = (bookingData: {
@@ -58,7 +85,7 @@ export const trackBookingCreated = (bookingData: {
   userEmail?: string;
   userName?: string;
 }) => {
-  trackServerEvent('Booking Created', {
+  return trackServerEvent('Booking Created', {
     booking_id: bookingData.bookingId,
     car_id: bookingData.carId,
     car_name: bookingData.carName,
@@ -81,7 +108,7 @@ export const trackPaymentSessionCreated = (sessionData: {
   depositAmount: number;
   userEmail?: string;
 }) => {
-  trackServerEvent('Payment Session Created', {
+  return trackServerEvent('Payment Session Created', {
     booking_id: sessionData.bookingId,
     session_id: sessionData.sessionId,
     total_amount: sessionData.totalAmount,
@@ -99,7 +126,7 @@ export const trackPaymentVerified = (paymentData: {
   paymentStatus: string;
   userEmail?: string;
 }) => {
-  trackServerEvent('Payment Verified', {
+  return trackServerEvent('Payment Verified', {
     booking_id: paymentData.bookingId,
     session_id: paymentData.sessionId,
     total_amount: paymentData.totalAmount,
@@ -119,7 +146,7 @@ export const trackWebhookReceived = (webhookData: {
   paymentStatus?: string;
   userEmail?: string;
 }) => {
-  trackServerEvent('Webhook Received', {
+  return trackServerEvent('Webhook Received', {
     event_type: webhookData.eventType,
     session_id: webhookData.sessionId,
     booking_id: webhookData.bookingId,
@@ -138,7 +165,7 @@ export const trackPaymentCompleted = (paymentData: {
   userEmail?: string;
   userName?: string;
 }) => {
-  trackServerEvent('Payment Completed Server', {
+  return trackServerEvent('Payment Completed Server', {
     booking_id: paymentData.bookingId,
     session_id: paymentData.sessionId,
     total_amount: paymentData.totalAmount,
@@ -156,7 +183,7 @@ export const trackApiError = (errorData: {
   statusCode?: number;
   userEmail?: string;
 }) => {
-  trackServerEvent('API Error', {
+  return trackServerEvent('API Error', {
     endpoint: errorData.endpoint,
     error_message: errorData.error,
     status_code: errorData.statusCode,
@@ -170,7 +197,7 @@ export const trackNotificationSent = (notificationData: {
   recipient: string;
   subject?: string;
 }) => {
-  trackServerEvent('Notification Sent', {
+  return trackServerEvent('Notification Sent', {
     notification_type: notificationData.type,
     booking_id: notificationData.bookingId,
     recipient: notificationData.recipient,
@@ -184,7 +211,7 @@ export const trackLocationApiCall = (apiData: {
   resultCount?: number;
   userEmail?: string;
 }) => {
-  trackServerEvent('Location API Call', {
+  return trackServerEvent('Location API Call', {
     endpoint: apiData.endpoint,
     query: apiData.query,
     result_count: apiData.resultCount,

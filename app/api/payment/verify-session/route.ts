@@ -92,23 +92,24 @@ export async function POST(request: Request) {
     await sendConfirmationNotification(updatedBooking);
 
     // Track payment verification and completion
-    trackPaymentVerified({
-      bookingId: bookingId,
-      sessionId: sessionId,
-      totalAmount: booking.totalPrice,
-      paidAmount: paymentAmount,
-      paymentStatus: 'paid',
-      userEmail: booking.email,
-    });
-
-    trackPaymentCompleted({
-      bookingId: bookingId,
-      sessionId: sessionId,
-      totalAmount: booking.totalPrice,
-      paidAmount: paymentAmount,
-      userEmail: booking.email,
-      userName: booking.name,
-    });
+    await Promise.all([
+      trackPaymentVerified({
+        bookingId: bookingId,
+        sessionId: sessionId,
+        totalAmount: booking.totalPrice,
+        paidAmount: paymentAmount,
+        paymentStatus: 'paid',
+        userEmail: booking.email,
+      }),
+      trackPaymentCompleted({
+        bookingId: bookingId,
+        sessionId: sessionId,
+        totalAmount: booking.totalPrice,
+        paidAmount: paymentAmount,
+        userEmail: booking.email,
+        userName: booking.name,
+      }),
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -119,7 +120,7 @@ export async function POST(request: Request) {
     console.error('Payment verification error:', error);
 
     // Track API error
-    trackApiError({
+    await trackApiError({
       endpoint: '/api/payment/verify-session',
       error: error instanceof Error ? error.message : 'Unknown error',
       statusCode: 500,

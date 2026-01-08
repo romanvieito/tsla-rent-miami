@@ -132,7 +132,7 @@ export async function POST(request: Request) {
     });
 
     // Track payment session creation
-    trackPaymentSessionCreated({
+    await trackPaymentSessionCreated({
       bookingId: payload.bookingId,
       sessionId: session.id,
       totalAmount: booking.totalPrice,
@@ -159,7 +159,7 @@ export async function POST(request: Request) {
     }
 
     // Track API error
-    trackApiError({
+    await trackApiError({
       endpoint: '/api/payment/create-session',
       error: error instanceof Error ? error.message : 'Unknown error',
       statusCode: 500,

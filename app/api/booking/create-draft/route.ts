@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     });
 
     // Track booking creation
-    trackBookingCreated({
+    await trackBookingCreated({
       bookingId: booking.bookingId,
       carId: payload.carModel, // Using carModel as identifier
       carName: payload.carModel, // carModel contains the model name
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
     console.error('Booking creation error:', error);
 
     // Track API error
-    trackApiError({
+    await trackApiError({
       endpoint: '/api/booking/create-draft',
       error: error instanceof Error ? error.message : 'Unknown error',
       statusCode: 500,
