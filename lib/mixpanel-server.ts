@@ -21,9 +21,9 @@ const initMixpanelServer = () => {
 };
 
 export const trackServerEvent = (eventName: string, properties?: Record<string, any>, distinctId?: string) => {
-  const instance = initMixpanelServer();
-  if (instance) {
-    try {
+  try {
+    const instance = initMixpanelServer();
+    if (instance) {
       if (distinctId) {
         instance.track(eventName, {
           distinct_id: distinctId,
@@ -36,7 +36,10 @@ export const trackServerEvent = (eventName: string, properties?: Record<string, 
           instance.track(eventName);
         }
       }
-    } catch (error) {
+    }
+  } catch (error) {
+    // Silently fail - don't log errors in production
+    if (process.env.NODE_ENV === 'development') {
       console.error('Server-side Mixpanel tracking error:', error);
     }
   }

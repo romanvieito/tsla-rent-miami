@@ -62,14 +62,13 @@ export async function POST(request: Request) {
     }
 
     // Track webhook received
-    // Temporarily disabled for testing
-    // trackWebhookReceived({
-    //   eventType: event.type,
-    //   sessionId: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).id : undefined,
-    //   bookingId: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).metadata?.bookingId : undefined,
-    //   amount: event.type === 'checkout.session.completed' ? ((event.data.object as Stripe.Checkout.Session).amount_total || 0) / 100 : undefined,
-    //   paymentStatus: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).payment_status : undefined,
-    // });
+    trackWebhookReceived({
+      eventType: event.type,
+      sessionId: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).id : undefined,
+      bookingId: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).metadata?.bookingId : undefined,
+      amount: event.type === 'checkout.session.completed' ? ((event.data.object as Stripe.Checkout.Session).amount_total || 0) / 100 : undefined,
+      paymentStatus: event.type === 'checkout.session.completed' ? (event.data.object as Stripe.Checkout.Session).payment_status : undefined,
+    });
 
     // Handle the event
     switch (event.type) {
@@ -97,12 +96,11 @@ export async function POST(request: Request) {
     console.error('Webhook processing error:', error);
 
     // Track webhook error
-    // Temporarily disabled for testing
-    // trackApiError({
-    //   endpoint: '/api/payment/webhook',
-    //   error: error instanceof Error ? error.message : 'Unknown webhook error',
-    //   statusCode: 500,
-    // });
+    trackApiError({
+      endpoint: '/api/payment/webhook',
+      error: error instanceof Error ? error.message : 'Unknown webhook error',
+      statusCode: 500,
+    });
 
     return NextResponse.json(
       { error: 'Webhook processing failed' },
@@ -130,15 +128,14 @@ async function handleSuccessfulPayment(bookingId: string, session: Stripe.Checko
     });
 
     // Track payment completion from webhook
-    // Temporarily disabled for testing
-    // trackPaymentCompleted({
-    //   bookingId: bookingId,
-    //   sessionId: session.id,
-    //   totalAmount: booking.totalPrice,
-    //   paidAmount: paymentAmount,
-    //   userEmail: booking.email,
-    //   userName: booking.name,
-    // });
+    trackPaymentCompleted({
+      bookingId: bookingId,
+      sessionId: session.id,
+      totalAmount: booking.totalPrice,
+      paidAmount: paymentAmount,
+      userEmail: booking.email,
+      userName: booking.name,
+    });
 
     // Send confirmation notification
     await sendConfirmationNotification(booking);
@@ -181,13 +178,12 @@ async function sendConfirmationNotification(booking: any) {
     });
 
     // Track notification sent
-    // Temporarily disabled for testing
-    // trackNotificationSent({
-    //   type: 'booking_confirmation_webhook',
-    //   bookingId: booking.bookingId,
-    //   recipient: booking.email,
-    //   subject: 'Booking Confirmed (Webhook)',
-    // });
+    trackNotificationSent({
+      type: 'booking_confirmation_webhook',
+      bookingId: booking.bookingId,
+      recipient: booking.email,
+      subject: 'Booking Confirmed (Webhook)',
+    });
 
   } catch (error) {
     console.error('Failed to send confirmation notification:', error);

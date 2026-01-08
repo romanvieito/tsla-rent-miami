@@ -132,14 +132,13 @@ export async function POST(request: Request) {
     });
 
     // Track payment session creation
-    // Temporarily disabled for testing
-    // trackPaymentSessionCreated({
-    //   bookingId: payload.bookingId,
-    //   sessionId: session.id,
-    //   totalAmount: booking.totalPrice,
-    //   depositAmount: payload.amount,
-    //   userEmail: payload.customerEmail,
-    // });
+    trackPaymentSessionCreated({
+      bookingId: payload.bookingId,
+      sessionId: session.id,
+      totalAmount: booking.totalPrice,
+      depositAmount: payload.amount,
+      userEmail: payload.customerEmail,
+    });
 
     return NextResponse.json({
       success: true,
@@ -160,13 +159,12 @@ export async function POST(request: Request) {
     }
 
     // Track API error
-    // Temporarily disabled for testing
-    // trackApiError({
-    //   endpoint: '/api/payment/create-session',
-    //   error: error instanceof Error ? error.message : 'Unknown error',
-    //   statusCode: 500,
-    //   userEmail: customerEmail,
-    // });
+    trackApiError({
+      endpoint: '/api/payment/create-session',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      statusCode: 500,
+      userEmail: customerEmail,
+    });
 
     return NextResponse.json(
       {
