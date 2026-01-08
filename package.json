@@ -7,6 +7,9 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "db:push": "prisma db push",
+    "db:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/migrate-cars.ts",
+    "deploy:db": "npm run db:push && npm run db:seed",
     "postinstall": "prisma generate"
   },
   "dependencies": {
