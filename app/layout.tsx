@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'TSLA.miami', url: 'https://tsla.miami' }],
   creator: 'TSLA.miami',
   publisher: 'TSLA.miami',
+  icons: {
+    icon: '/favicon.ico',
+  },
   openGraph: {
     title: 'TSLA.miami',
     description: 'Rent a Tesla in Miami with TSLA.miami',
