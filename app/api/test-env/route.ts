@@ -11,7 +11,9 @@ export async function GET() {
     nodeEnv,
     clientTokenLength: clientToken?.length,
     serverTokenLength: serverToken?.length,
-  });  return NextResponse.json({
+  });
+
+  return NextResponse.json({
     environment: {
       nodeEnv,
       clientToken: clientToken ? 'SET' : 'NOT SET',
