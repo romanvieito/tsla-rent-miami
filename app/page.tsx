@@ -633,7 +633,7 @@ export default function Home() {
                 Book a Tesla in Miami
               </h3>
               <p className="text-white/95 text-xl sm:text-2xl mb-7 max-w-2xl mx-auto drop-shadow-md">
-                Try FSD. Safety is more important than ever.
+                Safety is more important than ever. Try FSD.
               </p>
               <div className="flex justify-center">
                 <button
