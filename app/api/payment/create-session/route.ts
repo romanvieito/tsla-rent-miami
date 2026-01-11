@@ -7,6 +7,7 @@ type PaymentPayload = {
   bookingId: string;
   amount: number;
   customerEmail: string;
+  couponCode?: string;
 };
 
 // Lazy initialization of Stripe to avoid module-level errors
@@ -49,7 +50,15 @@ export async function POST(request: Request) {
     }
 
     // Clean the BASE_URL (remove quotes, newlines, whitespace)
-    let baseUrl = process.env.NEXT_PUBLIC_BASE_URL.trim();
+    let baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001').trim();
+
+    // Remove surrounding quotes if present
+    if ((baseUrl.startsWith('"') && baseUrl.endsWith('"')) ||
+        (baseUrl.startsWith("'") && baseUrl.endsWith("'"))) {
+      baseUrl = baseUrl.slice(1, -1);
+    }
+
+    console.log('Using BASE_URL for success/cancel URLs:', baseUrl);
 
     // Remove surrounding quotes if present
     if ((baseUrl.startsWith('"') && baseUrl.endsWith('"')) ||
@@ -98,7 +107,7 @@ export async function POST(request: Request) {
       console.error('Stripe initialization error:', stripeError);
       console.error('Stripe init error message:', stripeError instanceof Error ? stripeError.message : 'Unknown');
       return NextResponse.json(
-        { 
+        {
           error: 'Payment system configuration error',
           details: stripeError instanceof Error ? stripeError.message : 'Unknown'
         },
@@ -106,8 +115,29 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate coupon if provided
+    let couponId = null;
+    if (payload.couponCode) {
+      try {
+        const coupon = await stripe.coupons.retrieve(payload.couponCode);
+        if (!coupon.valid) {
+          return NextResponse.json(
+            { error: 'Invalid or expired coupon code' },
+            { status: 400 }
+          );
+        }
+        couponId = coupon.id;
+      } catch (error) {
+        console.error('Coupon retrieval error:', error);
+        return NextResponse.json(
+          { error: 'Invalid coupon code' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionConfig: any = {
       payment_method_types: ['card'],
       line_items: [
         {
@@ -115,7 +145,7 @@ export async function POST(request: Request) {
             currency: 'usd',
             product_data: {
               name: `Tesla ${booking.carModel} - Security Deposit`,
-              description: `${booking.rentalDays} day rental (${formatDate(booking.startDate)} - ${formatDate(booking.endDate)})`,
+              description: `${booking.rentalDays} day rental (${formatDate(booking.startDate)} - ${formatDate(booking.endDate)})${couponId ? ' - 100% OFF TEST COUPON APPLIED' : ''}`,
             },
             unit_amount: payload.amount * 100, // Convert to cents
           },
@@ -129,7 +159,22 @@ export async function POST(request: Request) {
       metadata: {
         bookingId: payload.bookingId,
       },
-    });
+    };
+
+    // Apply coupon if provided
+    if (couponId) {
+      sessionConfig.discounts = [{
+        coupon: couponId,
+      }];
+      // Add custom text to show discount
+      sessionConfig.custom_text = {
+        submit: {
+          message: "🎉 FREE TEST - No payment required! Complete checkout to confirm your booking."
+        }
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     // Track payment session creation
     await trackPaymentSessionCreated({

@@ -39,6 +39,8 @@ export default function PaymentPage() {
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [paymentStarted, setPaymentStarted] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!bookingId) return;
@@ -131,6 +133,7 @@ export default function PaymentPage() {
           bookingId: booking.bookingId,
           amount: booking.depositAmount,
           customerEmail: booking.email,
+          couponCode: couponCode.trim() || undefined,
         }),
       });
 
@@ -379,6 +382,33 @@ export default function PaymentPage() {
                       <p className="text-sm text-gray-600">Free cancellation within 24 hours after booking fee payment</p>
                     </div>
                   </div>
+                </div>
+
+                {/* Coupon Code Input */}
+                <div className="mt-6">
+                  <label htmlFor="coupon" className="block text-sm font-medium text-gray-700 mb-2">
+                    Coupon Code (Optional)
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      id="coupon"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value.toUpperCase());
+                        setCouponError(null);
+                      }}
+                      placeholder="Enter coupon code"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      disabled={processing}
+                    />
+                  </div>
+                  {couponError && (
+                    <p className="text-red-600 text-sm mt-1">{couponError}</p>
+                  )}
+                  {couponCode && !couponError && (
+                    <p className="text-green-600 text-sm mt-1">Coupon code will be applied at checkout</p>
+                  )}
                 </div>
 
                 <button

@@ -92,6 +92,33 @@ export default function ConfirmationPage() {
           rental_days: verifyData.booking.rentalDays,
           pickup_location: verifyData.booking.location
         });
+
+        // Track Google Ads conversion
+        const isDevelopment = process.env.NODE_ENV === 'development';
+
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          const conversionData = {
+            conversionId: 'AW-16510475658/pSTTCMb298QbEIq758A9',
+            value: verifyData.booking.paymentAmount,
+            currency: 'USD',
+          };
+
+          if (isDevelopment) {
+            // In development, only log - don't send to Google Ads
+            console.log('🧪 [TEST MODE] Google Ads conversion would fire:', conversionData);
+            console.log('✅ Conversion tracking is working! (Not sent to Google Ads in dev mode)');
+          } else {
+            // In production, actually fire the conversion
+            console.log('🎯 Firing Google Ads conversion:', conversionData);
+            (window as any).gtag('event', 'conversion', {
+              'send_to': 'AW-16510475658/pSTTCMb298QbEIq758A9',
+              'value': verifyData.booking.paymentAmount,
+              'currency': 'USD',
+            });
+          }
+        } else {
+          console.warn('⚠️ Google Ads conversion not fired: gtag not available');
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load booking confirmation');
       } finally {
