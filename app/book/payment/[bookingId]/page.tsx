@@ -55,7 +55,7 @@ export default function PaymentPage() {
         }
 
         setBooking(data.booking);
-        trackPaymentInitiated(data.booking.totalPrice);
+        trackPaymentInitiated(data.booking.totalPrice, data.booking.depositAmount);
 
         // Track payment page view
         trackEvent('Payment Page Viewed', {

@@ -102,10 +102,10 @@ export const trackBookingInquiry = (bookingData: {
   trackEvent('Booking Inquiry', bookingData);
 };
 
-export const trackPaymentInitiated = (totalAmount: number, depositAmount?: number) => {
+export const trackPaymentInitiated = (totalAmount: number, depositAmount: number) => {
   trackEvent('Payment Initiated', {
     total_amount: totalAmount,
-    deposit_amount: depositAmount || Math.max(50, Math.round(totalAmount * 0.25)),
+    deposit_amount: depositAmount,
     currency: 'USD'
   });
 };

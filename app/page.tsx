@@ -566,7 +566,7 @@ export default function Home() {
         booking_id: draftData.bookingId,
         car_model: selectedCar.model,
         total_amount: totalPrice,
-        deposit_amount: Math.max(50, Math.round(totalPrice * 0.25)),
+        deposit_amount: draftData.depositAmount,
         currency: 'USD'
       });
 
