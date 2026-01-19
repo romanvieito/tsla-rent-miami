@@ -151,6 +151,25 @@ export default function PaymentPage() {
     }
   };
 
+  const handleBack = () => {
+    if (booking) {
+      trackEvent('Payment Back Clicked', {
+        booking_id: booking.bookingId,
+        car_model: booking.carModel,
+        total_amount: booking.totalPrice,
+        deposit_amount: booking.depositAmount,
+        currency: 'USD'
+      });
+    }
+
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.push('/#book-form');
+  };
+
   if (loading) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
@@ -208,7 +227,17 @@ export default function PaymentPage() {
       {/* Progress Indicator */}
       <section className="bg-white border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={handleBack}
+              aria-label="Back to details"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
                 <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
