@@ -348,29 +348,14 @@ export default function PaymentPage() {
                 <h3 className="text-xl font-bold text-gray-900 mb-6">Payment Details</h3>
 
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-lg font-semibold text-gray-900">Booking Fee</span>
                     <span className="text-2xl font-bold text-blue-600">${booking.depositAmount}</span>
                   </div>
-                  <div className="space-y-2 text-sm text-gray-600">
-                    <p>• Secures your rental reservation</p>
-                    <p>• Flexible cancellation</p>
-                  </div>
+                  <p className="text-sm text-gray-600">Secures your reservation with flexible cancellation.</p>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">SSL Encrypted</p>
-                      <p className="text-sm text-gray-600">Secure payment processing</p>
-                    </div>
-                  </div>
-
                   <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
                     <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -380,6 +365,17 @@ export default function PaymentPage() {
                     <div>
                       <p className="font-medium text-gray-900">Flexible Cancellation</p>
                       <p className="text-sm text-gray-600">Free cancellation within 24 hours after booking fee payment</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Powered by Stripe</p>
+                      <p className="text-sm text-gray-600">Secure checkout</p>
                     </div>
                   </div>
                 </div>
@@ -426,9 +422,6 @@ export default function PaymentPage() {
                   )}
                 </button>
 
-                <p className="text-xs text-gray-500 text-center mt-4">
-                  Secure checkout via Stripe
-                </p>
                 <p className="text-xs text-gray-500 text-center mt-2">
                   By proceeding, you agree to our{' '}
                   <Link
