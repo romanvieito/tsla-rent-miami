@@ -143,6 +143,14 @@ export default function PaymentPage() {
         throw new Error(data.error || 'Failed to create payment session');
       }
 
+      trackEvent('Stripe Checkout Redirected', {
+        booking_id: booking.bookingId,
+        car_model: booking.carModel,
+        total_amount: booking.totalPrice,
+        deposit_amount: booking.depositAmount,
+        currency: 'USD'
+      });
+
       // Redirect to Stripe Checkout
       window.location.href = data.checkoutUrl;
     } catch (err) {
