@@ -630,7 +630,7 @@ export default function Home() {
           <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-4 md:pb-6 lg:pb-8">
             <div className="max-w-4xl mx-auto text-center">
               <h3 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
-                Book a Tesla in Miami
+                Enjoy a Tesla in Miami
               </h3>
               <p className="text-white/95 text-xl sm:text-2xl mb-7 max-w-2xl mx-auto drop-shadow-md">
                 Safety is more important than ever. Try FSD.
