@@ -151,6 +151,23 @@ export default function PaymentPage() {
         currency: 'USD'
       });
 
+      // Track Google Ads conversion - Stripe Checkout Redirect
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[TEST MODE] Google Ads "Stripe Checkout Redirect" conversion would fire:', {
+            send_to: 'AW-16510475658/gdk7CMzQ-vMbEIq758A9',
+            value: booking.depositAmount,
+            currency: 'USD',
+          });
+        } else {
+          (window as any).gtag('event', 'conversion', {
+            'send_to': 'AW-16510475658/gdk7CMzQ-vMbEIq758A9',
+            'value': booking.depositAmount,
+            'currency': 'USD',
+          });
+        }
+      }
+
       // Redirect to Stripe Checkout
       window.location.href = data.checkoutUrl;
     } catch (err) {
