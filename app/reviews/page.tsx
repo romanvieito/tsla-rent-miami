@@ -30,8 +30,10 @@ export default function ReviewsPage() {
 
   const [visibleCount, setVisibleCount] = useState(9);
 
-  // Filter out reviews without meaningful text content
-  const reviewsWithText = reviews.filter(review => review.text.trim().length > 0);
+  // Filter out reviews without meaningful text content, sort by date descending (newest first)
+  const reviewsWithText = reviews
+    .filter(review => review.text.trim().length > 0)
+    .sort((a, b) => (b.date > a.date ? 1 : -1));
 
   const visibleReviews = reviewsWithText.slice(0, visibleCount);
   const hasMore = reviewsWithText.length > visibleCount;

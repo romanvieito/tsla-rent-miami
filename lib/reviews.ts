@@ -3791,5 +3791,290 @@ export const reviews: Review[] = [
     "date": "2025-04-12",
     "rating": 5,
     "text": "Awesome host",
-    }
+    },
+  {
+    "id": 548,
+    "name": "Christopher",
+    "date": "2026-02-19",
+    "rating": 5,
+    "text": "The Tesla was in amazing condition and so much fun to drive. Communication with Yainery was super easy and had no issues collecting and returning the car. Would not hesitate renting from them again. ",
+    "photo": "/reviews/Christopher2026-02-19.jpg"
+  },
+  {
+    "id": 549,
+    "name": "Joy",
+    "date": "2026-02-16",
+    "rating": 5,
+    "text": "Fantastic car and host.  Will rent again.  Thanks!!",
+    "photo": "/reviews/Joy2026-02-16.jpg"
+  },
+  {
+    "id": 550,
+    "name": "Martin",
+    "date": "2026-02-15",
+    "rating": 5,
+    "text": "Yainery is the best host. Anyone should rent with her",
+    },
+  {
+    "id": 551,
+    "name": "Margaret",
+    "date": "2026-02-15",
+    "rating": 5,
+    "text": "The car was great",
+    },
+  {
+    "id": 552,
+    "name": "Dexter",
+    "date": "2026-02-15",
+    "rating": 5,
+    "text": "Thank you !",
+    "photo": "/reviews/Dexter2026-02-15.jpg"
+  },
+  {
+    "id": 553,
+    "name": "CYRIL",
+    "date": "2026-02-12",
+    "rating": 5,
+    "text": "Perfect as always",
+    "photo": "/reviews/CYRIL2026-02-12.jpg"
+  },
+  {
+    "id": 554,
+    "name": "Miguel",
+    "date": "2026-02-12",
+    "rating": 5,
+    "text": "It is always a perfect experience with this amazing Team. The car in perfect condition and the communication couldn't be better. I will keep using their services, my favorite in Miami!",
+    },
+  {
+    "id": 555,
+    "name": "Smiller",
+    "date": "2026-02-11",
+    "rating": 5,
+    "text": "Amazing hosts!!! Congratulations!!!",
+    },
+  {
+    "id": 556,
+    "name": "Henrique Leopoldo D.",
+    "date": "2026-02-11",
+    "rating": 5,
+    "text": "The service was perfect. Friendly and clear communication, unlike others. Super fluid. The car was perfect. Thank you",
+    },
+  {
+    "id": 557,
+    "name": "Muhammad Ahad",
+    "date": "2026-02-08",
+    "rating": 5,
+    "text": "Absolutely amazing, great host any questions I had got answered promptly, car was great nice and clean no issues at all, thank you for making this stress free.",
+    },
+  {
+    "id": 558,
+    "name": "Stanley",
+    "date": "2026-02-08",
+    "rating": 5,
+    "text": "Fantastic experience! Easy pickup, great communication, and an excellent car. Couldn't have asked for a better trip, would definitely book again.",
+    },
+  {
+    "id": 559,
+    "name": "Moises",
+    "date": "2026-02-07",
+    "rating": 5,
+    "text": "Awesome, great at all. Car ",
+    },
+  {
+    "id": 560,
+    "name": "Oğuz Can",
+    "date": "2026-02-05",
+    "rating": 5,
+    "text": "It was amazing service they are so helpfull and friendly. Also the car is amazing ! Thank you !",
+    },
+  {
+    "id": 561,
+    "name": "Brandon",
+    "date": "2026-02-01",
+    "rating": 5,
+    "text": "Really great host and very flexible! Will use again",
+    "photo": "/reviews/Brandon2026-02-01.jpg"
+  },
+  {
+    "id": 562,
+    "name": "Ernesto",
+    "date": "2026-01-30",
+    "rating": 5,
+    "text": "Everything great, very communicative",
+    "photo": "/reviews/Ernesto2026-01-30.jpg"
+  },
+  {
+    "id": 563,
+    "name": "Lisa",
+    "date": "2026-01-30",
+    "rating": 5,
+    "text": "Hostess was amazing!!! Very responsive!!",
+    },
+  {
+    "id": 564,
+    "name": "Roman",
+    "date": "2026-01-30",
+    "rating": 5,
+    "text": "Top-notch car and an attentive host! Also, don't forget to add FSD to your booking. It's a game changer.",
+    },
+  {
+    "id": 565,
+    "name": "Minyeong",
+    "date": "2026-01-28",
+    "rating": 5,
+    "text": "I was planning a 1-night, 2-day trip from Miami to Key West and was specifically looking for a Tesla with FSD. Thanks to this rental, the trip turned out absolutely amazing.\n\nThe host was very responsive and helpful, and the car was in excellent condition — clean, well-maintained, and drove perfectly the entire trip. The long drive was incredibly comfortable, which made the whole experience even better.\n\nI couldn't have asked for a better rental experience and would 100% recommend this car to anyone looking to rent a Tesla!\n",
+    },
+  {
+    "id": 566,
+    "name": "Teleaya",
+    "date": "2026-01-27",
+    "rating": 5,
+    "text": "Thank you ",
+    },
+  {
+    "id": 567,
+    "name": "Maurice",
+    "date": "2026-01-25",
+    "rating": 5,
+    "text": "Great 👍🏻 ",
+    },
+  {
+    "id": 568,
+    "name": "Sanjit",
+    "date": "2026-01-25",
+    "rating": 5,
+    "text": "Fantastic experience - have rented multiple times",
+    },
+  {
+    "id": 569,
+    "name": "weilie",
+    "date": "2026-01-24",
+    "rating": 5,
+    "text": "The check in and check out are very smooth.  The car is superb!",
+    "photo": "/reviews/weilie2026-01-24.jpg"
+  },
+  {
+    "id": 570,
+    "name": "Cobi",
+    "date": "2026-01-20",
+    "rating": 5,
+    "text": "Thanks again \n",
+    "photo": "/reviews/Cobi2026-01-20.jpg"
+  },
+  {
+    "id": 571,
+    "name": "ERIC",
+    "date": "2026-01-20",
+    "rating": 5,
+    "text": "Nice car and good owner communication. Definitely recommended. ",
+    "photo": "/reviews/ERIC2026-01-20.jpg"
+  },
+  {
+    "id": 572,
+    "name": "Rick",
+    "date": "2026-01-19",
+    "rating": 5,
+    "text": "Excellent owner communication. Car was fantastic! Very clean, fully functioned. FSD is very impressive! Would 100% rent again. ",
+    "photo": "/reviews/Rick2026-01-19.jpg"
+  },
+  {
+    "id": 573,
+    "name": "Michelle",
+    "date": "2026-01-16",
+    "rating": 5,
+    "text": "This was my best experience.. I come to Miami 3 times a year and I always rent a Tesla. Communication was very good. Car was very clean..Gave smooth ride. Directions were very clear on how & Where to find the car. Will definitely use you again. Thank you!",
+    "photo": "/reviews/Michelle2026-01-16.jpg"
+  },
+  {
+    "id": 574,
+    "name": "Nicholas",
+    "date": "2026-01-16",
+    "rating": 5,
+    "text": "Car was super clean. Host is responsive, friendly and accommodating. Would definitely recommend. ",
+    "photo": "/reviews/Nicholas2026-01-16.jpg"
+  },
+  {
+    "id": 575,
+    "name": "Eduardo",
+    "date": "2026-01-15",
+    "rating": 5,
+    "text": "Amazing car, thank you!\n",
+    "photo": "/reviews/Eduardo2026-01-15.jpg"
+  },
+  {
+    "id": 576,
+    "name": "Robert",
+    "date": "2026-01-15",
+    "rating": 5,
+    "text": "Pickup was a breeze, and the car was fantastic! FSD road trip is the only way to go ",
+    "photo": "/reviews/Robert2026-01-15.jpg"
+  },
+  {
+    "id": 577,
+    "name": "Björn",
+    "date": "2026-01-09",
+    "rating": 5,
+    "text": "Amazing experience! The car was great and FSD 14 was awesome, made the trip easy and relaxed. Super friendly host, always quick to help and insanely fast to respond.",
+    },
+  {
+    "id": 578,
+    "name": "Christian Gustavo",
+    "date": "2026-01-09",
+    "rating": 5,
+    "text": "I'm truly very disappointed!!!\nthat I can't give 10 stars to the service provided by your host, Yaineri. She was attentive from the very first minute, paying attention to every detail and answering every question I had. The Tesla is a car I would definitely rent again; it's an incredible experience. I'm never renting a car through traditional agencies again! The delivery and return process is completely streamlined.",
+    },
+  {
+    "id": 579,
+    "name": "Richard",
+    "date": "2026-01-08",
+    "rating": 5,
+    "text": "Amazing car ! If you rent a TESLA without FSD you're missing out ! Hosts are beyond GREAT! Super responsive . Super accommodating! Will definitely be a repeat renter ",
+    },
+  {
+    "id": 580,
+    "name": "Julian",
+    "date": "2026-01-06",
+    "rating": 5,
+    "text": "Great !",
+    "photo": "/reviews/Julian2026-01-06.jpg"
+  },
+  {
+    "id": 581,
+    "name": "Dan",
+    "date": "2026-01-05",
+    "rating": 5,
+    "text": "FSD was the best!!! ",
+    "photo": "/reviews/Dan2026-01-05.jpg"
+  },
+  {
+    "id": 582,
+    "name": "Rosa",
+    "date": "2026-01-04",
+    "rating": 5,
+    "text": "Excellent service, the car impeccable and economical. Very attentive and friendly hostess. Thank you very much!",
+    },
+  {
+    "id": 583,
+    "name": "Kenneth",
+    "date": "2026-01-04",
+    "rating": 5,
+    "text": "This is an awesome car! It was delivered, clean as can be, to our arrival point. It has every feature Tesla offers and all of the accessories needed for a great trip. Thanks!",
+    "photo": "/reviews/Kenneth2026-01-04.jpg"
+  },
+  {
+    "id": 584,
+    "name": "Bryan",
+    "date": "2026-01-03",
+    "rating": 5,
+    "text": "Excellent host and perfect vehicle! Easy to work with. Definitely recommend this host and car. ",
+    "photo": "/reviews/Bryan2026-01-03.jpg"
+  },
+  {
+    "id": 585,
+    "name": "Daniel",
+    "date": "2026-01-02",
+    "rating": 5,
+    "text": "Excellent car and amazing hosts!! ",
+    "photo": "/reviews/Daniel2026-01-02.jpg"
+  }
 ];
