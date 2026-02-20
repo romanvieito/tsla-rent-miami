@@ -120,19 +120,11 @@ export async function createOneTimePaymentLink(
       : undefined
   );
 
-  const createdSeconds =
-    typeof paymentLink.created === 'number'
-      ? paymentLink.created
-      : typeof paymentLink.created === 'string'
-        ? Number(paymentLink.created)
-        : NaN;
-  const createdMs = Number.isFinite(createdSeconds) ? createdSeconds * 1000 : Date.now();
-
   return {
     id: paymentLink.id,
     url: paymentLink.url,
     amountUsd: Number((amountCents / 100).toFixed(2)),
     currency: 'usd',
-    createdAt: new Date(createdMs).toISOString(),
+    createdAt: new Date().toISOString(),
   };
 }
