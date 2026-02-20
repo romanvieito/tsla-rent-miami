@@ -42,6 +42,71 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YOUR_API_KEY
 - ✅ With valid Google Maps API key: Uses Google Maps with enhanced integration
 - ✅ Without key or on error: Falls back to Leaflet with OpenStreetMap (free, no API key needed)
 
+### Internal Payment Links API
+
+Use this API when trusted internal services (for example Telegram/OpenClaw automation) need a one-time Stripe payment link.
+
+**Environment variables:**
+
+```bash
+# Required
+STRIPE_SECRET_KEY=sk_test_...
+INTERNAL_API_TOKEN=your_long_random_internal_token
+
+# Optional
+PAYMENT_LINK_DEFAULT_DESCRIPTION=Tesla rental - Miami
+```
+
+**Endpoint:** `POST /api/internal/payment-links`
+
+**Auth header:**
+
+```bash
+Authorization: Bearer <INTERNAL_API_TOKEN>
+```
+
+**Basic request example:**
+
+```bash
+curl -X POST "http://localhost:3000/api/internal/payment-links" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $INTERNAL_API_TOKEN" \
+  -d '{
+    "amountUsd": 80.18
+  }'
+```
+
+**Idempotent request example (recommended from bots):**
+
+```bash
+curl -X POST "http://localhost:3000/api/internal/payment-links" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $INTERNAL_API_TOKEN" \
+  -d '{
+    "amountUsd": "390.00",
+    "description": "Tesla rental - Miami",
+    "externalRequestId": "tg-order-2026-02-20-001"
+  }'
+```
+
+**Success response shape:**
+
+```json
+{
+  "ok": true,
+  "paymentLinkId": "plink_...",
+  "paymentLinkUrl": "https://buy.stripe.com/...",
+  "amountUsd": 80.18,
+  "currency": "usd",
+  "createdAt": "2026-02-20T12:34:56.000Z"
+}
+```
+
+**Common error statuses:**
+- `400` invalid payload
+- `401` invalid or missing bearer token
+- `429` too many requests (basic rate limit)
+
 ### Mixpanel Analytics Setup
 
 The app includes comprehensive Mixpanel analytics for tracking user behavior and conversions on both client and server sides.
