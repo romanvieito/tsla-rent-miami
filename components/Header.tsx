@@ -47,8 +47,8 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Book Now Button - Show on reviews and about pages after hydration */}
-            {isHydrated && (currentPage === '/reviews' || currentPage === '/about') && (
+            {/* Book Now Button - Show on reviews, about and contact pages after hydration */}
+            {isHydrated && (currentPage === '/reviews' || currentPage === '/about' || currentPage === '/contact') && (
               <a
                 href="/"
                 onClick={() => {
