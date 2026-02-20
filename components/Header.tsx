@@ -64,7 +64,8 @@ export default function Header() {
             {/* Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="mr-20 p-2 rounded-lg hover:bg-white/10 transition-colors text-white"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              className="p-2.5 rounded-lg text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors"
             >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileMenuOpen ? (
